@@ -1,14 +1,1075 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
-  title: E-Book E-Commerce & SAW API
-  version: 0.1.0
-  description: "[RENCANA] Spesifikasi OpenAPI untuk backend /api/v1. Akan diisi bertahap seiring implementasi endpoint."
+  title: E-Book E-Commerce & SPK SAW API
+  version: 0.2.0
+  description: |
+    Spesifikasi REST API untuk Sistem Informasi E-Commerce E-Book dan Sistem Pendukung Keputusan (SPK) metode Simple Additive Weighting (SAW).
+    Status aktual backend: hanya `GET /api/v1/health` dan `GET /api/v1/admin/ping` yang berstatus `[ADA]` di `backend/src/app.ts`; seluruh endpoint bisnis berstatus `[RENCANA]`.
+    Autentikasi pengguna (registrasi/login) dikelola oleh Supabase Auth, sedangkan backend Express memverifikasi Bearer JWT dan menegakkan otorisasi peran (`CUSTOMER` / `ADMIN`).
 servers:
-  - url: /api/v1
-paths: {}
+  - url: https://api.example.com/api/v1
+    description: Contoh server API (nonrahasia)
+tags:
+  - name: Health
+    description: Pemeriksaan kesehatan layanan backend [ADA]
+  - name: Auth
+    description: Sinkronisasi sesi Supabase Auth & profil pengguna [RENCANA]
+  - name: Profile
+    description: Pengelolaan profil pengguna aktif [RENCANA]
+  - name: Categories
+    description: Katalog kategori e-book publik [RENCANA]
+  - name: Ebooks
+    description: Katalog dan detail e-book publik [RENCANA]
+  - name: Recommendations
+    description: Rekomendasi e-book berbasis SPK SAW (backend-only) [RENCANA]
+  - name: Orders
+    description: Pembuatan dan pemantauan pesanan pelanggan [RENCANA]
+  - name: Payments
+    description: Inisiasi dan status pembayaran pelanggan [RENCANA]
+  - name: Webhooks
+    description: Callback terverifikasi signature dari Payment Gateway [RENCANA]
+  - name: Ebook Access
+    description: Penerbitan signed URL sementara untuk pembacaan PDF privat [RENCANA]
+  - name: Admin Dashboard
+    description: Ringkasan metrik operasional admin [ADA sebagian ping / RENCANA dashboard]
+  - name: Admin Categories
+    description: CRUD kategori e-book oleh Admin [RENCANA]
+  - name: Admin Ebooks
+    description: CRUD e-book dan unggah PDF ke bucket privat oleh Admin [RENCANA]
+  - name: Admin Customers
+    description: Pemantauan dan pengelolaan status pelanggan oleh Admin [RENCANA]
+  - name: Admin Orders
+    description: Pemantauan daftar dan detail pesanan oleh Admin [RENCANA]
+  - name: Admin Payments
+    description: Pemantauan daftar pembayaran oleh Admin [RENCANA]
+  - name: Admin Transactions
+    description: Audit daftar transaksi resmi oleh Admin [RENCANA]
+  - name: Admin Reports
+    description: Laporan penjualan periodik oleh Admin [RENCANA]
+  - name: Admin SAW
+    description: Konfigurasi dan audit bobot SPK SAW oleh Admin [RENCANA - Keputusan #5, #9]
+  - name: Admin Access
+    description: Pencabutan dan pemulihan EbookAccess oleh Admin [RENCANA]
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Cek kesehatan layanan backend
+      description: "[ADA] Endpoint publik untuk memverifikasi server Express aktif (teruji di Vitest)."
+      x-implementation-status: "[ADA]"
+      x-required-role: PUBLIC
+      responses:
+        "200":
+          description: Layanan backend siap
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+              example:
+                success: true
+                message: Backend E-Book Store siap
+                data:
+                  status: ok
+                  environment: development
+
+  /auth/sync:
+    post:
+      tags: [Auth]
+      summary: Sinkronisasi profil pengguna Supabase Auth ke database aplikasi
+      description: "[RENCANA] Memverifikasi Bearer JWT Supabase Auth dan menyinkronkan record User di PostgreSQL tanpa menyimpan password di backend."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: CUSTOMER | ADMIN
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  example: "DATA SIMULASI - Budi Santoso"
+                phone:
+                  type: string
+                  example: "081200000000"
+      responses:
+        "200":
+          description: Profil tersinkronisasi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+
+  /users/me:
+    get:
+      tags: [Profile]
+      summary: Lihat profil pengguna aktif
+      description: "[RENCANA] Mengambil profil pengguna terautentikasi berdasarkan Bearer JWT."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: CUSTOMER | ADMIN
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Profil pengguna ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+    patch:
+      tags: [Profile]
+      summary: Perbarui profil pengguna aktif
+      description: "[RENCANA] Memperbarui fullName dan phone milik pengguna aktif (tidak dapat mengubah role atau isActive)."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: CUSTOMER | ADMIN
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  minLength: 2
+                  maxLength: 120
+                phone:
+                  type: string
+                  maxLength: 25
+      responses:
+        "200":
+          description: Profil berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSuccessResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: Daftar kategori e-book aktif
+      description: "[RENCANA] Mengambil seluruh kategori aktif untuk filter katalog."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: PUBLIC
+      responses:
+        "200":
+          description: Daftar kategori
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /ebooks:
+    get:
+      tags: [Ebooks]
+      summary: Daftar dan pencarian katalog e-book aktif
+      description: "[RENCANA] Menampilkan katalog e-book dengan isActive=true tanpa mengekspos storagePath privat."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: PUBLIC
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/SearchParam"
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter berdasarkan ID kategori
+      responses:
+        "200":
+          description: Daftar e-book terpaginasi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedEbooksResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+
+  /ebooks/{id}:
+    get:
+      tags: [Ebooks]
+      summary: Detail e-book
+      description: "[RENCANA] Menampilkan metadata lengkap e-book aktif tanpa storagePath privat."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: PUBLIC
+      parameters:
+        - $ref: "#/components/parameters/UuidIdParam"
+      responses:
+        "200":
+          description: Detail e-book ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /recommendations/saw:
+    get:
+      tags: [Recommendations]
+      summary: Rekomendasi e-book berbasis metode SAW
+      description: "[RENCANA] Menghitung peringkat SAW di backend menggunakan bobot tersimpan di server (menolak bobot mentah klien). Status akses (Publik vs Customer) mengikuti keputusan terbuka #5."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: PUBLIC | CUSTOMER
+      parameters:
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - $ref: "#/components/parameters/LimitParam"
+      responses:
+        "200":
+          description: Daftar peringkat e-book hasil perhitungan SAW
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+              example:
+                success: true
+                data:
+                  - ebookId: "00000000-0000-0000-0000-000000000001"
+                    title: "DATA SIMULASI - Pengantar Sains Data"
+                    sawScore: 0.875
+                    rank: 1
+
+  /orders:
+    post:
+      tags: [Orders]
+      summary: Buat pesanan baru (checkout)
+      description: "[RENCANA] Membuat Order PENDING beserta OrderItem; totalAmount dan unitPrice dihitung dari harga Ebook di database."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: CUSTOMER
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ebookIds]
+              properties:
+                ebookIds:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    format: uuid
+            example:
+              ebookIds:
+                - "00000000-0000-0000-0000-000000000001"
+      responses:
+        "201":
+          description: Pesanan berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+
+  /orders/me:
+    get:
+      tags: [Orders]
+      summary: Daftar pesanan milik pelanggan aktif
+      description: "[RENCANA] Mengambil riwayat pesanan milik userId dari JWT."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: CUSTOMER
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/OrderStatusParam"
+      responses:
+        "200":
+          description: Daftar pesanan pelanggan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+
+  /orders/{id}:
+    get:
+      tags: [Orders]
+      summary: Detail pesanan milik pelanggan aktif
+      description: "[RENCANA] Menampilkan detail pesanan apabila dimiliki oleh userId pada JWT."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: CUSTOMER
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidIdParam"
+      responses:
+        "200":
+          description: Detail pesanan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /payments:
+    post:
+      tags: [Payments]
+      summary: Inisiasi pembayaran via Payment Gateway
+      description: "[RENCANA] Membuat record Payment PENDING untuk Order PENDING milik pelanggan dan mengembalikan instruksi gateway."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: CUSTOMER
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orderId, paymentMethod]
+              properties:
+                orderId:
+                  type: string
+                  format: uuid
+                paymentMethod:
+                  type: string
+                  example: "QRIS"
+      responses:
+        "201":
+          description: Pembayaran diinisiasi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+
+  /payments/{id}:
+    get:
+      tags: [Payments]
+      summary: Cek status pembayaran milik pelanggan
+      description: "[RENCANA] Mengambil status Payment terkini milik pelanggan terkait."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: CUSTOMER
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidIdParam"
+      responses:
+        "200":
+          description: Status pembayaran
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /payments/webhook:
+    post:
+      tags: [Webhooks]
+      summary: Callback webhook dari Payment Gateway
+      description: "[RENCANA] Menerima notifikasi status pembayaran dari Payment Gateway (tanpa JWT pelanggan), wajib verifikasi signature dan bersifat idempoten."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: PAYMENT_GATEWAY
+      parameters:
+        - name: X-Webhook-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Signature kriptografis dari Payment Gateway
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [externalRef, status, amount]
+              properties:
+                externalRef:
+                  type: string
+                  example: "DATA-SIMULASI-GW-001"
+                status:
+                  type: string
+                  enum: [VERIFIED, FAILED, EXPIRED, PENDING]
+                amount:
+                  type: string
+                  example: "75000.00"
+      responses:
+        "200":
+          description: Webhook diproses atau diabaikan secara idempoten
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+
+  /ebooks/{id}/access-url:
+    get:
+      tags: [Ebook Access]
+      summary: Minta signed URL sementara untuk membaca PDF
+      description: "[RENCANA] Memverifikasi EbookAccess aktif (!isRevoked) untuk (userId, ebookId) lalu menerbitkan signed URL sementara dari bucket privat."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: CUSTOMER
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidIdParam"
+      responses:
+        "200":
+          description: Signed URL sementara diterbitkan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+              example:
+                success: true
+                data:
+                  signedUrl: "https://storage.example.com/private/signed-token-placeholder"
+                  expiresInSeconds: 300
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /admin/ping:
+    get:
+      tags: [Admin Dashboard]
+      summary: Uji otorisasi admin dasar
+      description: "[ADA] Endpoint uji di backend/src/app.ts yang dilindungi authenticate + authorize('ADMIN')."
+      x-implementation-status: "[ADA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Admin terotorisasi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /admin/dashboard:
+    get:
+      tags: [Admin Dashboard]
+      summary: Ringkasan statistik dashboard admin
+      description: "[RENCANA] Agregasi pendapatan, total pesanan per status, e-book aktif, dan pelanggan aktif."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Ringkasan dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /admin/categories:
+    post:
+      tags: [Admin Categories]
+      summary: Tambah kategori e-book
+      description: "[RENCANA] Membuat kategori baru."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, slug]
+              properties:
+                name:
+                  type: string
+                slug:
+                  type: string
+                description:
+                  type: string
+      responses:
+        "201":
+          description: Kategori dibuat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+
+  /admin/categories/{id}:
+    patch:
+      tags: [Admin Categories]
+      summary: Perbarui kategori e-book
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidIdParam"
+      responses:
+        "200":
+          description: Kategori diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+    delete:
+      tags: [Admin Categories]
+      summary: Hapus / nonaktifkan kategori e-book
+      description: "[RENCANA] Menolak penghapusan apabila kategori masih direferensikan oleh Ebook (onDelete Restrict)."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidIdParam"
+      responses:
+        "200":
+          description: Kategori dihapus
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+
+  /admin/ebooks:
+    post:
+      tags: [Admin Ebooks]
+      summary: Tambah e-book dan unggah file PDF ke bucket privat
+      description: "[RENCANA] Menerima metadata e-book serta file sampul/PDF untuk diunggah ke Supabase Storage bucket privat oleh backend."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [categoryId, title, author, description, price, pdfFile]
+              properties:
+                categoryId:
+                  type: string
+                  format: uuid
+                title:
+                  type: string
+                author:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: string
+                  example: "75000.00"
+                pdfFile:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: E-book berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /admin/ebooks/{id}:
+    patch:
+      tags: [Admin Ebooks]
+      summary: Perbarui metadata/harga/status e-book
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidIdParam"
+      responses:
+        "200":
+          description: E-book diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+    delete:
+      tags: [Admin Ebooks]
+      summary: Arsipkan e-book (soft delete isActive=false)
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidIdParam"
+      responses:
+        "200":
+          description: E-book diarsipkan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/customers:
+    get:
+      tags: [Admin Customers]
+      summary: Daftar pelanggan (Admin)
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/SearchParam"
+      responses:
+        "200":
+          description: Daftar pelanggan terpaginasi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/customers/{id}:
+    get:
+      tags: [Admin Customers]
+      summary: Detail pelanggan beserta ringkasan pesanan
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidIdParam"
+      responses:
+        "200":
+          description: Detail pelanggan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/orders:
+    get:
+      tags: [Admin Orders]
+      summary: Daftar seluruh pesanan (Admin)
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/OrderStatusParam"
+        - $ref: "#/components/parameters/StartDateParam"
+        - $ref: "#/components/parameters/EndDateParam"
+      responses:
+        "200":
+          description: Daftar pesanan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/orders/{id}:
+    get:
+      tags: [Admin Orders]
+      summary: Detail pesanan lengkap (Admin)
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidIdParam"
+      responses:
+        "200":
+          description: Detail pesanan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/payments:
+    get:
+      tags: [Admin Payments]
+      summary: Daftar pembayaran (Admin)
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+      responses:
+        "200":
+          description: Daftar pembayaran
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/transactions:
+    get:
+      tags: [Admin Transactions]
+      summary: Daftar transaksi resmi (Admin)
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/StartDateParam"
+        - $ref: "#/components/parameters/EndDateParam"
+      responses:
+        "200":
+          description: Daftar transaksi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/reports/sales:
+    get:
+      tags: [Admin Reports]
+      summary: Laporan penjualan periodik (Admin)
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/StartDateParam"
+        - $ref: "#/components/parameters/EndDateParam"
+        - name: groupBy
+          in: query
+          schema:
+            type: string
+            enum: [day, month]
+      responses:
+        "200":
+          description: Ringkasan laporan penjualan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/saw/weights:
+    get:
+      tags: [Admin SAW]
+      summary: Lihat konfigurasi bobot kriteria SAW aktif
+      description: "[RENCANA] Bergantung Keputusan #5 dan #9 di docs/00-project/keputusan-terbuka.md."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Konfigurasi bobot SAW aktif
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+    put:
+      tags: [Admin SAW]
+      summary: Perbarui bobot kriteria SAW
+      description: "[RENCANA] Wajib memvalidasi setiap bobot > 0 dan total bobot == 1.0."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Bobot SAW diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+
+  /admin/accesses/{id}:
+    patch:
+      tags: [Admin Access]
+      summary: Cabut atau pulihkan EbookAccess pelanggan
+      description: "[RENCANA] Mengubah flag isRevoked pada tabel ebook_accesses."
+      x-implementation-status: "[RENCANA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [isRevoked]
+              properties:
+                isRevoked:
+                  type: boolean
+      responses:
+        "200":
+          description: Status akses diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: Access Token JWT yang diterbitkan oleh Supabase Auth dan diverifikasi di backend.
+
+  parameters:
+    UuidIdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    SearchParam:
+      name: search
+      in: query
+      schema:
+        type: string
+        maxLength: 100
+    OrderStatusParam:
+      name: status
+      in: query
+      schema:
+        type: string
+        enum: [PENDING, PAID, FAILED, EXPIRED, CANCELLED]
+    StartDateParam:
+      name: startDate
+      in: query
+      schema:
+        type: string
+        format: date-time
+    EndDateParam:
+      name: endDate
+      in: query
+      schema:
+        type: string
+        format: date-time
+
+  schemas:
+    SuccessResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          const: true
+        message:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    ErrorResponse:
+      type: object
+      required: [success, error]
+      properties:
+        success:
+          type: boolean
+          const: false
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: object
+                additionalProperties: true
+
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [CUSTOMER, ADMIN]
+        isActive:
+          type: boolean
+
+    UserSuccessResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          const: true
+        data:
+          $ref: "#/components/schemas/UserProfile"
+
+    EbookSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        categoryId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        author:
+          type: string
+        price:
+          type: string
+          description: Decimal(12,2)
+          example: "75000.00"
+        ratingAvg:
+          type: string
+          example: "4.50"
+        salesCount:
+          type: integer
+        isActive:
+          type: boolean
+
+    PaginatedEbooksResponse:
+      type: object
+      required: [success, data, meta]
+      properties:
+        success:
+          type: boolean
+          const: true
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/EbookSummary"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+  responses:
+    ValidationError:
+      description: Input tidak valid (Zod)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    UnauthorizedError:
+      description: Autentikasi gagal atau token tidak valid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ForbiddenError:
+      description: Role atau kepemilikan tidak mencukupi
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFoundError:
+      description: Resource tidak ditemukan
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ConflictError:
+      description: Konflik aturan bisnis
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
