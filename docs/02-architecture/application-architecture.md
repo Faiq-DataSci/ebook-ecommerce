@@ -1,55 +1,59 @@
 # Arsitektur Aplikasi (`Application Architecture`)
 
-**Status:** `[ADA]` (struktur folder & template awal) | `[RENCANA]` (target arsitektur per aplikasi) | `[RENCANA]` (modul bisnis)
+**Status:** `[ADA]` (struktur monorepo, fondasi `backend/src/`, `web/admin-web` TypeScript template, `web/pengunjung-web` template, `mobile/ebook_store` template + paket) | `[RENCANA]` (seluruh modul fitur bisnis pada keempat aplikasi)
 
 ---
 
-## 1. Struktur Monorepo Aktual
+## 1. Backend (`backend/` — Node.js + Express + TypeScript + Zod + Prisma 7 ESM)
 
-```text
-ebook-ecommerce/
-├── backend/              # Rencana layanan REST API (baru berisi package.json)
-├── mobile/ebook_store/   # Aplikasi mobile pelanggan (Flutter template default)
-├── web/admin-web/        # Aplikasi web admin (React + Vite template default)
-├── web/pengunjung-web/   # Aplikasi web pengunjung (React + Vite template default) [RENCANA]
-├── docs/                 # Dokumentasi proyek
-├── .agents/              # Panduan & skill agen pengembangan
-└── .github/              # CI placeholder & PR template
+### Lapisan Arsitektur Backend
+- **Router & App (`app.ts` `[ADA]`):** Mendaftarkan `helmet`, `cors`, parser JSON, serta rute `/api/v1/*`. Saat ini baru memuat `GET /api/v1/health` dan `GET /api/v1/admin/ping`.
+- **Middleware (`[ADA]` kerangka / `[RENCANA]` penuh):**
+  - `auth.middleware.ts` (`[ADA]`): `authenticate` (verifikasi JWT Supabase) & `authorize` (`RBAC`).
+  - `validate.ts` (`[ADA]`): validasi request dengan **Zod**.
+  - `error.middleware.ts` (`[ADA]` aktif di `app.ts`; catatan: terdapat `middleware/error-handler.ts` duplikat yang belum disatukan).
+  - `rate-limit.middleware.ts` (`[ADA]` berkas, `[RENCANA]` pemasangan pada rute sensitif di `app.ts`).
+- **Controller & Service (`[RENCANA]`):** Mengorkestrasi logika bisnis katalog, pesanan, pembayaran, akses PDF, laporan, dan **SAW Service** (fungsi murni *backend-only*).
+- **Repository / Prisma Client (`config/prisma.ts` `[ADA]`):** Akses *type-safe* ke PostgreSQL Supabase melalui Prisma 7 (`schema.prisma` 8 model `[ADA]`; migrasi `[RENCANA]`).
+- **Integrasi Eksternal:** Supabase Auth (`config/supabase.ts` `[ADA]`), Storage helper (`integrations/storage/supabase-storage.ts` `[ADA]` dengan `createPrivatePdfSignedUrl`), Payment Gateway (`[RENCANA]`).
+- **Logging, Observabilitas, & Testing:** `console.error` dasar pada error handler (`[ADA]`); logging terstruktur produksi (`[RENCANA]`). **Unit test** Vitest: 2 berkas, 5 tes lulus (`[ADA]`); integration test fitur bisnis (`[RENCANA]`).
+
+```mermaid
+flowchart LR
+    Router["Router (app.ts)"] --> Middleware["Middleware (Auth, Zod, RateLimit)"]
+    Middleware --> Controller["Controller [RENCANA]"]
+    Controller --> Service["Service [RENCANA]"]
+    Service --> Repository["Repository [RENCANA]"]
+    Repository --> Prisma["Prisma Client [ADA]"]
+    Prisma --> Database[("PostgreSQL")]
+
+    Service --> AuthService["Supabase Auth [ADA/RENCANA]"]
+    Service --> StorageService["Supabase Storage [ADA helper]"]
+    Service --> PaymentService["Payment Gateway [RENCANA]"]
+    Service --> SawService["SAW Service [RENCANA]"]
 ```
 
 ---
 
-## 2. Rincian Arsitektur Tiap Aplikasi
+## 2. Admin Web (`web/admin-web/`)
 
-### A. Mobile Application (`mobile/ebook_store`)
-- **Kondisi Aktual `[ADA]`:**
-  - Entry point: `mobile/ebook_store/lib/main.dart` berisi kelas `MyApp` dan `MyHomePage` (template counter bawaan Flutter).
-  - Pengujian bawaan: `mobile/ebook_store/test/widget_test.dart`.
-  - Belum terdapat folder `features/`, `core/`, `services/`, `models/`, maupun konfigurasi state management/routing.
-- **Target Arsitektur `[RENCANA]` / `[RENCANA]`:**
-  - State management: **Riverpod** (`[RENCANA]`).
-  - HTTP client: **Dio** (`[RENCANA]`).
-  - Lapisan yang direncanakan (`[RENCANA]`): `core/` (konfigurasi API, interceptor token, tema), `features/` (auth, catalog, recommendation, order, payment, library/reader).
+- **Stack (`[ADA]` di `package.json`):** React `^19.3.1`, TypeScript `^6.0.3`, Vite `^8.3.6`, ESLint (`tsc --noEmit` & `lint` PASS). Gaya desain terkunci: **Neo-Brutalism** (3 zona intensitas `[RENCANA]`).
+- **Struktur Rencana (`[RENCANA]`):** Halaman login Supabase Auth, proteksi route di UI (*hanya kenyamanan antarmuka, bukan pengganti otorisasi `ADMIN` di backend*), Dashboard ringkasan, Manajemen Kategori & E-Book (+ unggah PDF via backend), Pemantauan Pelanggan/Pesanan/Pembayaran/Transaksi, Laporan Penjualan, dan Kontrol Bobot SAW (menunggu Keputusan #5 & #9).
+- **Status Implementasi:** Template Vite + TypeScript `[ADA]`; seluruh modul admin `[RENCANA]`.
 
-### B. Admin Web Application (`web/admin-web`)
-- **Kondisi Aktual `[ADA]`:**
-  - Entry point: `web/admin-web/src/main.jsx` dan `web/admin-web/src/App.jsx` (template counter bawaan Vite + React).
-  - Masih menggunakan JavaScript (`.jsx`), belum terdapat `tsconfig.json`, router, maupun komponen admin.
-- **Target Arsitektur `[RENCANA]` / `[RENCANA]`:**
-  - Bahasa: TypeScript (`[ADA]` pada `AGENTS.md`).
-  - Gaya UI: Neo-brutalism (`[ADA]` pada `AGENTS.md`).
-  - Lapisan yang direncanakan (`[RENCANA]`): halaman login admin, dashboard ringkasan, manajemen e-book & kategori, manajemen pelanggan, pemantauan pesanan & pembayaran, laporan penjualan, serta konfigurasi bobot SAW.
+---
 
-### C. Pengunjung Web Application (`web/pengunjung-web`)
-- **Kondisi Aktual `[ADA]`:**
-  - Entry point: `web/pengunjung-web/src/main.jsx` dan `web/pengunjung-web/src/App.jsx` (template counter bawaan Vite + React).
-- **Status Arsitektur `[RENCANA]`:**
-  - Belum tercantum pada `README.md` maupun `AGENTS.md`. Diperkirakan sebagai antarmuka web untuk aktor Pelanggan/Pengunjung, menunggu konfirmasi pemilik proyek.
+## 3. Portal Web Pengunjung (`web/pengunjung-web/`)
 
-### D. Backend Service (`backend/`)
-- **Kondisi Aktual `[RENCANA]`:**
-  - Hanya terdapat `backend/package.json` dengan `"type": "module"` dan skrip `dev`, `build`, `start`, `typecheck`, `test`, `prisma:validate`.
-  - Folder `src/`, `prisma/`, dan file `.env.example` belum ada.
-- **Target Arsitektur `[RENCANA]` / `[RENCANA]`:**
-  - Pola modular berlapis (`[RENCANA]`): `routes/` -> `middlewares/` (auth, role, validasi Zod) -> `controllers/` -> `services/` (termasuk `saw.service`) -> `repositories/` (Prisma Client).
-  - Konvensi ESM: seluruh import relatif di file `.ts` wajib menggunakan ekstensi `.js` (`[ADA]` pada `AGENTS.md`).
+- **Stack (`[ADA]` di `package.json`):** React `^19.3.1`, Vite `^8.3.6` (lint & build PASS). Dipertahankan sebagai portal web pelanggan sesuai Keputusan #1 (`[ADA]`).
+- **Fitur Rencana (`[RENCANA]`):** Katalog `e-book`, pencarian & filter kategori, detail `e-book`, rekomendasi `SPK SAW` dari backend, *checkout* & pembayaran gateway, riwayat pembelian, dan pembaca PDF internal via `signed URL`.
+- **Status Implementasi:** Template default Vite `[ADA]`; seluruh modul pelanggan web `[RENCANA]`.
+
+---
+
+## 4. Mobile Flutter (`mobile/ebook_store/`)
+
+- **Stack (`[ADA]` di `pubspec.yaml`):** Flutter (Dart `^3.12.0`), `flutter_riverpod ^2.6.1` (*state management*), `dio ^5.8.0+1` (*HTTP client*), dan `flutter_secure_storage ^9.2.4` (penyimpanan token aman).
+- **Target Platform:** **Android** sebagai target utama fase awal (iOS/Desktop *out-of-scope* fase awal).
+- **Fitur Rencana (`[RENCANA]`):** Autentikasi Supabase, katalog & pencarian, rekomendasi `SPK SAW`, *checkout* & pembayaran, riwayat pembelian, serta *in-app PDF reader* via `signed URL` sementara.
+- **Status Implementasi Actual:** `lib/main.dart` masih berupa template *counter app* (`flutter analyze` & `flutter test` template PASS); seluruh fitur bisnis `[RENCANA]`.

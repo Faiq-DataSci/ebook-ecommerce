@@ -1,101 +1,68 @@
 # Arsitektur Sistem (`System Architecture`)
 
-**Status:** `[RENCANA]` (arsitektur target pada `AGENTS.md`) | `[RENCANA]` (detail alur komunikasi & pemrosesan) | `[RENCANA]` (implementasi backend & database)
+**Status:** `[ADA]` (arsitektur target terkunci pada `AGENTS.md`, fondasi `backend/`, `schema.prisma`, dan template klien) | `[RENCANA]` (implementasi fitur bisnis, integrasi penuh Supabase Auth/Storage privat, Payment Gateway, dan `SPK SAW`)
 
 ---
 
-## 1. Gambaran Umum Arsitektur
+## 1. Tujuan & Ruang Lingkup Arsitektur Sistem
 
-Sistem Informasi E-Commerce E-Book dirancang menggunakan arsitektur **Client–Server (N-Tier)** dengan satu layanan backend terpusat sebagai *single source of truth* untuk logika bisnis, otorisasi, transaksi, pemberian hak akses e-book, serta perhitungan SPK (SAW).
+Dokumen ini menetapkan arsitektur tingkat tinggi **Sistem Informasi E-Commerce E-Book dan SPK (Metode SAW)** untuk menyelaraskan komunikasi antar-komponen, batas keamanan, dan jalur data utama. Ruang lingkup mencakup model *Single-Seller B2C* ([ADR-0001](../adr/0001-single-seller-b2c.md)) dengan **2 aktor utama**: **Pelanggan** dan **Admin**.
+
+---
+
+## 2. Diagram Arsitektur Sistem (`[ADA]` Kerangka / `[RENCANA]` Bisnis)
 
 ```mermaid
-flowchart LR
-    subgraph Clients["Aplikasi Klien"]
-        M["Mobile App (Flutter: ebook_store) [IMPLEMENTED: Template]"]
-        AW["Admin Web (React + Vite: web/admin-web) [IMPLEMENTED: Template]"]
-        PW["Pengunjung Web (React + Vite: web/pengunjung-web) [RENCANA]"]
-    end
+flowchart TB
+    Customer["Pelanggan"]
+    Admin["Admin"]
 
-    subgraph Backend["Backend Layer [RENCANA]"]
-        API["REST API Server (Express + TypeScript + Zod) [RENCANA]"]
-        SAW["SAW Recommendation Engine [CONFIRMED: Backend-Only]"]
-    end
+    Mobile["Mobile Flutter"]
+    VisitorWeb["Portal Web Pengunjung"]
+    AdminWeb["Admin Web"]
 
-    subgraph Data["Data & Storage Layer [RENCANA]"]
-        DB[("PostgreSQL (Supabase via Prisma 7) [RENCANA]")]
-        ST["Supabase Storage Bucket Privat (PDF E-Book) [RENCANA]"]
-    end
+    Backend["Backend Express REST API"]
+    Auth["Supabase Auth"]
+    Database[("PostgreSQL Supabase")]
+    Storage["Supabase Storage\nBucket Privat"]
+    Payment["Payment Gateway"]
 
-    M -->|"HTTPS / REST JSON + Bearer Token [RENCANA]"| API
-    AW -->|"HTTPS / REST JSON + Bearer Token [RENCANA]"| API
-    PW -.->|"HTTPS / REST JSON [RENCANA]"| API
-    API --> SAW
-    API -->|"Prisma ORM [RENCANA]"| DB
-    API -->|"Service Role / Signed URL [RENCANA]"| ST
-    M -.->|"Akses PDF via Signed URL Sementara [RENCANA]"| ST
+    Customer --> Mobile
+    Customer --> VisitorWeb
+    Admin --> AdminWeb
+
+    Mobile -->|"HTTPS REST + Bearer JWT"| Backend
+    VisitorWeb -->|"HTTPS REST + Bearer JWT"| Backend
+    AdminWeb -->|"HTTPS REST + Bearer JWT (ADMIN)"| Backend
+
+    Backend -->|"Verifikasi JWT"| Auth
+    Backend -->|"Prisma 7 ORM"| Database
+    Backend -->|"Service Role / Signed URL"| Storage
+    Backend -->|"Inisiasi Bayar"| Payment
+    Payment -->|"Webhook + Signature"| Backend
 ```
+
+> **Penegasan Batas Akses:** Aplikasi klien (`Mobile Flutter`, `Portal Web Pengunjung`, `Admin Web`) **tidak mengakses** PostgreSQL Supabase, `Storage Bucket Privat`, maupun perhitungan `SPK SAW` secara langsung. Seluruh kendali otorisasi, bisnis, transaksi, dan penerbitan `signed URL` terpusat di `Backend Express REST API`.
 
 ---
 
-## 2. Hubungan Antarkomponen
+## 3. Komponen Sistem, Tanggung Jawab, & Status Aktual
 
-### A. Mobile Application (`mobile/ebook_store`) dengan Backend
-- **Status:** `[RENCANA]` (belum ada HTTP client maupun endpoint; `lib/main.dart` masih berupa template default).
-- **Rancangan (`[RENCANA]` / `[RENCANA]`):**
-  - Aplikasi mobile menggunakan **Dio** (`[ADA]` pada `AGENTS.md`) untuk berkomunikasi dengan Backend REST API melalui JSON.
-  - Aplikasi mobile **tidak** terhubung langsung ke database PostgreSQL dan **tidak** menyimpan *service role key* Supabase (`[RENCANA]`).
-  - Perhitungan rekomendasi e-book (SAW) hanya dipanggil dari endpoint backend; klien mobile hanya menerima hasil peringkat (`[RENCANA]`).
-
-### B. Admin Web (`web/admin-web`) dengan Backend
-- **Status:** `[RENCANA]` (belum ada integrasi API; `src/App.jsx` masih berupa template Vite).
-- **Rancangan (`[RENCANA]` / `[RENCANA]`):**
-  - Admin Web berkomunikasi dengan Backend REST API yang sama dengan proteksi role `ADMIN` (`[RENCANA]`).
-  - Penyembunyian menu di UI hanya bersifat kosmetik; seluruh validasi hak akses admin wajib ditegakkan di backend (`[RENCANA]`).
-
-### C. Pengunjung Web (`web/pengunjung-web`) dengan Backend
-- **Status:** `[RENCANA]` — Direktori ditemukan sebagai template React + Vite, namun belum tercantum dalam `AGENTS.md`. Jika digunakan untuk pelanggan versi web, komunikasinya mengikuti pola yang sama dengan Mobile App melalui REST API.
-
-### D. Backend dengan Database & Storage
-- **Status:** `[RENCANA]` — Belum ada `schema.prisma` maupun kode backend.
-- **Rancangan (`[RENCANA]`):**
-  - Backend mengakses PostgreSQL Supabase menggunakan **Prisma 7** (`DATABASE_URL` port 6543 untuk runtime dan `DIRECT_URL` port 5432 untuk migrasi).
-  - File PDF e-book disimpan pada **Supabase Storage bucket privat**; backend menghasilkan *signed URL* berjangka waktu pendek hanya setelah hak akses pelanggan terverifikasi.
+| Komponen | Tanggung Jawab Utama | Batas Akses | Status Implementasi |
+|---|---|---|---|
+| **Mobile Flutter (`mobile/ebook_store`)** | Antarmuka Android Pelanggan: katalog, rekomendasi SAW, checkout, riwayat, dan *in-app PDF reader*. | Hanya memanggil REST API backend & login Supabase Auth. | `[ADA]` template + paket (`pubspec.yaml`); `[RENCANA]` fitur |
+| **Portal Web Pengunjung (`web/pengunjung-web`)** | Antarmuka web Pelanggan (Keputusan #1 `[ADA]`). | Tidak menyimpan secret di `VITE_*`; hanya via REST API backend. | `[ADA]` template Vite; `[RENCANA]` fitur |
+| **Admin Web (`web/admin-web`)** | Antarmuka operasional Admin (Neo-Brutalism): kelola katalog/PDF, kategori, order, laporan, SAW. | Proteksi UI bersifat kosmetik; otorisasi ditegakkan backend. | `[ADA]` template TypeScript; `[RENCANA]` fitur |
+| **Backend REST API (`backend/`)** | *Single source of truth*: verifikasi JWT, `RBAC`, validasi Zod, checkout, *webhook*, `signed URL`, dan `SPK SAW`. | Satu-satunya komponen yang memegang *service role key* & *webhook secret*. | `[ADA]` fondasi (`/health`, `/admin/ping`, middleware, `schema.prisma`); `[RENCANA]` modul bisnis |
+| **Supabase Auth** | Registrasi, login, dan penerbitan `JWT` sesi. | Diverifikasi ulang oleh `backend/` sebelum akses data. | `[ADA]` Keputusan #2 & `auth.middleware.ts`; `[RENCANA]` sinkronisasi DB |
+| **PostgreSQL Supabase** | Penyimpanan persisten data relasional via Prisma 7. | Tidak terekspos langsung ke klien publik. | `[ADA]` `schema.prisma` (8 model); `[RENCANA]` migrasi SQL |
+| **Supabase Storage (`Bucket Privat`)** | Penyimpanan file PDF `e-book` secara privat. | Akses baca hanya via `signed URL` TTL singkat dari `backend/`. | `[ADA]` helper dasar `supabase-storage.ts`; `[RENCANA]` endpoint & upload |
+| **Payment Gateway** | Pemrosesan pembayaran daring nyata (Keputusan #3 `[ADA]`). | Status pembayaran sah hanya lewat *webhook* terverifikasi di `backend/`. | `[RENCANA]` |
 
 ---
 
-## 3. Alur Komunikasi API, Autentikasi, Transaksi, dan Hak Akses E-Book (`[RENCANA]`)
+## 4. Jalur Data Utama, Risiko, & Referensi
 
-```mermaid
-sequenceDiagram
-    actor C as Pelanggan (Mobile)
-    participant API as Backend API [RENCANA]
-    participant DB as PostgreSQL [RENCANA]
-    participant ST as Supabase Storage Privat [RENCANA]
-
-    C->>API: 1. Login (email, password)
-    API->>DB: Verifikasi kredensial user
-    DB-->>API: Data user + role
-    API-->>C: Access Token (JWT)
-
-    C->>API: 2. Buat Pesanan (ebook_ids) + Bearer Token
-    API->>DB: Simpan Order (status PENDING) + snapshot harga
-    DB-->>API: Order ID
-    API-->>C: Detail Pesanan & Instruksi Pembayaran
-
-    C->>API: 3. Kirim / Konfirmasi Pembayaran
-    API->>DB: Verifikasi pembayaran -> Update PAID -> Catat Transaction & Ebook Access
-    DB-->>API: Status berhasil
-    API-->>C: Pembayaran terverifikasi
-
-    C->>API: 4. Minta Akses E-Book (ebook_id) + Bearer Token
-    API->>DB: Cek kepemilikan di Ebook Access
-    DB-->>API: Hak akses valid
-    API->>ST: Minta Signed URL sementara
-    ST-->>API: Signed URL (TTL singkat)
-    API-->>C: Signed URL untuk membaca e-book
-```
-
-### Prinsip Arsitektur Kunci (`[ADA]`)
-1. **Otorisasi Terpusat di Backend:** Setiap endpoint terproteksi memeriksa validitas token dan role (`CUSTOMER` / `ADMIN`).
-2. **Integritas Harga & Transaksi:** Harga item pada pesanan diambil dari harga database saat transaksi dibuat (*snapshot*), bukan dari input klien.
-3. **Pemberian Hak Akses E-Book Berbasis Verifikasi:** Hak akses (`Ebook Access`) hanya diberikan setelah status pembayaran berstatus terverifikasi/lunas (`PAID`), bukan sekadar saat pesanan dibuat.
+- **Jalur Data Utama (`[RENCANA]`):** (1) Autentikasi Supabase Auth -> verifikasi JWT backend; (2) Katalog publik terpaginasi tanpa `storagePath`; (3) Rekomendasi `SPK SAW` *backend-only*; (4) Checkout dengan *snapshot* harga DB -> Payment Gateway -> *webhook* idempoten -> transaksi atomik `Transaction` + `EbookAccess`; (5) Permintaan `signed URL` sementara untuk *in-app PDF reader*.
+- **Risiko & Dependensi Utama:** Ketergantungan pada penyelesaian Keputusan #5–#11 di [`keputusan-terbuka.md`](../00-project/keputusan-terbuka.md) (terutama #9 konflik kriteria SAW dan #10 hosting backend), keamanan *webhook* lokal/produksi, serta perlindungan bucket privat.
+- **Referensi Terkait:** [`architecture.md`](../01-design/architecture.md) | [`api-spec.yaml`](../02-api/api-spec.yaml) | [`erd.md`](../01-design/erd.md) | [`security-overview.md`](../07-security/security-overview.md) | [`adr/`](../adr/0001-single-seller-b2c.md).
