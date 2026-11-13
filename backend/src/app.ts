@@ -2,7 +2,9 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import { env } from './config/env.js';
+import { checkDatabaseConnection } from './config/prisma.js';
 import { errorHandler } from './middleware/error-handler.js';
+import { sendSuccess } from './utils/response.js';
 
 export function createApp() {
   const app = express();
@@ -17,14 +19,24 @@ export function createApp() {
   app.use(express.json());
 
   app.get(`${env.API_PREFIX}/health`, (_req, res) => {
-    res.status(200).json({
-      success: true,
-      data: {
-        status: 'ok',
-        environment: env.NODE_ENV,
-        timestamp: new Date().toISOString(),
-      },
+    sendSuccess(res, {
+      status: 'ok',
+      environment: env.NODE_ENV,
+      timestamp: new Date().toISOString(),
     });
+  });
+
+  app.get(`${env.API_PREFIX}/health/ready`, async (_req, res, next) => {
+    try {
+      await checkDatabaseConnection();
+      sendSuccess(res, {
+        status: 'ready',
+        database: 'connected',
+        timestamp: new Date().toISOString(),
+      });
+    } catch (err) {
+      next(err);
+    }
   });
 
   app.use((_req, res) => {
