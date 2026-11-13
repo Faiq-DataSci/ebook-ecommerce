@@ -1,0 +1,14 @@
+openapi: 3.0.3
+info:
+  title: E-Book E-Commerce & SAW API
+  version: 0.1.0
+  description: "[RENCANA] Spesifikasi OpenAPI untuk backend /api/v1. Akan diisi bertahap seiring implementasi endpoint."
+servers:
+  - url: /api/v1
+paths: {}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
