@@ -1,0 +1,18 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Flutter / Dart
+.dart_tool/
+
+# Android / Java signing keys
+*.keystore
+*.jks
