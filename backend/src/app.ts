@@ -1,55 +1,44 @@
-import cors from 'cors';
-import express from 'express';
-import helmet from 'helmet';
-import { env } from './config/env.js';
-import { checkDatabaseConnection } from './config/prisma.js';
-import { errorHandler } from './middleware/error-handler.js';
-import { sendSuccess } from './utils/response.js';
+import cors from 'cors'
+import express from 'express'
+import helmet from 'helmet'
+import { env } from './config/env.js'
+import { authenticate, authorize } from './middlewares/auth.middleware.js'
+import { errorHandler } from './middlewares/error.middleware.js'
 
-export function createApp() {
-  const app = express();
+const allowedOrigins = env.CORS_ORIGINS.split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
 
-  app.use(helmet());
-  app.use(
-    cors({
-      origin: env.ADMIN_WEB_ORIGIN,
-      credentials: true,
-    }),
-  );
-  app.use(express.json());
+export const app = express()
 
-  app.get(`${env.API_PREFIX}/health`, (_req, res) => {
-    sendSuccess(res, {
+app.use(helmet())
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true)
+        return
+      }
+      callback(new Error('Origin tidak diizinkan oleh kebijakan CORS'))
+    },
+    credentials: true,
+  }),
+)
+app.use(express.json({ limit: '1mb' }))
+
+app.get('/api/v1/health', (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Backend E-Book Store siap',
+    data: {
       status: 'ok',
       environment: env.NODE_ENV,
-      timestamp: new Date().toISOString(),
-    });
-  });
+    },
+  })
+})
 
-  app.get(`${env.API_PREFIX}/health/ready`, async (_req, res, next) => {
-    try {
-      await checkDatabaseConnection();
-      sendSuccess(res, {
-        status: 'ready',
-        database: 'connected',
-        timestamp: new Date().toISOString(),
-      });
-    } catch (err) {
-      next(err);
-    }
-  });
+app.get('/api/v1/admin/ping', authenticate, authorize('ADMIN'), (_req, res) => {
+  res.status(200).json({ success: true, data: { pong: true } })
+})
 
-  app.use((_req, res) => {
-    res.status(404).json({
-      success: false,
-      error: {
-        code: 'NOT_FOUND',
-        message: 'Endpoint tidak ditemukan',
-      },
-    });
-  });
-
-  app.use(errorHandler);
-
-  return app;
-}
+app.use(errorHandler)

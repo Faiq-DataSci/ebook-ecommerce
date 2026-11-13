@@ -1,8 +1,6 @@
-import { createApp } from './app.js';
-import { env } from './config/env.js';
-
-const app = createApp();
+import { app } from './app.js'
+import { env } from './config/env.js'
 
 app.listen(env.PORT, () => {
-  console.log(`Server berjalan di http://localhost:${env.PORT}${env.API_PREFIX}`);
-});
+  console.log(`Server berjalan pada port ${env.PORT} (${env.NODE_ENV})`)
+})
