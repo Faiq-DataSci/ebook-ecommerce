@@ -1,6 +1,6 @@
 # Laporan Pengujian (Test Report)
 
-**Status:** `[RENCANA]`
+**Status:** `[RENCANA]` — struktur lama; hasil pengujian aktual dipindahkan ke [`09-testing/test-results.md`](../09-testing/test-results.md).
 
 ## Daftar Bagian yang Akan Diisi
 1. Ringkasan Cakupan Pengujian (Backend, Admin Web, Mobile)
