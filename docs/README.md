@@ -27,51 +27,51 @@ Setiap bagian dalam dokumentasi ini menggunakan label status eksplisit berikut:
 - [Kebutuhan Bisnis (`business-requirements.md`)](./01-project-overview/business-requirements.md)
 - [Ruang Lingkup Sistem (`system-scope.md`)](./01-project-overview/system-scope.md)
 
-### 02. Arsitektur Sistem (`02-architecture/`) *(Tahap 2)*
-- `system-architecture.md` — Gambaran umum arsitektur, alur API, autentikasi, transaksi, dan akses e-book
-- `application-architecture.md` — Struktur aplikasi Mobile, Admin Web, Pengunjung Web, dan Backend
-- `technology-stack.md` — Perbandingan stack aktual di repository vs stack terkunci proyek
+### 02. Arsitektur Sistem (`02-architecture/`)
+- [Arsitektur Sistem (`system-architecture.md`)](./02-architecture/system-architecture.md) — Gambaran umum arsitektur, alur API, autentikasi, transaksi, dan akses e-book
+- [Arsitektur Aplikasi (`application-architecture.md`)](./02-architecture/application-architecture.md) — Struktur aplikasi Mobile, Admin Web, Pengunjung Web, dan Backend
+- [Technology Stack (`technology-stack.md`)](./02-architecture/technology-stack.md) — Perbandingan stack aktual di repository vs stack terkunci proyek
 
-### 03. Proses Bisnis (`03-business-process/`) *(Tahap 2)*
-- `customer-workflow.md` — Alur pelanggan & skenario alternatif
-- `admin-workflow.md` — Alur administrasi
-- `transaction-workflow.md` — Siklus pesanan, pembayaran, transaksi, dan hak akses e-book
+### 03. Proses Bisnis (`03-business-process/`)
+- [Alur Pelanggan (`customer-workflow.md`)](./03-business-process/customer-workflow.md) — Alur pelanggan & skenario alternatif
+- [Alur Admin (`admin-workflow.md`)](./03-business-process/admin-workflow.md) — Alur administrasi
+- [Alur Transaksi (`transaction-workflow.md`)](./03-business-process/transaction-workflow.md) — Siklus pesanan, pembayaran, transaksi, dan hak akses e-book
 
-### 04. Basis Data (`04-database/`) *(Tahap 3)*
-- `database-design.md` — Rancangan konseptual basis data (`[PROPOSED]`)
-- `data-dictionary.md` — Kamus data entitas utama (`[PROPOSED]`)
-- `erd.md` — Entity Relationship Diagram (Mermaid) (`[PROPOSED]`)
+### 04. Basis Data (`04-database/`)
+- [Rancangan Basis Data (`database-design.md`)](./04-database/database-design.md) — Rancangan konseptual basis data (`[PROPOSED]`)
+- [Kamus Data (`data-dictionary.md`)](./04-database/data-dictionary.md) — Kamus data entitas utama (`[PROPOSED]`)
+- [Entity Relationship Diagram (`erd.md`)](./04-database/erd.md) — Entity Relationship Diagram (Mermaid) (`[PROPOSED]`)
 
-### 05. Spesifikasi API (`05-api/`) *(Tahap 3)*
-- `api-overview.md` — Konvensi REST API, autentikasi, otorisasi, dan format respons
-- `api-endpoints.md` — Rancangan endpoint per modul (`[PROPOSED]`)
+### 05. Spesifikasi API (`05-api/`)
+- [Gambaran Umum API (`api-overview.md`)](./05-api/api-overview.md) — Konvensi REST API, autentikasi, otorisasi, dan format respons
+- [Rancangan Endpoint API (`api-endpoints.md`)](./05-api/api-endpoints.md) — Rancangan endpoint per modul (`[PROPOSED]`)
 
-### 06. Dokumentasi Modul (`06-modules/`) *(Tahap 4)*
-- `authentication.md` — Modul Autentikasi & Manajemen Pengguna
-- `ebook-catalog.md` — Modul Katalog & Kategori E-Book (serta integrasi SPK SAW)
-- `order-management.md` — Modul Manajemen Pesanan
-- `payment-management.md` — Modul Pembayaran & Transaksi
-- `ebook-access.md` — Modul Riwayat Pembelian & Hak Akses E-Book
-- `admin-dashboard.md` — Modul Dashboard Admin & Laporan Penjualan
+### 06. Dokumentasi Modul (`06-modules/`)
+- [Autentikasi & Manajemen Pengguna (`authentication.md`)](./06-modules/authentication.md) — Modul Autentikasi & Manajemen Pengguna
+- [Katalog, Kategori & SPK SAW (`ebook-catalog.md`)](./06-modules/ebook-catalog.md) — Modul Katalog & Kategori E-Book (serta integrasi SPK SAW)
+- [Manajemen Pesanan (`order-management.md`)](./06-modules/order-management.md) — Modul Manajemen Pesanan
+- [Pembayaran & Transaksi (`payment-management.md`)](./06-modules/payment-management.md) — Modul Pembayaran & Transaksi
+- [Riwayat Pembelian & Akses E-Book (`ebook-access.md`)](./06-modules/ebook-access.md) — Modul Riwayat Pembelian & Hak Akses E-Book
+- [Dashboard Admin & Laporan Penjualan (`admin-dashboard.md`)](./06-modules/admin-dashboard.md) — Modul Dashboard Admin & Laporan Penjualan
 
-### 07. Keamanan (`07-security/`) *(Tahap 4)*
-- `security-overview.md` — Analisis kontrol keamanan aktual dan target
-- `security-guidelines.md` — Pedoman perlindungan kredensial, API, file PDF, dan data pelanggan
+### 07. Keamanan (`07-security/`)
+- [Gambaran Umum Keamanan (`security-overview.md`)](./07-security/security-overview.md) — Analisis kontrol keamanan aktual dan target
+- [Pedoman Keamanan (`security-guidelines.md`)](./07-security/security-guidelines.md) — Pedoman perlindungan kredensial, API, file PDF, dan data pelanggan
 
-### 08. Pengembangan (`08-development/`) *(Tahap 5)*
-- `installation.md` — Panduan instalasi & setup lokal
-- `development-guide.md` — Panduan alur pengembangan monorepo
-- `environment-configuration.md` — Variabel lingkungan & template `.env.example`
-- `coding-conventions.md` — Standar kode & aturan teknis
+### 08. Pengembangan (`08-development/`)
+- [Panduan Instalasi (`installation.md`)](./08-development/installation.md) — Panduan instalasi & setup lokal
+- [Panduan Pengembangan (`development-guide.md`)](./08-development/development-guide.md) — Panduan alur pengembangan monorepo
+- [Konfigurasi Lingkungan (`environment-configuration.md`)](./08-development/environment-configuration.md) — Variabel lingkungan & template `.env.example`
+- [Konvensi Penulisan Kode (`coding-conventions.md`)](./08-development/coding-conventions.md) — Standar kode & aturan teknis
 
-### 09. Pengujian (`09-testing/`) *(Tahap 5)*
-- `testing-strategy.md` — Strategi pengujian per lapisan
-- `test-cases.md` — Skenario uji fungsional & keamanan
-- `test-results.md` — Catatan hasil pengujian aktual
+### 09. Pengujian (`09-testing/`)
+- [Strategi Pengujian (`testing-strategy.md`)](./09-testing/testing-strategy.md) — Strategi pengujian per lapisan
+- [Kasus Uji (`test-cases.md`)](./09-testing/test-cases.md) — Skenario uji fungsional & keamanan
+- [Hasil Pengujian (`test-results.md`)](./09-testing/test-results.md) — Catatan hasil pengujian aktual
 
-### 10. Pemeliharaan (`10-maintenance/`) *(Tahap 5)*
-- `troubleshooting.md` — Penanganan masalah umum pengembangan & runtime
-- `maintenance-guide.md` — Panduan pemeliharaan sistem
+### 10. Pemeliharaan (`10-maintenance/`)
+- [Penanganan Masalah (`troubleshooting.md`)](./10-maintenance/troubleshooting.md) — Penanganan masalah umum pengembangan & runtime
+- [Panduan Pemeliharaan (`maintenance-guide.md`)](./10-maintenance/maintenance-guide.md) — Panduan pemeliharaan sistem
 
 ---
 
