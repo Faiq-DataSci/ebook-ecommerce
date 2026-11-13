@@ -6,13 +6,35 @@
 # Dependencies
 node_modules/
 
-# Build outputs
+# Build & test outputs
 dist/
 build/
+coverage/
+
+# Logs & local configs
+logs/
+*.log
+*.local
+
+# Keys, certificates & database backups
+*.pem
+*.key
+*.p12
+*.pfx
+*.sql
+*.bak
+*.sqlite
+*.db
+*.keystore
+*.jks
 
 # Flutter / Dart
 .dart_tool/
+.flutter-plugins
 
-# Android / Java signing keys
-*.keystore
-*.jks
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
