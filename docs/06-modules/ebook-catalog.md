@@ -1,20 +1,20 @@
 # Modul Katalog, Kategori E-Book & Rekomendasi SAW
 
-**Status Implementasi:** `[NOT AVAILABLE]` — Belum ada implementasi di kode sumber.
+**Status Implementasi:** `[RENCANA]` — Belum ada implementasi di kode sumber.
 
-Dokumen ini mencakup **3. E-Book Catalog Module**, **4. Category Management Module**, serta **Modul SPK SAW** (`[CONFIRMED]` pada `AGENTS.md`).
+Dokumen ini mencakup **3. E-Book Catalog Module**, **4. Category Management Module**, serta **Modul SPK SAW** (`[ADA]` pada `AGENTS.md`).
 
 ---
 
-## A. E-Book Catalog Module (`[NOT AVAILABLE]` / `[PROPOSED]`)
+## A. E-Book Catalog Module (`[RENCANA]` / `[RENCANA]`)
 
 | Aspek | Keterangan |
 |---|---|
 | **Tujuan Modul** | Menyediakan pengelolaan dan penelusuran informasi e-book yang dijual secara daring. |
-| **Fungsi Utama** | Menampilkan katalog e-book aktif, pencarian & filter kategori, detail e-book (judul, penulis, kategori, deskripsi, harga), serta CRUD e-book dan unggah file PDF ke bucket privat oleh admin (`[PROPOSED]`). |
+| **Fungsi Utama** | Menampilkan katalog e-book aktif, pencarian & filter kategori, detail e-book (judul, penulis, kategori, deskripsi, harga), serta CRUD e-book dan unggah file PDF ke bucket privat oleh admin (`[RENCANA]`). |
 | **Aktor** | Pelanggan (baca/cari), Admin (kelola). |
 | **Input** | Query pencarian (`search`, `categoryId`, `page`, `limit`), ID e-book, atau payload metadata e-book + file PDF (admin). |
-| **Proses** | Validasi input via Zod; query daftar/detail dari tabel `ebooks` (hanya `is_active = true` untuk publik); unggah PDF ke Supabase Storage bucket privat oleh backend (`[CONFIRMED]`). |
+| **Proses** | Validasi input via Zod; query daftar/detail dari tabel `ebooks` (hanya `is_active = true` untuk publik); unggah PDF ke Supabase Storage bucket privat oleh backend (`[RENCANA]`). |
 | **Output** | Daftar/detail e-book tanpa mengekspos `storage_path` privat. |
 | **Hubungan Modul** | Bergantung pada Category Management; digunakan oleh Order Management, E-Book Access, dan SPK SAW Module. |
 | **File/Direktori Aktual** | Belum tersedia. |
@@ -22,7 +22,7 @@ Dokumen ini mencakup **3. E-Book Catalog Module**, **4. Category Management Modu
 
 ---
 
-## B. Category Management Module (`[NOT AVAILABLE]` / `[PROPOSED]`)
+## B. Category Management Module (`[RENCANA]` / `[RENCANA]`)
 
 | Aspek | Keterangan |
 |---|---|
@@ -38,8 +38,8 @@ Dokumen ini mencakup **3. E-Book Catalog Module**, **4. Category Management Modu
 
 ---
 
-## C. SPK SAW Recommendation Module (`[CONFIRMED]` di `AGENTS.md`, `[NOT AVAILABLE]` di kode)
+## C. SPK SAW Recommendation Module (`[RENCANA]` di `AGENTS.md`, `[RENCANA]` di kode)
 
-- **Tujuan:** Memberikan peringkat rekomendasi e-book menggunakan metode *Simple Additive Weighting* (SAW) yang dihitung **hanya di backend** (`[CONFIRMED]` pada ADR-0002).
+- **Tujuan:** Memberikan peringkat rekomendasi e-book menggunakan metode *Simple Additive Weighting* (SAW) yang dihitung **hanya di backend** (`[RENCANA]` pada ADR-0002).
 - **Batasan Keamanan:** Bobot dari klien tidak dipercaya secara langsung; validasi dan perhitungan matriks normalisasi dilakukan sepenuhnya di server.
 - **Keterbatasan Saat Ini:** Konflik jumlah kriteria (4 kriteria vs 5 kriteria) dan perlakuan e-book tanpa rating masih tercatat sebagai keputusan terbuka di [keputusan-terbuka.md](../00-project/keputusan-terbuka.md).

@@ -1,17 +1,17 @@
 # Modul Dashboard Admin & Laporan Penjualan
 
-**Status Implementasi:** `[NOT AVAILABLE]` — Belum ada implementasi di `web/admin-web/` maupun `backend/`.
+**Status Implementasi:** `[RENCANA]` — Belum ada implementasi di `web/admin-web/` maupun `backend/`.
 
 Dokumen ini mencakup **10. Admin Dashboard Module** dan **11. Sales Reporting Module**.
 
 ---
 
-## A. Admin Dashboard Module (`[NOT AVAILABLE]` / `[PROPOSED]`)
+## A. Admin Dashboard Module (`[RENCANA]` / `[RENCANA]`)
 
 | Aspek | Keterangan |
 |---|---|
 | **Tujuan Modul** | Memberikan ringkasan kondisi operasional toko e-book kepada admin dalam satu tampilan terpusat. |
-| **Fungsi Utama** | Menampilkan metrik ringkas seperti total pendapatan, jumlah pesanan (per status), jumlah e-book aktif, dan jumlah pelanggan terdaftar (`[PROPOSED]`). |
+| **Fungsi Utama** | Menampilkan metrik ringkas seperti total pendapatan, jumlah pesanan (per status), jumlah e-book aktif, dan jumlah pelanggan terdaftar (`[RENCANA]`). |
 | **Aktor** | Admin. |
 | **Input** | Token sesi admin dengan role `ADMIN`. |
 | **Proses** | Verifikasi role `ADMIN` di backend, lalu melakukan agregasi data dari tabel `orders`, `transactions`, `ebooks`, dan `customers`. |
@@ -22,12 +22,12 @@ Dokumen ini mencakup **10. Admin Dashboard Module** dan **11. Sales Reporting Mo
 
 ---
 
-## B. Sales Reporting Module (`[NOT AVAILABLE]` / `[PROPOSED]`)
+## B. Sales Reporting Module (`[RENCANA]` / `[RENCANA]`)
 
 | Aspek | Keterangan |
 |---|---|
 | **Tujuan Modul** | Menyajikan laporan penjualan terstruktur berdasarkan rentang waktu untuk kebutuhan evaluasi dan pelaporan bisnis. |
-| **Fungsi Utama** | Agregasi pendapatan dan jumlah unit terjual per periode (harian/bulanan), daftar e-book terlaris, serta filter berdasarkan rentang tanggal/kategori (`[PROPOSED]`). |
+| **Fungsi Utama** | Agregasi pendapatan dan jumlah unit terjual per periode (harian/bulanan), daftar e-book terlaris, serta filter berdasarkan rentang tanggal/kategori (`[RENCANA]`). |
 | **Aktor** | Admin. |
 | **Input** | `startDate`, `endDate`, `groupBy` (`day|month`). |
 | **Proses** | Validasi rentang tanggal di backend, hanya menghitung pesanan/transaksi yang berstatus lunas (`PAID` / tercatat di `transactions`), lalu mengelompokkan hasil per periode. |

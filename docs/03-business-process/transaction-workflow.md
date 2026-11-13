@@ -1,6 +1,6 @@
 # Alur Pemrosesan Transaksi & Hak Akses (`Transaction Workflow`)
 
-**Status:** `[PROPOSED]` (rancangan alur status transaksi) | `[NOT AVAILABLE]` (implementasi di kode)
+**Status:** `[RENCANA]` (rancangan alur status transaksi) | `[RENCANA]` (implementasi di kode)
 
 ---
 
@@ -23,7 +23,7 @@ stateDiagram-v2
 
 ---
 
-## 2. Aturan Pemrosesan Transaksi (`[PROPOSED]`)
+## 2. Aturan Pemrosesan Transaksi (`[RENCANA]`)
 
 1. **Snapshot Harga Saat Checkout:**
    Saat pesanan dibuat, nilai `price` pada setiap item pesanan disalin dari tabel `ebooks` pada saat itu. Perubahan harga e-book oleh admin di kemudian hari tidak mengubah nilai pesanan yang sudah dibuat.

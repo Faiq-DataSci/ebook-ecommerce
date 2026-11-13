@@ -1,10 +1,10 @@
 # Panduan Pengembangan (`Development Guide`)
 
-**Status:** `[CONFIRMED]` (urutan & aturan kerja pada `AGENTS.md`) | `[PROPOSED]` (alur kerja tim)
+**Status:** `[ADA]` (urutan & aturan kerja pada `AGENTS.md`) | `[RENCANA]` (alur kerja tim)
 
 ---
 
-## 1. Urutan Pengembangan Terkunci (`[CONFIRMED]`)
+## 1. Urutan Pengembangan Terkunci (`[ADA]`)
 
 Sesuai `AGENTS.md`, pengembangan fitur dilakukan secara berurutan agar fondasi API dan data siap sebelum antarmuka dibangun:
 
@@ -12,11 +12,11 @@ Sesuai `AGENTS.md`, pengembangan fitur dilakukan secara berurutan agar fondasi A
 2. **`web/admin-web/`** — Antarmuka administrasi (konversi ke TypeScript + UI Neo-brutalism).
 3. **`mobile/ebook_store/`** — Aplikasi pelanggan Flutter (integrasi Riverpod + Dio).
 
-Uji konektivitas dasar (*health check* / auth / endpoint dasar) wajib dijalankan sebelum membangun UI penuh (`[CONFIRMED]`).
+Uji konektivitas dasar (*health check* / auth / endpoint dasar) wajib dijalankan sebelum membangun UI penuh (`[RENCANA]`).
 
 ---
 
-## 2. Skrip yang Tersedia Saat Ini (`[IMPLEMENTED]` di file konfigurasi)
+## 2. Skrip yang Tersedia Saat Ini (`[ADA]` di file konfigurasi)
 
 ### `backend/package.json` *(skrip sudah didefinisikan, source code belum ada)*
 - `npm run dev` (`tsx watch src/server.ts`)
@@ -39,7 +39,7 @@ Uji konektivitas dasar (*health check* / auth / endpoint dasar) wajib dijalankan
 
 ---
 
-## 3. Aturan Data Simulasi & Audit Pra-Push (`[CONFIRMED]`)
+## 3. Aturan Data Simulasi & Audit Pra-Push (`[ADA]`)
 
 - Jika UI menampilkan data tiruan selama pengembangan, wajib diberi label **`"DATA SIMULASI"`**.
 - Tidak diperbolehkan membuat endpoint palsu atau tombol tanpa aksi.

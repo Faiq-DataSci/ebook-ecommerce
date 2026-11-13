@@ -1,6 +1,6 @@
 # Gambaran Umum API (`API Overview`)
 
-**Status:** `[NOT AVAILABLE]` (belum ada endpoint yang diimplementasikan di `backend/`) | `[PROPOSED]` (rancangan spesifikasi REST API)
+**Status:** `[RENCANA]` (belum ada endpoint yang diimplementasikan di `backend/`) | `[RENCANA]` (rancangan spesifikasi REST API)
 
 ---
 
@@ -8,20 +8,20 @@
 
 Berdasarkan pemeriksaan terhadap direktori `backend/`, belum terdapat kode server Express, router, controller, maupun middleware. Spesifikasi OpenAPI di [api-spec.yaml](../02-api/api-spec.yaml) juga masih berstatus kerangka awal (`paths: {}`, base URL `/api/v1`).
 
-Seluruh rancangan pada dokumen ini berstatus **`[PROPOSED]`** (*Proposed API Design*).
+Seluruh rancangan pada dokumen ini berstatus **`[RENCANA]`** (*Proposed API Design*).
 
 ---
 
-## 2. Konvensi Umum (`[PROPOSED]`)
+## 2. Konvensi Umum (`[RENCANA]`)
 
 - **Base Path:** `/api/v1` (sesuai kerangka [api-spec.yaml](../02-api/api-spec.yaml))
 - **Format Pertukaran Data:** `application/json` (UTF-8)
 - **Skema Autentikasi:** Bearer Token (`Authorization: Bearer <token>`)
-- **Validasi Input:** Menggunakan **Zod** (`[CONFIRMED]` pada `AGENTS.md`) di sisi backend sebelum logika bisnis dijalankan.
+- **Validasi Input:** Menggunakan **Zod** (`[ADA]` pada `AGENTS.md`) di sisi backend sebelum logika bisnis dijalankan.
 
 ---
 
-## 3. Format Standar Respons (`[PROPOSED]`)
+## 3. Format Standar Respons (`[RENCANA]`)
 
 ### Respons Sukses
 ```json
@@ -46,7 +46,7 @@ Seluruh rancangan pada dokumen ini berstatus **`[PROPOSED]`** (*Proposed API Des
 
 ---
 
-## 4. Kode Status HTTP Standar (`[PROPOSED]`)
+## 4. Kode Status HTTP Standar (`[RENCANA]`)
 
 | HTTP Status | Makna | Penggunaan Utama |
 |---|---|---|

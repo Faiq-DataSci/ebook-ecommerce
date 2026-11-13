@@ -1,6 +1,6 @@
 # Rancangan Endpoint API (`Proposed API Design`)
 
-**Status:** `[NOT AVAILABLE]` (belum ada implementasi di `backend/`) | `[PROPOSED]` (rancangan API yang diusulkan)
+**Status:** `[RENCANA]` (belum ada implementasi di `backend/`) | `[RENCANA]` (rancangan API yang diusulkan)
 
 > **Catatan Penting:** Tidak satu pun endpoint di bawah ini sudah tersedia secara aktual di kode sumber. Daftar ini adalah **Proposed API Design** sebagai acuan implementasi backend.
 
@@ -119,8 +119,8 @@
 ### 4.3 Rekomendasi E-Book (SPK Metode SAW)
 - **HTTP Method:** `GET` *(atau `POST` jika mengirim preferensi yang diizinkan)*
 - **Endpoint:** `/api/v1/ebooks/recommendations`
-- **Deskripsi:** Menghitung dan mengembalikan peringkat rekomendasi e-book menggunakan metode SAW di backend (`[CONFIRMED]` backend-only).
-- **Authentication:** Opsional / Wajib (`[ASSUMPTION]`)
+- **Deskripsi:** Menghitung dan mengembalikan peringkat rekomendasi e-book menggunakan metode SAW di backend (`[RENCANA]` backend-only).
+- **Authentication:** Opsional / Wajib (`[RENCANA]`)
 - **Authorization:** `CUSTOMER` / Publik
 - **Request Parameters:** Query filter opsional (`categoryId`, `limit`)
 - **Request Body:** Tidak ada (bobot kriteria bersumber dari konfigurasi backend)

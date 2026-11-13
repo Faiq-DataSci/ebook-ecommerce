@@ -1,6 +1,6 @@
 # Technology Stack
 
-**Status:** `[IMPLEMENTED]` (paket yang sudah terpasang di template) | `[CONFIRMED]` (stack terkunci di `AGENTS.md`) | `[NOT AVAILABLE]` (paket backend & database)
+**Status:** `[ADA]` (paket yang sudah terpasang di template) | `[ADA]` (stack terkunci di `AGENTS.md`) | `[RENCANA]` (paket backend & database)
 
 ---
 
@@ -8,14 +8,14 @@
 
 | Lapisan | Teknologi Aktual di Repository | Status Aktual | Stack Terkunci / Target (`AGENTS.md`) |
 |---|---|---|---|
-| **Mobile (`mobile/ebook_store`)** | Dart SDK `^3.12.0`, Flutter, `cupertino_icons ^1.0.8`, `flutter_lints ^6.0.0` | `[IMPLEMENTED]` (template) | Flutter + Dart + **Riverpod** + **Dio** (`[CONFIRMED]`) |
-| **Admin Web (`web/admin-web`)** | React `^19.3.1`, React DOM `^19.3.1`, Vite `^8.3.6`, ESLint `^10.14.0`, JavaScript (`.jsx`) | `[IMPLEMENTED]` (template) | React + **TypeScript** + Vite (Neo-brutalism) (`[CONFIRMED]`) |
-| **Pengunjung Web (`web/pengunjung-web`)** | React `^19.3.1`, React DOM `^19.3.1`, Vite `^8.3.6`, ESLint `^10.14.0`, JavaScript (`.jsx`) | `[IMPLEMENTED]` (template) | Belum tercantum di `AGENTS.md` (`[ASSUMPTION]`) |
-| **Backend (`backend/`)** | `package.json` ESM (`"type": "module"`); `node_modules` & dependencies belum terpasang | `[NOT AVAILABLE]` | Node.js + **Express** + **TypeScript** + **Zod** + **Prisma 7** (`[CONFIRMED]`) |
-| **Database** | Belum ada skema maupun koneksi | `[NOT AVAILABLE]` | **PostgreSQL Supabase** (`[CONFIRMED]`) |
-| **Object Storage** | Belum ada integrasi | `[NOT AVAILABLE]` | **Supabase Storage** bucket privat + Signed URL (`[CONFIRMED]`) |
-| **SPK / Rekomendasi** | Belum diimplementasikan | `[NOT AVAILABLE]` | Metode **Simple Additive Weighting (SAW)** di backend (`[CONFIRMED]`) |
-| **Testing** | Flutter `flutter_test` (default); skrip `vitest run` tercantum di `backend/package.json` | `[IMPLEMENTED]` (minimal) | Vitest (backend), Flutter test (mobile) (`[CONFIRMED]`/`[PROPOSED]`) |
+| **Mobile (`mobile/ebook_store`)** | Dart SDK `^3.12.0`, Flutter, `cupertino_icons ^1.0.8`, `flutter_lints ^6.0.0` | `[ADA]` (template) | Flutter + Dart + **Riverpod** + **Dio** (`[RENCANA]`) |
+| **Admin Web (`web/admin-web`)** | React `^19.3.1`, React DOM `^19.3.1`, Vite `^8.3.6`, ESLint `^10.14.0`, JavaScript (`.jsx`) | `[ADA]` (template) | React + **TypeScript** + Vite (Neo-brutalism) (`[RENCANA]`) |
+| **Pengunjung Web (`web/pengunjung-web`)** | React `^19.3.1`, React DOM `^19.3.1`, Vite `^8.3.6`, ESLint `^10.14.0`, JavaScript (`.jsx`) | `[ADA]` (template) | Belum tercantum di `AGENTS.md` (`[RENCANA]`) |
+| **Backend (`backend/`)** | `package.json` ESM (`"type": "module"`); `node_modules` & dependencies belum terpasang | `[RENCANA]` | Node.js + **Express** + **TypeScript** + **Zod** + **Prisma 7** (`[RENCANA]`) |
+| **Database** | Belum ada skema maupun koneksi | `[RENCANA]` | **PostgreSQL Supabase** (`[RENCANA]`) |
+| **Object Storage** | Belum ada integrasi | `[RENCANA]` | **Supabase Storage** bucket privat + Signed URL (`[RENCANA]`) |
+| **SPK / Rekomendasi** | Belum diimplementasikan | `[RENCANA]` | Metode **Simple Additive Weighting (SAW)** di backend (`[RENCANA]`) |
+| **Testing** | Flutter `flutter_test` (default); skrip `vitest run` tercantum di `backend/package.json` | `[ADA]` (minimal) | Vitest (backend), Flutter test (mobile) (`[RENCANA]`/`[RENCANA]`) |
 
 ---
 

@@ -1,6 +1,6 @@
 # Arsitektur Sistem (`System Architecture`)
 
-**Status:** `[CONFIRMED]` (arsitektur target pada `AGENTS.md`) | `[PROPOSED]` (detail alur komunikasi & pemrosesan) | `[NOT AVAILABLE]` (implementasi backend & database)
+**Status:** `[RENCANA]` (arsitektur target pada `AGENTS.md`) | `[RENCANA]` (detail alur komunikasi & pemrosesan) | `[RENCANA]` (implementasi backend & database)
 
 ---
 
@@ -13,26 +13,26 @@ flowchart LR
     subgraph Clients["Aplikasi Klien"]
         M["Mobile App (Flutter: ebook_store) [IMPLEMENTED: Template]"]
         AW["Admin Web (React + Vite: web/admin-web) [IMPLEMENTED: Template]"]
-        PW["Pengunjung Web (React + Vite: web/pengunjung-web) [ASSUMPTION]"]
+        PW["Pengunjung Web (React + Vite: web/pengunjung-web) [RENCANA]"]
     end
 
-    subgraph Backend["Backend Layer [NOT AVAILABLE]"]
-        API["REST API Server (Express + TypeScript + Zod) [CONFIRMED]"]
+    subgraph Backend["Backend Layer [RENCANA]"]
+        API["REST API Server (Express + TypeScript + Zod) [RENCANA]"]
         SAW["SAW Recommendation Engine [CONFIRMED: Backend-Only]"]
     end
 
-    subgraph Data["Data & Storage Layer [NOT AVAILABLE]"]
-        DB[("PostgreSQL (Supabase via Prisma 7) [CONFIRMED]")]
-        ST["Supabase Storage Bucket Privat (PDF E-Book) [CONFIRMED]"]
+    subgraph Data["Data & Storage Layer [RENCANA]"]
+        DB[("PostgreSQL (Supabase via Prisma 7) [RENCANA]")]
+        ST["Supabase Storage Bucket Privat (PDF E-Book) [RENCANA]"]
     end
 
-    M -->|"HTTPS / REST JSON + Bearer Token [PROPOSED]"| API
-    AW -->|"HTTPS / REST JSON + Bearer Token [PROPOSED]"| API
-    PW -.->|"HTTPS / REST JSON [ASSUMPTION]"| API
+    M -->|"HTTPS / REST JSON + Bearer Token [RENCANA]"| API
+    AW -->|"HTTPS / REST JSON + Bearer Token [RENCANA]"| API
+    PW -.->|"HTTPS / REST JSON [RENCANA]"| API
     API --> SAW
-    API -->|"Prisma ORM [CONFIRMED]"| DB
-    API -->|"Service Role / Signed URL [CONFIRMED]"| ST
-    M -.->|"Akses PDF via Signed URL Sementara [PROPOSED]"| ST
+    API -->|"Prisma ORM [RENCANA]"| DB
+    API -->|"Service Role / Signed URL [RENCANA]"| ST
+    M -.->|"Akses PDF via Signed URL Sementara [RENCANA]"| ST
 ```
 
 ---
@@ -40,37 +40,37 @@ flowchart LR
 ## 2. Hubungan Antarkomponen
 
 ### A. Mobile Application (`mobile/ebook_store`) dengan Backend
-- **Status:** `[NOT AVAILABLE]` (belum ada HTTP client maupun endpoint; `lib/main.dart` masih berupa template default).
-- **Rancangan (`[CONFIRMED]` / `[PROPOSED]`):**
-  - Aplikasi mobile menggunakan **Dio** (`[CONFIRMED]` pada `AGENTS.md`) untuk berkomunikasi dengan Backend REST API melalui JSON.
-  - Aplikasi mobile **tidak** terhubung langsung ke database PostgreSQL dan **tidak** menyimpan *service role key* Supabase (`[CONFIRMED]`).
-  - Perhitungan rekomendasi e-book (SAW) hanya dipanggil dari endpoint backend; klien mobile hanya menerima hasil peringkat (`[CONFIRMED]`).
+- **Status:** `[RENCANA]` (belum ada HTTP client maupun endpoint; `lib/main.dart` masih berupa template default).
+- **Rancangan (`[RENCANA]` / `[RENCANA]`):**
+  - Aplikasi mobile menggunakan **Dio** (`[ADA]` pada `AGENTS.md`) untuk berkomunikasi dengan Backend REST API melalui JSON.
+  - Aplikasi mobile **tidak** terhubung langsung ke database PostgreSQL dan **tidak** menyimpan *service role key* Supabase (`[RENCANA]`).
+  - Perhitungan rekomendasi e-book (SAW) hanya dipanggil dari endpoint backend; klien mobile hanya menerima hasil peringkat (`[RENCANA]`).
 
 ### B. Admin Web (`web/admin-web`) dengan Backend
-- **Status:** `[NOT AVAILABLE]` (belum ada integrasi API; `src/App.jsx` masih berupa template Vite).
-- **Rancangan (`[CONFIRMED]` / `[PROPOSED]`):**
-  - Admin Web berkomunikasi dengan Backend REST API yang sama dengan proteksi role `ADMIN` (`[CONFIRMED]`).
-  - Penyembunyian menu di UI hanya bersifat kosmetik; seluruh validasi hak akses admin wajib ditegakkan di backend (`[CONFIRMED]`).
+- **Status:** `[RENCANA]` (belum ada integrasi API; `src/App.jsx` masih berupa template Vite).
+- **Rancangan (`[RENCANA]` / `[RENCANA]`):**
+  - Admin Web berkomunikasi dengan Backend REST API yang sama dengan proteksi role `ADMIN` (`[RENCANA]`).
+  - Penyembunyian menu di UI hanya bersifat kosmetik; seluruh validasi hak akses admin wajib ditegakkan di backend (`[RENCANA]`).
 
 ### C. Pengunjung Web (`web/pengunjung-web`) dengan Backend
-- **Status:** `[ASSUMPTION]` — Direktori ditemukan sebagai template React + Vite, namun belum tercantum dalam `AGENTS.md`. Jika digunakan untuk pelanggan versi web, komunikasinya mengikuti pola yang sama dengan Mobile App melalui REST API.
+- **Status:** `[RENCANA]` — Direktori ditemukan sebagai template React + Vite, namun belum tercantum dalam `AGENTS.md`. Jika digunakan untuk pelanggan versi web, komunikasinya mengikuti pola yang sama dengan Mobile App melalui REST API.
 
 ### D. Backend dengan Database & Storage
-- **Status:** `[NOT AVAILABLE]` — Belum ada `schema.prisma` maupun kode backend.
-- **Rancangan (`[CONFIRMED]`):**
+- **Status:** `[RENCANA]` — Belum ada `schema.prisma` maupun kode backend.
+- **Rancangan (`[RENCANA]`):**
   - Backend mengakses PostgreSQL Supabase menggunakan **Prisma 7** (`DATABASE_URL` port 6543 untuk runtime dan `DIRECT_URL` port 5432 untuk migrasi).
   - File PDF e-book disimpan pada **Supabase Storage bucket privat**; backend menghasilkan *signed URL* berjangka waktu pendek hanya setelah hak akses pelanggan terverifikasi.
 
 ---
 
-## 3. Alur Komunikasi API, Autentikasi, Transaksi, dan Hak Akses E-Book (`[PROPOSED]`)
+## 3. Alur Komunikasi API, Autentikasi, Transaksi, dan Hak Akses E-Book (`[RENCANA]`)
 
 ```mermaid
 sequenceDiagram
     actor C as Pelanggan (Mobile)
-    participant API as Backend API [NOT AVAILABLE]
-    participant DB as PostgreSQL [NOT AVAILABLE]
-    participant ST as Supabase Storage Privat [NOT AVAILABLE]
+    participant API as Backend API [RENCANA]
+    participant DB as PostgreSQL [RENCANA]
+    participant ST as Supabase Storage Privat [RENCANA]
 
     C->>API: 1. Login (email, password)
     API->>DB: Verifikasi kredensial user
@@ -95,7 +95,7 @@ sequenceDiagram
     API-->>C: Signed URL untuk membaca e-book
 ```
 
-### Prinsip Arsitektur Kunci (`[CONFIRMED]`)
+### Prinsip Arsitektur Kunci (`[ADA]`)
 1. **Otorisasi Terpusat di Backend:** Setiap endpoint terproteksi memeriksa validitas token dan role (`CUSTOMER` / `ADMIN`).
 2. **Integritas Harga & Transaksi:** Harga item pada pesanan diambil dari harga database saat transaksi dibuat (*snapshot*), bukan dari input klien.
 3. **Pemberian Hak Akses E-Book Berbasis Verifikasi:** Hak akses (`Ebook Access`) hanya diberikan setelah status pembayaran berstatus terverifikasi/lunas (`PAID`), bukan sekadar saat pesanan dibuat.

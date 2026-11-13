@@ -1,10 +1,10 @@
 # Konvensi Penulisan Kode (`Coding Conventions`)
 
-**Status:** `[CONFIRMED]` (aturan di `AGENTS.md` & `mobile/AGENTS.md`) | `[IMPLEMENTED]` (linting template web & Flutter)
+**Status:** `[ADA]` (aturan di `AGENTS.md` & `mobile/AGENTS.md`) | `[ADA]` (linting template web & Flutter)
 
 ---
 
-## 1. Backend (`backend/`) — `[CONFIRMED]`
+## 1. Backend (`backend/`) — `[RENCANA]`
 
 - **Module System:** ESM (`"type": "module"` pada `backend/package.json`).
 - **Ekstensi Import Relatif:** Semua import relatif di dalam file `.ts` **wajib** memakai ekstensi `.js` (contoh: `import { app } from './app.js'`).
@@ -14,16 +14,16 @@
 
 ---
 
-## 2. Admin Web (`web/admin-web/`) — `[CONFIRMED]` & `[IMPLEMENTED]`
+## 2. Admin Web (`web/admin-web/`) — `[RENCANA]` & `[ADA]`
 
-- **Target Bahasa:** TypeScript (`[CONFIRMED]`), meski template awal saat ini masih `.jsx`.
-- **Gaya Desain:** Neo-brutalism dengan 3 zona intensitas (`[CONFIRMED]`).
-- **Linting:** ESLint terkonfigurasi di `web/admin-web/eslint.config.js` (`[IMPLEMENTED]`).
+- **Target Bahasa:** TypeScript (`[RENCANA]`), meski template awal saat ini masih `.jsx`.
+- **Gaya Desain:** Neo-brutalism dengan 3 zona intensitas (`[RENCANA]`).
+- **Linting:** ESLint terkonfigurasi di `web/admin-web/eslint.config.js` (`[ADA]`).
 
 ---
 
-## 3. Mobile (`mobile/ebook_store/`) — `[CONFIRMED]` & `[IMPLEMENTED]`
+## 3. Mobile (`mobile/ebook_store/`) — `[RENCANA]` & `[ADA]`
 
-- **State Management & HTTP:** Riverpod + Dio (`[CONFIRMED]`).
-- **Linting:** Mengikuti aturan `package:flutter_lints/flutter.yaml` pada `mobile/ebook_store/analysis_options.yaml` (`[IMPLEMENTED]`).
-- **Keamanan Klien:** Dilarang menaruh secret/private key di kode Dart; akses PDF hanya lewat *signed URL* dari backend (`[CONFIRMED]`).
+- **State Management & HTTP:** Riverpod + Dio (`[RENCANA]`).
+- **Linting:** Mengikuti aturan `package:flutter_lints/flutter.yaml` pada `mobile/ebook_store/analysis_options.yaml` (`[ADA]`).
+- **Keamanan Klien:** Dilarang menaruh secret/private key di kode Dart; akses PDF hanya lewat *signed URL* dari backend (`[RENCANA]`).

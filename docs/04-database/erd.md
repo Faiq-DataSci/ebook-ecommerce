@@ -1,10 +1,10 @@
 # Entity Relationship Diagram (ERD)
 
-**Status:** `[PROPOSED]` — Rancangan konseptual awal; belum ada implementasi database aktual di repository.
+**Status:** `[RENCANA]` — Rancangan konseptual awal; belum ada implementasi database aktual di repository.
 
 ---
 
-## 1. Diagram ERD (`[PROPOSED]`)
+## 1. Diagram ERD (`[RENCANA]`)
 
 ```mermaid
 erDiagram

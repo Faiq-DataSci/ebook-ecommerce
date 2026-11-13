@@ -1,18 +1,18 @@
 # Konfigurasi Lingkungan (`Environment Configuration`)
 
-**Status:** `[NOT AVAILABLE]` (belum ada file `.env` maupun `.env.example` di repository) | `[PROPOSED]` (daftar variabel lingkungan usulan)
+**Status:** `[ADA]` (template `.env.example` tersedia di `backend/`, `web/admin-web/`, dan `web/pengunjung-web/`) | `[RENCANA]` (file `.env` lokal belum dibuat dan variabel belum diisi nilainya)
 
 ---
 
-## 1. Aturan Keamanan Environment (`[CONFIRMED]`)
+## 1. Aturan Keamanan Environment (`[ADA]`)
 
-- File `.env` dan `.env.*` wajib diabaikan oleh `.gitignore` (sudah dikonfigurasi pada root [.gitignore](file:///D:/Semester%203/Sistem%20Informasi/Project/ebook-ecommerce/.gitignore), dengan pengecualian `!.env.example`).
+- File `.env` dan `.env.*` wajib diabaikan oleh `.gitignore` (sudah dikonfigurasi pada root [`.gitignore`](../../.gitignore), dengan pengecualian `!.env.example`).
 - Dilarang menyimpan secret atau `SUPABASE_SERVICE_ROLE_KEY` pada variabel `VITE_*` (`web/admin-web`, `web/pengunjung-web`) maupun di kode Flutter (`mobile/ebook_store`).
 - Gunakan file `.env.example` berisi nilai placeholder tanpa kredensial asli.
 
 ---
 
-## 2. Usulan Variabel Lingkungan — Backend (`backend/.env.example`) `[PROPOSED]`
+## 2. Usulan Variabel Lingkungan — Backend (`backend/.env.example`) `[RENCANA]`
 
 ```env
 PORT=3000
@@ -34,7 +34,7 @@ SUPABASE_EBOOK_BUCKET="ebooks-private"
 
 ---
 
-## 3. Usulan Variabel Lingkungan — Frontend Web (`web/admin-web/.env.example`) `[PROPOSED]`
+## 3. Usulan Variabel Lingkungan — Frontend Web (`web/admin-web/.env.example`) `[RENCANA]`
 
 ```env
 VITE_API_BASE_URL="http://localhost:3000/api/v1"
@@ -42,7 +42,7 @@ VITE_API_BASE_URL="http://localhost:3000/api/v1"
 
 ---
 
-## 4. Konfigurasi Base URL — Mobile (`mobile/ebook_store`) `[CONFIRMED]` pada `mobile/AGENTS.md`
+## 4. Konfigurasi Base URL — Mobile (`mobile/ebook_store`) `[ADA]` pada `mobile/AGENTS.md`
 
-- Emulator Android: `http://10.0.2.2:3000/api/v1` (`[ASSUMPTION]` port 3000)
+- Emulator Android: `http://10.0.2.2:3000/api/v1` (`[RENCANA]` port 3000)
 - Perangkat fisik: IP LAN host pengembangan atau domain staging/produksi (`HTTPS`)

@@ -1,17 +1,17 @@
 # Modul Pembayaran & Transaksi
 
-**Status Implementasi:** `[NOT AVAILABLE]` — Belum ada implementasi di repository.
+**Status Implementasi:** `[RENCANA]` — Belum ada implementasi di repository.
 
 Dokumen ini mencakup **6. Payment Module** dan **7. Transaction Module**.
 
 ---
 
-## A. Payment Module (`[NOT AVAILABLE]` / `[PROPOSED]`)
+## A. Payment Module (`[RENCANA]` / `[RENCANA]`)
 
 | Aspek | Keterangan |
 |---|---|
 | **Tujuan Modul** | Memproses inisiasi pembayaran dan memverifikasi keabsahan pembayaran sebelum pesanan dinyatakan lunas. |
-| **Fungsi Utama** | Membuat tagihan/catatan pembayaran, memantau status pembayaran (`PENDING`, `VERIFIED`, `FAILED`, `EXPIRED`), dan memproses callback/verifikasi pembayaran (`[PROPOSED]`). |
+| **Fungsi Utama** | Membuat tagihan/catatan pembayaran, memantau status pembayaran (`PENDING`, `VERIFIED`, `FAILED`, `EXPIRED`), dan memproses callback/verifikasi pembayaran (`[RENCANA]`). |
 | **Aktor** | Pelanggan (melakukan & memantau pembayaran) dan Admin / Sistem Pembayaran (memantau & memverifikasi). |
 | **Input** | `orderId`, `paymentMethod` (saat inisiasi); `paymentId`, status verifikasi, dan `externalRef`/signature (saat verifikasi). |
 | **Proses** | 1) Validasi kepemilikan pesanan dan pastikan status pesanan `PENDING` serta belum kedaluwarsa. 2) Catat `payments` dengan nominal sesuai `orders.total_amount` di server. 3) Saat verifikasi valid, jalankan transaksi database atomik: ubah `payments.status = VERIFIED`, `orders.status = PAID`, buat `transactions`, dan aktifkan `ebook_accesses`. |
@@ -22,7 +22,7 @@ Dokumen ini mencakup **6. Payment Module** dan **7. Transaction Module**.
 
 ---
 
-## B. Transaction Module (`[NOT AVAILABLE]` / `[PROPOSED]`)
+## B. Transaction Module (`[RENCANA]` / `[RENCANA]`)
 
 | Aspek | Keterangan |
 |---|---|

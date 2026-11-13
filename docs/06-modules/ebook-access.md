@@ -1,12 +1,12 @@
 # Modul Riwayat Pembelian & Hak Akses E-Book
 
-**Status Implementasi:** `[NOT AVAILABLE]` — Belum ada implementasi di repository.
+**Status Implementasi:** `[RENCANA]` — Belum ada implementasi di repository.
 
 Dokumen ini mencakup **8. Purchase History Module** dan **9. E-Book Access Module**.
 
 ---
 
-## A. Purchase History Module (`[NOT AVAILABLE]` / `[PROPOSED]`)
+## A. Purchase History Module (`[RENCANA]` / `[RENCANA]`)
 
 | Aspek | Keterangan |
 |---|---|
@@ -22,12 +22,12 @@ Dokumen ini mencakup **8. Purchase History Module** dan **9. E-Book Access Modul
 
 ---
 
-## B. E-Book Access Module (`[NOT AVAILABLE]` / `[PROPOSED]`)
+## B. E-Book Access Module (`[RENCANA]` / `[RENCANA]`)
 
 | Aspek | Keterangan |
 |---|---|
 | **Tujuan Modul** | Mengontrol dan memberikan akses baca/unduh file PDF e-book secara aman hanya kepada pelanggan yang pembayarannya telah diverifikasi. |
-| **Fungsi Utama** | Menyimpan catatan kepemilikan (`ebook_accesses`), memvalidasi hak akses per permintaan, dan menerbitkan *signed URL* sementara dari bucket privat Supabase Storage (`[CONFIRMED]` pada `AGENTS.md`). |
+| **Fungsi Utama** | Menyimpan catatan kepemilikan (`ebook_accesses`), memvalidasi hak akses per permintaan, dan menerbitkan *signed URL* sementara dari bucket privat Supabase Storage (`[ADA]` pada `AGENTS.md`). |
 | **Aktor** | Pelanggan (pemilik hak akses) dan Sistem (penerbitan akses otomatis pasca-verifikasi pembayaran). |
 | **Input** | Token sesi pelanggan + `ebookId`. |
 | **Proses** | 1) Cek record di `ebook_accesses` untuk `(customer_id, ebook_id)` dengan `is_revoked = false`. 2) Jika tidak ada atau dicabut, kembalikan `403 Forbidden`. 3) Jika valid, backend meminta *signed URL* berjangka waktu singkat ke Supabase Storage bucket privat menggunakan kredensial server. |

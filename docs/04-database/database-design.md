@@ -1,16 +1,16 @@
 # Rancangan Basis Data (`Database Design`)
 
-**Status:** `[NOT AVAILABLE]` (belum ada `schema.prisma` atau migrasi di repository) | `[PROPOSED]` (rancangan konseptual) | `[CONFIRMED]` (target: PostgreSQL Supabase via Prisma 7)
+**Status:** `[RENCANA]` (belum ada `schema.prisma` atau migrasi di repository) | `[RENCANA]` (rancangan konseptual) | `[RENCANA]` (target: PostgreSQL Supabase via Prisma 7)
 
 ---
 
 ## 1. Catatan Status Implementasi
 
-Hingga saat ini, direktori `backend/` belum memiliki `prisma/schema.prisma`, `prisma.config.ts`, maupun berkas migrasi SQL. Seluruh desain tabel, tipe data, dan relasi di bawah ini merupakan **rancangan konseptual (`[PROPOSED]`)** yang perlu divalidasi sebelum implementasi migrasi.
+Hingga saat ini, direktori `backend/` belum memiliki `prisma/schema.prisma`, `prisma.config.ts`, maupun berkas migrasi SQL. Seluruh desain tabel, tipe data, dan relasi di bawah ini merupakan **rancangan konseptual (`[RENCANA]`)** yang perlu divalidasi sebelum implementasi migrasi.
 
 ---
 
-## 2. Prinsip Perancangan Basis Data (`[PROPOSED]`)
+## 2. Prinsip Perancangan Basis Data (`[RENCANA]`)
 
 1. **Primary Key UUID:** Seluruh tabel utama menggunakan `UUID` untuk menghindari enumerasi ID secara berurutan pada API publik.
 2. **Tipe Data Moneter Presisi:** Harga e-book, total pesanan, dan nominal pembayaran menggunakan `DECIMAL(12,2)` (atau `NUMERIC`) agar tidak terjadi galat pembulatan *floating-point*.
@@ -22,7 +22,7 @@ Hingga saat ini, direktori `backend/` belum memiliki `prisma/schema.prisma`, `pr
 
 ---
 
-## 3. Ringkasan Entitas Konseptual (`[PROPOSED]`)
+## 3. Ringkasan Entitas Konseptual (`[RENCANA]`)
 
 | Entitas | Nama Tabel Usulan | Fungsi Utama |
 |---|---|---|

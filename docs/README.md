@@ -1,6 +1,6 @@
 # Dokumentasi Teknis — Sistem Informasi E-Commerce E-Book (E-Book Store)
 
-**Status Umum Proyek:** `[RENCANA]` — Fondasi monorepo dan kerangka aplikasi telah tersedia (`[IMPLEMENTED]` sebagai template awal), sedangkan fitur bisnis, backend API, dan database belum diimplementasikan (`[NOT AVAILABLE]`).
+**Status Umum Proyek:** `[RENCANA]` — fondasi monorepo, kerangka aplikasi, dan backend dasar (health endpoint) sudah tersedia (`[ADA]`), sedangkan fitur bisnis, autentikasi, database, dan SPK SAW belum diimplementasikan (`[RENCANA]`).
 
 Dokumentasi ini disusun sebagai panduan resmi pengembangan, arsitektur, basis data, API, keamanan, pengujian, dan pemeliharaan untuk proyek **E-Book Store** (Sistem Informasi E-Book dan SPK Metode SAW).
 
@@ -12,11 +12,8 @@ Setiap bagian dalam dokumentasi ini menggunakan label status eksplisit berikut:
 
 | Label | Makna |
 |---|---|
-| `[IMPLEMENTED]` | Sudah ditemukan secara aktual di dalam kode sumber atau konfigurasi repository. |
-| `[CONFIRMED]` | Sudah dikonfirmasi sebagai keputusan proyek (misalnya pada `AGENTS.md` atau ADR). |
-| `[PROPOSED]` | Rancangan atau rekomendasi teknis yang belum diimplementasikan. |
-| `[ASSUMPTION]` | Asumsi sementara yang masih memerlukan validasi dari pemilik proyek/tim. |
-| `[NOT AVAILABLE]` | Informasi, konfigurasi, atau implementasi belum tersedia di repository. |
+| `[ADA]` | Sudah ada secara nyata di repository: kode, konfigurasi, atau berkas dokumentasi. |
+| `[RENCANA]` | Belum ada secara nyata di repository. Mencakup kebutuhan, usulan, asumsi, dan keputusan yang sudah disetujui tetapi belum diimplementasikan. |
 
 ---
 
@@ -38,13 +35,13 @@ Setiap bagian dalam dokumentasi ini menggunakan label status eksplisit berikut:
 - [Alur Transaksi (`transaction-workflow.md`)](./03-business-process/transaction-workflow.md) — Siklus pesanan, pembayaran, transaksi, dan hak akses e-book
 
 ### 04. Basis Data (`04-database/`)
-- [Rancangan Basis Data (`database-design.md`)](./04-database/database-design.md) — Rancangan konseptual basis data (`[PROPOSED]`)
-- [Kamus Data (`data-dictionary.md`)](./04-database/data-dictionary.md) — Kamus data entitas utama (`[PROPOSED]`)
-- [Entity Relationship Diagram (`erd.md`)](./04-database/erd.md) — Entity Relationship Diagram (Mermaid) (`[PROPOSED]`)
+- [Rancangan Basis Data (`database-design.md`)](./04-database/database-design.md) — Rancangan konseptual basis data (`[RENCANA]`)
+- [Kamus Data (`data-dictionary.md`)](./04-database/data-dictionary.md) — Kamus data entitas utama (`[RENCANA]`)
+- [Entity Relationship Diagram (`erd.md`)](./04-database/erd.md) — Entity Relationship Diagram (Mermaid) (`[RENCANA]`)
 
 ### 05. Spesifikasi API (`05-api/`)
 - [Gambaran Umum API (`api-overview.md`)](./05-api/api-overview.md) — Konvensi REST API, autentikasi, otorisasi, dan format respons
-- [Rancangan Endpoint API (`api-endpoints.md`)](./05-api/api-endpoints.md) — Rancangan endpoint per modul (`[PROPOSED]`)
+- [Rancangan Endpoint API (`api-endpoints.md`)](./05-api/api-endpoints.md) — Rancangan endpoint per modul (`[RENCANA]`)
 
 ### 06. Dokumentasi Modul (`06-modules/`)
 - [Autentikasi & Manajemen Pengguna (`authentication.md`)](./06-modules/authentication.md) — Modul Autentikasi & Manajemen Pengguna

@@ -1,8 +1,8 @@
 # Daftar Keputusan Terbuka & Keputusan Terkonfirmasi
 
-**Status:** Sebagian `[CONFIRMED]`, sebagian masih `[RENCANA]` — diperbarui berdasarkan konfirmasi pemilik proyek.
+**Status:** Sebagian `[ADA]` (keputusan sudah ditetapkan), sebagian `[RENCANA]` (masih terbuka) — diperbarui berdasarkan konfirmasi pemilik proyek.
 
-## Keputusan yang Sudah Ditetapkan (`[CONFIRMED]`)
+## Keputusan yang Sudah Ditetapkan (`[ADA]`)
 
 1. **Aplikasi Pengunjung Web (`web/pengunjung-web/`):** Dipertahankan sebagai portal web pelanggan (melengkapi aplikasi mobile `ebook_store`).
 2. **Autentikasi:** Menggunakan **Supabase Auth** dengan verifikasi token Supabase di backend (`Express`).

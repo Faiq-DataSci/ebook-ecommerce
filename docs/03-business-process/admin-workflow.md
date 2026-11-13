@@ -1,6 +1,6 @@
 # Alur Proses Bisnis Admin (`Admin Workflow`)
 
-**Status:** `[CONFIRMED]` (kebutuhan alur dasar) | `[PROPOSED]` (detail proses) | `[NOT AVAILABLE]` (implementasi di `web/admin-web` & `backend/`)
+**Status:** `[RENCANA]` (kebutuhan alur dasar) | `[RENCANA]` (detail proses) | `[RENCANA]` (implementasi di `web/admin-web` & `backend/`)
 
 ---
 
@@ -16,7 +16,7 @@
 
 ---
 
-## 2. Diagram Alur Admin (`[PROPOSED]`)
+## 2. Diagram Alur Admin (`[RENCANA]`)
 
 ```mermaid
 flowchart TD
@@ -33,7 +33,7 @@ flowchart TD
 
 ---
 
-## 3. Ketentuan Keamanan Alur Admin (`[CONFIRMED]`)
+## 3. Ketentuan Keamanan Alur Admin (`[ADA]`)
 
 - Pembatasan menu di `web/admin-web` tidak cukup; setiap endpoint admin di backend wajib dilindungi middleware autentikasi + otorisasi role `ADMIN`.
-- Perubahan data master (seperti penghapusan e-book yang sudah pernah dibeli) tidak boleh merusak riwayat transaksi dan hak akses pelanggan yang sudah membayar (*soft delete* / arsip `[PROPOSED]`).
+- Perubahan data master (seperti penghapusan e-book yang sudah pernah dibeli) tidak boleh merusak riwayat transaksi dan hak akses pelanggan yang sudah membayar (*soft delete* / arsip `[RENCANA]`).

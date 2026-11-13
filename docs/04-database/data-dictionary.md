@@ -1,6 +1,6 @@
 # Kamus Data (`Data Dictionary`)
 
-**Status:** `[PROPOSED]` — Rancangan konseptual awal; belum terdapat implementasi aktual di `backend/`.
+**Status:** `[RENCANA]` — Rancangan konseptual awal; belum terdapat implementasi aktual di `backend/`.
 
 ---
 
@@ -62,7 +62,7 @@
 | `price` | `DECIMAL(12,2)` | `NOT NULL`, `CHECK (price >= 0)` | Harga jual e-book |
 | `cover_url` | `TEXT` | `NULL` | URL gambar sampul |
 | `storage_path` | `TEXT` | `NOT NULL` | Path objek PDF di bucket privat Supabase |
-| `page_count` | `INTEGER` | `NULL`, `CHECK (page_count > 0)` | Jumlah halaman (dapat dipakai kriteria SAW `[ASSUMPTION]`) |
+| `page_count` | `INTEGER` | `NULL`, `CHECK (page_count > 0)` | Jumlah halaman (dapat dipakai kriteria SAW `[RENCANA]`) |
 | `published_year` | `INTEGER` | `NULL` | Tahun terbit |
 | `is_active` | `BOOLEAN` | `NOT NULL`, `DEFAULT true` | Penanda tampil di katalog (non-hard-delete) |
 | `created_at` | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT now()` | Waktu dibuat |
@@ -97,7 +97,7 @@
 | `unit_price` | `DECIMAL(12,2)` | `NOT NULL`, `CHECK (unit_price >= 0)` | Snapshot harga e-book saat checkout |
 | `created_at` | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT now()` | Waktu dibuat |
 
-*Constraint tambahan usulan:* `UNIQUE (order_id, ebook_id)` karena pembelian produk digital e-book umumnya bernilai kuantitas 1 per judul per pesanan (`[ASSUMPTION]`).
+*Constraint tambahan usulan:* `UNIQUE (order_id, ebook_id)` karena pembelian produk digital e-book umumnya bernilai kuantitas 1 per judul per pesanan (`[RENCANA]`).
 
 ---
 

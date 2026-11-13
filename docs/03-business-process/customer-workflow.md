@@ -1,13 +1,13 @@
 # Alur Proses Bisnis Pelanggan (`Customer Workflow`)
 
-**Status:** `[CONFIRMED]` (kebutuhan alur utama) | `[PROPOSED]` (detail alur alternatif & diagram) | `[NOT AVAILABLE]` (implementasi di kode)
+**Status:** `[RENCANA]` (kebutuhan alur utama) | `[RENCANA]` (detail alur alternatif & diagram) | `[RENCANA]` (implementasi di kode)
 
 ---
 
 ## 1. Alur Utama Pelanggan (*Happy Path*)
 
-1. **Pelanggan membuka aplikasi** (`ebook_store` atau web pelanggan `[ASSUMPTION]`).
-2. **Registrasi / Login:** Pelanggan membuat akun baru atau login untuk memperoleh token sesi. *(Penjelajahan katalog publik dapat dilakukan sebelum login `[ASSUMPTION]`, tetapi pemesanan dan akses e-book wajib terautentikasi `[CONFIRMED]`.)*
+1. **Pelanggan membuka aplikasi** (`ebook_store` atau web pelanggan `[RENCANA]`).
+2. **Registrasi / Login:** Pelanggan membuat akun baru atau login untuk memperoleh token sesi. *(Penjelajahan katalog publik dapat dilakukan sebelum login `[RENCANA]`, tetapi pemesanan dan akses e-book wajib terautentikasi `[RENCANA]`.)*
 3. **Mengakses katalog e-book:** Pelanggan menelusuri daftar e-book, memfilter kategori, mencari kata kunci, atau melihat rekomendasi SPK (SAW) dari backend.
 4. **Memilih e-book & melihat detail:** Pelanggan memeriksa judul, penulis, kategori, deskripsi, dan harga.
 5. **Membuat pesanan (*Order*):** Pelanggan memilih satu atau beberapa e-book lalu membuat pesanan; sistem mengunci harga dari database (*snapshot*).
@@ -18,7 +18,7 @@
 
 ---
 
-## 2. Diagram Alur Pelanggan (`[PROPOSED]`)
+## 2. Diagram Alur Pelanggan (`[RENCANA]`)
 
 ```mermaid
 flowchart TD
@@ -39,7 +39,7 @@ flowchart TD
 
 ---
 
-## 3. Alur Alternatif dan Penanganan Pengecualian (`[PROPOSED]`)
+## 3. Alur Alternatif dan Penanganan Pengecualian (`[RENCANA]`)
 
 | Skenario Alternatif | Kondisi Pemicu | Perilaku Sistem yang Direncanakan |
 |---|---|---|
