@@ -1,0 +1,21 @@
+# Register Kesenjangan Deployment (`Deployment Gap Register`)
+
+**Status:** `[ADA]` (hasil audit faktual kondisi repository terhadap kesiapan deployment produksi)  
+**Cakupan Audit:** `backend/`, `web/admin-web/`, `web/pengunjung-web/`, `mobile/ebook_store/`, `.github/workflows/ci.yml`, dan `docs/08-development/environment-configuration.md`.
+
+---
+
+## Daftar Kesenjangan Aktual vs Target Produksi
+
+| ID Gap | Area | Kondisi Aktual (`[ADA]`) | Target Produksi (`[RENCANA]`) | Dampak / Risiko | Rekomendasi Tindak Lanjut |
+|---|---|---|---|---|---|
+| **GAP-DEP-01** | Hosting Backend (Keputusan #10) | Belum ada konfigurasi hosting produksi (`Dockerfile`, `vercel.json`, atau manifest PaaS) | Penetapan opsi PaaS Node.js atau Serverless Vercel Functions | Pipeline CD & adapter entry point backend belum bisa dikunci | Putuskan Keputusan #10 di `keputusan-terbuka.md` sebelum masuk tahap deployment |
+| **GAP-DEP-02** | Migrasi Database Prisma | `backend/prisma/schema.prisma` ada, tetapi direktori `backend/prisma/migrations/` belum ada | Riwayat migrasi awal & `prisma migrate deploy` di staging/produksi | Skema database belum bisa diterapkan secara terkelola ke Supabase | Buat migrasi awal menggunakan `DIRECT_URL` (port `5432`) saat DB siap |
+| **GAP-DEP-03** | Graceful Shutdown Backend | `backend/src/server.ts` hanya memanggil `app.listen(...)`; `disconnectDatabase()` belum dipanggil saat shutdown | Penanganan `SIGTERM` / `SIGINT` untuk menutup HTTP server & pool PostgreSQL | Potensi koneksi database menggantung saat restart/deploy ulang | Tambahkan handler `SIGTERM`/`SIGINT` di `backend/src/server.ts` |
+| **GAP-DEP-04** | Pemasangan Rate Limiter | `backend/src/middlewares/rate-limit.middleware.ts` ada, tetapi belum dipasang di `backend/src/app.ts` | Rate limiting aktif pada endpoint sensitif (auth, checkout, SAW) | API rentan brute-force atau penyalahgunaan traffic di produksi | Pasang middleware rate limit pada `app.ts` saat endpoint bisnis dibangun |
+| **GAP-DEP-05** | Readiness Check Database | `GET /api/v1/health` mengembalikan JSON statis tanpa memanggil `checkDatabaseConnection()` | Endpoint health/readiness memverifikasi konektivitas DB bila diperlukan | Load balancer bisa menganggap instance sehat meski DB terputus | Pertimbangkan readiness check dengan `checkDatabaseConnection()` tanpa membocorkan detail error |
+| **GAP-DEP-06** | Pipeline CI/CD | `.github/workflows/ci.yml` hanya berisi `echo "CI placeholder ..."` | CI otomatis untuk lint, typecheck, test, & build lintas modul + CD gating | Regresi build/test atau kebocoran secret tidak terdeteksi otomatis di PR | Ganti placeholder dengan job CI backend, web, dan mobile secara bertahap |
+| **GAP-DEP-07** | Validasi Env Produksi | Field sensitif (`DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, dll.) di `env.ts` masih `.optional()` | Validasi wajib aktif ketika `NODE_ENV === 'production'` | Server produksi bisa start tanpa secret kritikal lalu gagal di runtime | Tambahkan `superRefine` di `env.ts` khusus untuk `NODE_ENV === 'production'` |
+| **GAP-DEP-08** | Inkonsistensi Dokumen Lama (`08-development`) | `docs/08-development/environment-configuration.md` masih menyebut `JWT_SECRET` (usulan lama) | Seluruh referensi env konsisten memakai Supabase Auth seperti `backend/src/config/env.ts` | Kebingungan developer saat menyiapkan `.env` lokal/produksi | Gunakan [`deployment-environment.md`](./deployment-environment.md) sebagai acuan terbaru & jadwalkan pembaruan `08-development` terpisah |
+| **GAP-DEP-09** | Signing & PDF Mobile | `mobile/ebook_store` baru berisi template `main.dart`; belum ada konfigurasi `baseUrl`, signing `key.properties`, & package PDF viewer | Build APK/AAB bertanda tangan dengan `API_BASE_URL` HTTPS & PDF viewer aman | Aplikasi mobile belum siap dibangun untuk distribusi internal/store | Lengkapi konfigurasi di tahap `mobile` sesuai [`deployment-mobile.md`](./deployment-mobile.md) |
+| **GAP-DEP-10** | Backup, Monitoring, & Alerting | Belum ada konfigurasi logging terpusat, alerting error, atau uji restore backup Supabase | Backup harian + PITR Supabase & monitoring error/latency aktif | Sulit mendeteksi insiden produksi atau memulihkan data jika terjadi gangguan | Aktifkan backup Supabase & siapkan checklist uji restore sebelum go-live |
