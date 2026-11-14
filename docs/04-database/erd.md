@@ -1,106 +1,127 @@
 # Entity Relationship Diagram (ERD)
 
-**Status:** `[RENCANA]` — Rancangan konseptual awal; belum ada implementasi database aktual di repository.
+> **Status Dokumen:** `[ADA]` (Diselaraskan penuh dengan [`backend/prisma/schema.prisma`](../../backend/prisma/schema.prisma))
+> **Catatan:** Diagram di bawah hanya menampilkan **8 model aktif** yang benar-benar ada di `schema.prisma`. Entitas rencana (`Review`, konfigurasi bobot SAW, snapshot SAW) dipisahkan sebagai `[RENCANA]`.
 
 ---
 
-## 1. Diagram ERD (`[RENCANA]`)
+## 1. Diagram ERD (`schema.prisma`)
 
 ```mermaid
 erDiagram
-    CUSTOMERS ||--o{ ORDERS : "membuat"
-    CUSTOMERS ||--o{ TRANSACTIONS : "memiliki"
-    CUSTOMERS ||--o{ EBOOK_ACCESSES : "memperoleh"
-    CATEGORIES ||--o{ EBOOKS : "mengelompokkan"
-    ORDERS ||--|{ ORDER_DETAILS : "berisi"
-    EBOOKS ||--o{ ORDER_DETAILS : "dipesan pada"
-    ORDERS ||--o{ PAYMENTS : "dibayar melalui"
-    ORDERS ||--o| TRANSACTIONS : "menghasilkan"
-    PAYMENTS ||--o| TRANSACTIONS : "memvalidasi"
-    ORDERS ||--o{ EBOOK_ACCESSES : "mengaktifkan"
-    EBOOKS ||--o{ EBOOK_ACCESSES : "diakses melalui"
+    USER ||--o{ ORDER : membuat
+    USER ||--o{ TRANSACTION : memiliki
+    USER ||--o{ EBOOK_ACCESS : menerima
 
-    CUSTOMERS {
+    CATEGORY ||--o{ EBOOK : mengelompokkan
+
+    ORDER ||--|{ ORDER_ITEM : memiliki
+    ORDER ||--o{ PAYMENT : memiliki
+    ORDER ||--o| TRANSACTION : menghasilkan
+    ORDER ||--o{ EBOOK_ACCESS : menerbitkan
+
+    EBOOK ||--o{ ORDER_ITEM : dipesan_dalam
+    EBOOK ||--o{ EBOOK_ACCESS : dapat_diakses
+
+    PAYMENT ||--o| TRANSACTION : dikonfirmasi_melalui
+
+    USER {
         uuid id PK
+        string supabase_user_id UK
         varchar full_name
         varchar email UK
-        text password_hash
+        varchar phone
+        enum role
         boolean is_active
     }
 
-    ADMINS {
-        uuid id PK
-        varchar full_name
-        varchar email UK
-        text password_hash
-        boolean is_active
-    }
-
-    CATEGORIES {
+    CATEGORY {
         uuid id PK
         varchar name UK
         varchar slug UK
+        boolean is_active
     }
 
-    EBOOKS {
+    EBOOK {
         uuid id PK
         uuid category_id FK
         varchar title
         varchar author
         decimal price
         text storage_path
+        int page_count
+        int published_year
+        decimal rating_avg
+        int sales_count
         boolean is_active
     }
 
-    ORDERS {
+    ORDER {
         uuid id PK
-        uuid customer_id FK
+        uuid user_id FK
         varchar order_number UK
         decimal total_amount
-        varchar status
+        enum status
         timestamptz expires_at
     }
 
-    ORDER_DETAILS {
+    ORDER_ITEM {
         uuid id PK
         uuid order_id FK
         uuid ebook_id FK
         decimal unit_price
     }
 
-    PAYMENTS {
+    PAYMENT {
         uuid id PK
         uuid order_id FK
         varchar payment_method
         decimal amount
-        varchar status
+        enum status
         varchar external_ref
+        timestamptz paid_at
     }
 
-    TRANSACTIONS {
+    TRANSACTION {
         uuid id PK
         uuid order_id FK, UK
         uuid payment_id FK, UK
-        uuid customer_id FK
+        uuid user_id FK
         varchar transaction_code UK
         decimal amount
+        timestamptz recorded_at
     }
 
-    EBOOK_ACCESSES {
+    EBOOK_ACCESS {
         uuid id PK
-        uuid customer_id FK
+        uuid user_id FK
         uuid ebook_id FK
         uuid order_id FK
         boolean is_revoked
+        timestamptz granted_at
     }
 ```
 
+> **Catatan Storage Privat:** Kolom `EBOOK.storage_path` hanya menyimpan referensi path objek PDF di Supabase Storage **bucket privat**, bukan isi biner/BLOB file PDF.
+
 ---
 
-## 2. Ringkasan Kardinalitas & Integritas Referensial
+## 2. Ringkasan Primary Key, Foreign Key, Unique Constraint & Indeks (`[ADA]` di `schema.prisma`)
 
-- `CATEGORIES (1) -> (0..N) EBOOKS`: Satu kategori dapat memiliki banyak e-book; penghapusan kategori yang masih memiliki e-book harus ditolak (`ON DELETE RESTRICT`).
-- `CUSTOMERS (1) -> (0..N) ORDERS`: Satu pelanggan dapat membuat banyak pesanan.
-- `ORDERS (1) -> (1..N) ORDER_DETAILS` dan `EBOOKS (1) -> (0..N) ORDER_DETAILS`: Merepresentasikan relasi *many-to-many* antara pesanan dan e-book dengan *snapshot* harga (`unit_price`).
-- `ORDERS (1) -> (0..N) PAYMENTS`: Satu pesanan dapat memiliki lebih dari satu percobaan pembayaran jika pembayaran sebelumnya gagal/kedaluwarsa, namun hanya satu pembayaran valid yang menghasilkan `TRANSACTIONS` (`1-to-1`).
-- `CUSTOMERS (1) -> (0..N) EBOOK_ACCESSES <- (0..N) EBOOKS`: Diikat oleh `UNIQUE (customer_id, ebook_id)` agar satu pelanggan tidak memiliki duplikasi izin untuk judul yang sama.
+- **Primary Key (`@id @default(uuid())`):** Seluruh 8 model menggunakan `UUID` (`@db.Uuid`).
+- **Unique Constraint:**
+  - `User`: `supabaseUserId`, `email`
+  - `Category`: `name`, `slug`
+  - `Order`: `orderNumber`
+  - `OrderItem`: `@@unique([orderId, ebookId])`
+  - `Transaction`: `orderId`, `paymentId`, `transactionCode`
+  - `EbookAccess`: `@@unique([userId, ebookId])`
+- **Indeks Eksplisit (`@@index`):** `Ebook(categoryId, isActive)`, `Order(userId, status)`, `OrderItem(ebookId)`, `Payment(orderId)`, `Transaction(userId)`, `EbookAccess(ebookId)`.
+
+---
+
+## 3. Entitas Rencana yang Terpisah (`[RENCANA]`)
+
+Entitas berikut belum ada di `schema.prisma` dan tidak dimasukkan ke diagram aktif di atas:
+- `SawCriterionConfig` & `SawCalculationSnapshot` (`[RENCANA]` — Keputusan #5, #9, #11).
+- `Review` (`[RENCANA]` — Keputusan #6 & #7).

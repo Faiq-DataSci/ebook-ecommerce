@@ -1,0 +1,20 @@
+# Matriks Keterlacakan SPK SAW (`Traceability Matrix`)
+
+> **Status Dokumen:** `[ADA]` (Dokumentasi pemetaan keterlacakan) | **Implementasi & Pengujian:** `[RENCANA]`
+> **Referensi:** [`requirements.md`](../00-project/requirements.md), [`api-traceability.md`](../02-api/api-traceability.md), [`process-traceability.md`](../03-business-process/process-traceability.md)
+
+---
+
+## 1. Matriks Keterlacakan Kebutuhan ke Implementasi & Pengujian SAW
+
+| Requirement ID | Aturan SAW | Sumber Data | Modul Backend | Endpoint | Test Case | Dokumen Referensi | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **FR-C05 / FR-C06** | Pelanggan/Publik memperoleh rekomendasi e-book berperingkat hasil SAW | `Ebook` (`isActive = true`), `Category` | `SawModule` (`saw.controller`, `saw.service`) | `GET /api/v1/recommendations/saw` | `TC-SAW-01`, `TC-SAW-08` | [`saw-method.md`](./saw-method.md), [`saw-backend-contract.md`](./saw-backend-contract.md), [`customer-workflow.md`](../03-business-process/customer-workflow.md) (`BP-C06`) | `[RENCANA]` |
+| **FR-A10** | Admin mengatur bobot kriteria SAW (`Σ = 1.0`) & mengaudit hasil perhitungan | `SawCriterionConfig` `[RENCANA]` | `AdminSawModule` (`admin.saw.controller`, `saw.service`) | `GET/PUT /api/v1/admin/saw/weights` | `TC-SAW-02`, `TC-SAW-03`, `TC-SAW-04`, `TC-SAW-16` | [`criteria-and-weights.md`](./criteria-and-weights.md), [`admin-workflow.md`](../03-business-process/admin-workflow.md) (`BP-A14`, `BP-A15`) | `[RENCANA]` |
+| **FR-S01** | Perhitungan SAW eksklusif sebagai fungsi murni di backend; tolak bobot mentah klien publik | `Ebook` + konfigurasi bobot server | `SawService` | `GET /api/v1/recommendations/saw` | `TC-SAW-01`, `TC-SAW-14` | [`ADR-0002`](../adr/0002-backend-only-saw.md), [`saw-method.md`](./saw-method.md) | `[RENCANA]` *(keputusan `ADR-0002` `[ADA]`)* |
+| **FR-S02** | Validasi ketat bobot kriteria (`Σ w_j = 1.0`, `w_j >= 0`, kriteria tidak kosong) | Konfigurasi bobot & schema Zod | `SawValidator` / `SawService` | `PUT /api/v1/admin/saw/weights`, `GET /api/v1/recommendations/saw` | `TC-SAW-02`, `TC-SAW-03`, `TC-SAW-04`, `TC-SAW-11` | [`criteria-and-weights.md`](./criteria-and-weights.md), [`error-catalog.md`](../02-api/error-catalog.md) | `[RENCANA]` |
+| **FR-S03** | Normalisasi Benefit & Cost serta penanganan *edge case* (`0`, `null`, 1 kandidat, bebas `NaN`/`Infinity`) | `Ebook` (`price`, `ratingAvg`, `salesCount`, dll.) | `SawService` (`normalizeMatrix`) | `GET /api/v1/recommendations/saw` | `TC-SAW-05`–`TC-SAW-08`, `TC-SAW-10`, `TC-SAW-12`, `TC-SAW-13` | [`normalization-rules.md`](./normalization-rules.md), [`saw-edge-cases.md`](./saw-edge-cases.md) | `[RENCANA]` |
+| **FR-S04** | Perhitungan nilai preferensi $V_i$ presisi penuh & *tie-breaker* deterministik (judul A–Z) | Hasil normalisasi & `Ebook.title` | `SawService` (`rankAlternatives`) | `GET /api/v1/recommendations/saw` | `TC-SAW-09`, `TC-SAW-15` | [`saw-method.md`](./saw-method.md), [`perhitungan-manual.md`](./perhitungan-manual.md) | `[RENCANA]` |
+| **FR-S05** | Snapshot & *immutability* hasil historis SAW *(menunggu Keputusan #11)* | `SawCalculationSnapshot` `[RENCANA]` | `SawSnapshotRepository` `[RENCANA]` | `GET /api/v1/admin/saw/audit` `[RENCANA]` | — *(menunggu Keputusan #11)* | [`keputusan-terbuka.md`](../00-project/keputusan-terbuka.md), [`saw-decision-log.md`](./saw-decision-log.md) | `[RENCANA]` |
+| **FR-S06** | Verifikasi unit test backend identik dengan perhitungan manual `DATA SIMULASI` | Dataset `DATA SIMULASI` | `backend/tests/saw.test.ts` `[RENCANA]` | — *(unit test fungsi murni)* | `TC-SAW-01` | [`perhitungan-manual.md`](./perhitungan-manual.md), [`saw-test-specification.md`](./saw-test-specification.md) | `[RENCANA]` |
+| **NFR-05 & NFR-07** | Kinerja latensi < 500 ms dan presisi numerik penuh (`Decimal` di DB, *full precision* di kalkulasi) | `Ebook` (`Decimal(12,2)`, `Decimal(3,2)`) | `SawService`, Prisma Client | `GET /api/v1/recommendations/saw` | `TC-SAW-01`, `TC-SAW-13` | [`requirements.md`](../00-project/requirements.md), [`schema.prisma`](../../backend/prisma/schema.prisma) | `[ADA]` skema / `[RENCANA]` logika |

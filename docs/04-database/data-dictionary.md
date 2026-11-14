@@ -1,148 +1,134 @@
 # Kamus Data (`Data Dictionary`)
 
-**Status:** `[RENCANA]` — Rancangan konseptual awal; belum terdapat implementasi aktual di `backend/`.
+> **Status Dokumen:** `[ADA]` (Diselaraskan penuh dengan [`backend/prisma/schema.prisma`](../../backend/prisma/schema.prisma))
+> **Catatan:** Seluruh model dan kolom pada Bagian 1 berstatus `[ADA]` di `schema.prisma`, namun migrasi ke PostgreSQL Supabase masih `[RENCANA]`.
 
 ---
 
-## 1. `customers` (Pelanggan)
-**Fungsi:** Menyimpan identitas autentikasi dan profil pelanggan.
+## 1. Kamus Data Model Aktif di `schema.prisma` (`[ADA]` di Skema)
 
-| Atribut | Tipe Data Usulan | Key / Constraint | Keterangan |
-|---|---|---|---|
-| `id` | `UUID` | `PK`, `NOT NULL` | Pengenal unik pelanggan |
-| `full_name` | `VARCHAR(120)` | `NOT NULL` | Nama lengkap pelanggan |
-| `email` | `VARCHAR(150)` | `UNIQUE`, `NOT NULL` | Email login pelanggan |
-| `password_hash` | `TEXT` | `NOT NULL` | Hash password (tidak pernah dikembalikan di API) |
-| `phone` | `VARCHAR(25)` | `NULL` | Nomor telepon opsional |
-| `is_active` | `BOOLEAN` | `NOT NULL`, `DEFAULT true` | Status aktif akun |
-| `created_at` | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT now()` | Waktu registrasi |
-| `updated_at` | `TIMESTAMPTZ` | `NOT NULL` | Waktu pembaruan terakhir |
+### 1.1 `users` (Model `User`)
 
----
+| Kolom | Nama Prisma | Tipe PostgreSQL/Prisma | Nullable | Default | Key/Constraint | Deskripsi | Sumber Data | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `id` | `UUID` / `String` | Tidak | `uuid()` | `PK` | Pengenal unik internal pengguna | Generated UUID | `[ADA]` di schema |
+| `supabase_user_id` | `supabaseUserId` | `TEXT` / `String` | Tidak | — | `UNIQUE` | ID subjek (`sub`) dari Supabase Auth | Supabase Auth JWT | `[ADA]` di schema |
+| `full_name` | `fullName` | `VARCHAR(120)` / `String` | Tidak | — | `NOT NULL` | Nama lengkap pengguna | Input registrasi / profil | `[ADA]` di schema |
+| `email` | `email` | `VARCHAR(150)` / `String` | Tidak | — | `UNIQUE` | Email unik pengguna | Supabase Auth / input | `[ADA]` di schema |
+| `phone` | `phone` | `VARCHAR(25)` / `String?` | Ya | `NULL` | — | Nomor telepon opsional pengguna | Input profil | `[ADA]` di schema |
+| `role` | `role` | `UserRole` (`CUSTOMER \| ADMIN`) | Tidak | `CUSTOMER` | Enum `UserRole` | Peran otorisasi sistem *(tidak boleh disetel klien publik)* | Backend / seed Admin | `[ADA]` di schema |
+| `is_active` | `isActive` | `BOOLEAN` / `Boolean` | Tidak | `true` | `NOT NULL` | Penanda status aktif akun pengguna | Backend / Admin | `[ADA]` di schema |
+| `created_at` | `createdAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | `now()` | `NOT NULL` | Waktu akun dibuat | Sistem DB | `[ADA]` di schema |
+| `updated_at` | `updatedAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | `@updatedAt` | `NOT NULL` | Waktu pembaruan terakhir | Prisma / Sistem | `[ADA]` di schema |
 
-## 2. `admins` (Administrator)
-**Fungsi:** Menyimpan identitas akun administrator untuk akses `admin-web`.
+### 1.2 `categories` (Model `Category`)
 
-| Atribut | Tipe Data Usulan | Key / Constraint | Keterangan |
-|---|---|---|---|
-| `id` | `UUID` | `PK`, `NOT NULL` | Pengenal unik admin |
-| `full_name` | `VARCHAR(120)` | `NOT NULL` | Nama admin |
-| `email` | `VARCHAR(150)` | `UNIQUE`, `NOT NULL` | Email login admin |
-| `password_hash` | `TEXT` | `NOT NULL` | Hash password |
-| `is_active` | `BOOLEAN` | `NOT NULL`, `DEFAULT true` | Status aktif admin |
-| `created_at` | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT now()` | Waktu dibuat |
-| `updated_at` | `TIMESTAMPTZ` | `NOT NULL` | Waktu pembaruan terakhir |
+| Kolom | Nama Prisma | Tipe PostgreSQL/Prisma | Nullable | Default | Key/Constraint | Deskripsi | Sumber Data | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `id` | `UUID` / `String` | Tidak | `uuid()` | `PK` | Pengenal unik kategori | Generated UUID | `[ADA]` di schema |
+| `name` | `name` | `VARCHAR(100)` / `String` | Tidak | — | `UNIQUE` | Nama kategori e-book | Input Admin | `[ADA]` di schema |
+| `slug` | `slug` | `VARCHAR(120)` / `String` | Tidak | — | `UNIQUE` | Slug ramah URL untuk filter | Generated / Input Admin | `[ADA]` di schema |
+| `description` | `description` | `TEXT` / `String?` | Ya | `NULL` | — | Deskripsi kategori | Input Admin | `[ADA]` di schema |
+| `is_active` | `isActive` | `BOOLEAN` / `Boolean` | Tidak | `true` | `NOT NULL` | Penanda kategori aktif di katalog | Input Admin | `[ADA]` di schema |
+| `created_at` | `createdAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | `now()` | `NOT NULL` | Waktu dibuat | Sistem DB | `[ADA]` di schema |
+| `updated_at` | `updatedAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | `@updatedAt` | `NOT NULL` | Waktu pembaruan terakhir | Prisma / Sistem | `[ADA]` di schema |
 
----
+### 1.3 `ebooks` (Model `Ebook`)
 
-## 3. `categories` (Kategori E-Book)
-**Fungsi:** Mengelompokkan e-book ke dalam kategori.
+| Kolom | Nama Prisma | Tipe PostgreSQL/Prisma | Nullable | Default | Key/Constraint | Deskripsi | Sumber Data | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `id` | `UUID` / `String` | Tidak | `uuid()` | `PK` | Pengenal unik e-book | Generated UUID | `[ADA]` di schema |
+| `category_id` | `categoryId` | `UUID` / `String` | Tidak | — | `FK -> categories(id)`, `INDEX` | Kategori induk e-book (`onDelete: Restrict`) | Input Admin | `[ADA]` di schema |
+| `title` | `title` | `VARCHAR(200)` / `String` | Tidak | — | `NOT NULL` | Judul e-book | Input Admin | `[ADA]` di schema |
+| `author` | `author` | `VARCHAR(150)` / `String` | Tidak | — | `NOT NULL` | Nama penulis e-book | Input Admin | `[ADA]` di schema |
+| `description` | `description` | `TEXT` / `String` | Tidak | — | `NOT NULL` | Sinopsis / deskripsi e-book | Input Admin | `[ADA]` di schema |
+| `price` | `price` | `DECIMAL(12,2)` / `Decimal` | Tidak | — | `NOT NULL` | Harga jual resmi e-book | Input Admin | `[ADA]` di schema |
+| `cover_url` | `coverUrl` | `TEXT` / `String?` | Ya | `NULL` | — | URL sampul e-book | Storage publik / Admin | `[ADA]` di schema |
+| `storage_path` | `storagePath` | `TEXT` / `String` | Tidak | — | `NOT NULL` | Path objek PDF di Supabase Storage **bucket privat** *(bukan isi PDF)* | Backend Storage Upload | `[ADA]` di schema |
+| `page_count` | `pageCount` | `INTEGER` / `Int?` | Ya | `NULL` | — | Jumlah halaman e-book | Input Admin | `[ADA]` di schema |
+| `published_year` | `publishedYear` | `INTEGER` / `Int?` | Ya | `NULL` | — | Tahun terbit e-book | Input Admin | `[ADA]` di schema |
+| `rating_avg` | `ratingAvg` | `DECIMAL(3,2)` / `Decimal` | Tidak | `0` | `NOT NULL` | Rata-rata rating (`0.00–5.00`) untuk tampilan & SAW | Sistem *(sumber ulasan `[RENCANA]`)* | `[ADA]` di schema |
+| `sales_count` | `salesCount` | `INTEGER` / `Int` | Tidak | `0` | `NOT NULL` | Jumlah penjualan terverifikasi untuk katalog & SAW | Backend atomik saat `PAID` | `[ADA]` di schema |
+| `is_active` | `isActive` | `BOOLEAN` / `Boolean` | Tidak | `true` | `INDEX` | Status tampil di katalog & kandidat SAW (`false` = arsip) | Input Admin | `[ADA]` di schema |
+| `created_at` | `createdAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | `now()` | `NOT NULL` | Waktu dibuat | Sistem DB | `[ADA]` di schema |
+| `updated_at` | `updatedAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | `@updatedAt` | `NOT NULL` | Waktu pembaruan terakhir | Prisma / Sistem | `[ADA]` di schema |
 
-| Atribut | Tipe Data Usulan | Key / Constraint | Keterangan |
-|---|---|---|---|
-| `id` | `UUID` | `PK`, `NOT NULL` | Pengenal unik kategori |
-| `name` | `VARCHAR(100)` | `UNIQUE`, `NOT NULL` | Nama kategori |
-| `slug` | `VARCHAR(120)` | `UNIQUE`, `NOT NULL` | Slug URL-friendly |
-| `description` | `TEXT` | `NULL` | Deskripsi singkat kategori |
-| `created_at` | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT now()` | Waktu dibuat |
-| `updated_at` | `TIMESTAMPTZ` | `NOT NULL` | Waktu diperbarui |
+### 1.4 `orders` (Model `Order`)
 
----
+| Kolom | Nama Prisma | Tipe PostgreSQL/Prisma | Nullable | Default | Key/Constraint | Deskripsi | Sumber Data | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `id` | `UUID` / `String` | Tidak | `uuid()` | `PK` | Pengenal unik pesanan | Generated UUID | `[ADA]` di schema |
+| `user_id` | `userId` | `UUID` / `String` | Tidak | — | `FK -> users(id)`, `INDEX` | Pelanggan pembuat pesanan (`onDelete: Restrict`) | Token JWT `User.id` | `[ADA]` di schema |
+| `order_number` | `orderNumber` | `VARCHAR(40)` / `String` | Tidak | — | `UNIQUE` | Nomor referensi pesanan | Generated Backend | `[ADA]` di schema |
+| `total_amount` | `totalAmount` | `DECIMAL(12,2)` / `Decimal` | Tidak | — | `NOT NULL` | Total tagihan pesanan *(dihitung backend, bukan klien)* | Kalkulasi Backend | `[ADA]` di schema |
+| `status` | `status` | `OrderStatus` | Tidak | `PENDING` | `INDEX`, Enum `OrderStatus` | Status: `PENDING \| PAID \| FAILED \| EXPIRED \| CANCELLED` | Backend / Webhook | `[ADA]` di schema |
+| `expires_at` | `expiresAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | — | `NOT NULL` | Batas waktu pembayaran pesanan | Backend saat checkout | `[ADA]` di schema |
+| `created_at` | `createdAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | `now()` | `NOT NULL` | Waktu pesanan dibuat | Sistem DB | `[ADA]` di schema |
+| `updated_at` | `updatedAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | `@updatedAt` | `NOT NULL` | Waktu pembaruan status | Prisma / Sistem | `[ADA]` di schema |
 
-## 4. `ebooks` (Katalog E-Book)
-**Fungsi:** Menyimpan metadata produk e-book dan referensi file PDF di storage privat.
+### 1.5 `order_items` (Model `OrderItem`)
 
-| Atribut | Tipe Data Usulan | Key / Constraint | Keterangan |
-|---|---|---|---|
-| `id` | `UUID` | `PK`, `NOT NULL` | Pengenal unik e-book |
-| `category_id` | `UUID` | `FK -> categories(id)`, `NOT NULL` | Relasi ke kategori |
-| `title` | `VARCHAR(200)` | `NOT NULL` | Judul e-book |
-| `author` | `VARCHAR(150)` | `NOT NULL` | Nama penulis |
-| `description` | `TEXT` | `NOT NULL` | Sinopsis / deskripsi e-book |
-| `price` | `DECIMAL(12,2)` | `NOT NULL`, `CHECK (price >= 0)` | Harga jual e-book |
-| `cover_url` | `TEXT` | `NULL` | URL gambar sampul |
-| `storage_path` | `TEXT` | `NOT NULL` | Path objek PDF di bucket privat Supabase |
-| `page_count` | `INTEGER` | `NULL`, `CHECK (page_count > 0)` | Jumlah halaman (dapat dipakai kriteria SAW `[RENCANA]`) |
-| `published_year` | `INTEGER` | `NULL` | Tahun terbit |
-| `is_active` | `BOOLEAN` | `NOT NULL`, `DEFAULT true` | Penanda tampil di katalog (non-hard-delete) |
-| `created_at` | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT now()` | Waktu dibuat |
-| `updated_at` | `TIMESTAMPTZ` | `NOT NULL` | Waktu diperbarui |
+| Kolom | Nama Prisma | Tipe PostgreSQL/Prisma | Nullable | Default | Key/Constraint | Deskripsi | Sumber Data | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `id` | `UUID` / `String` | Tidak | `uuid()` | `PK` | Pengenal unik item pesanan | Generated UUID | `[ADA]` di schema |
+| `order_id` | `orderId` | `UUID` / `String` | Tidak | — | `FK -> orders(id)`, `UNIQUE(orderId, ebookId)` | Pesanan induk (`onDelete: Cascade`) | Backend | `[ADA]` di schema |
+| `ebook_id` | `ebookId` | `UUID` / `String` | Tidak | — | `FK -> ebooks(id)`, `INDEX`, `UNIQUE(orderId, ebookId)` | E-book yang dipesan (`onDelete: Restrict`) | Input `ebookId` | `[ADA]` di schema |
+| `unit_price` | `unitPrice` | `DECIMAL(12,2)` / `Decimal` | Tidak | — | `NOT NULL` | Snapshot harga e-book saat checkout *(dihitung backend)* | Salinan `Ebook.price` | `[ADA]` di schema |
+| `created_at` | `createdAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | `now()` | `NOT NULL` | Waktu dibuat | Sistem DB | `[ADA]` di schema |
 
----
+### 1.6 `payments` (Model `Payment`)
 
-## 5. `orders` (Pesanan)
-**Fungsi:** Menyimpan header pesanan pembelian e-book oleh pelanggan.
+| Kolom | Nama Prisma | Tipe PostgreSQL/Prisma | Nullable | Default | Key/Constraint | Deskripsi | Sumber Data | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `id` | `UUID` / `String` | Tidak | `uuid()` | `PK` | Pengenal unik pembayaran | Generated UUID | `[ADA]` di schema |
+| `order_id` | `orderId` | `UUID` / `String` | Tidak | — | `FK -> orders(id)`, `INDEX` | Pesanan terkait (`onDelete: Cascade`) | Input Pelanggan / Backend | `[ADA]` di schema |
+| `payment_method` | `paymentMethod` | `VARCHAR(50)` / `String` | Tidak | — | `NOT NULL` | Metode pembayaran (VA, QRIS, dll.) | Gateway / Input | `[ADA]` di schema |
+| `amount` | `amount` | `DECIMAL(12,2)` / `Decimal` | Tidak | — | `NOT NULL` | Nominal pembayaran | Backend (`Order.totalAmount`) | `[ADA]` di schema |
+| `status` | `status` | `PaymentStatus` | Tidak | `PENDING` | Enum `PaymentStatus` | Status: `PENDING \| VERIFIED \| FAILED \| EXPIRED` | Backend / Webhook Gateway | `[ADA]` di schema |
+| `external_ref` | `externalRef` | `VARCHAR(120)` / `String?` | Ya | `NULL` | — | ID referensi transaksi dari payment gateway | Payment Gateway | `[ADA]` di schema |
+| `paid_at` | `paidAt` | `TIMESTAMPTZ` / `DateTime?` | Ya | `NULL` | — | Waktu pembayaran diverifikasi oleh webhook | Webhook Gateway | `[ADA]` di schema |
+| `created_at` | `createdAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | `now()` | `NOT NULL` | Waktu dibuat | Sistem DB | `[ADA]` di schema |
+| `updated_at` | `updatedAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | `@updatedAt` | `NOT NULL` | Waktu diperbarui | Prisma / Sistem | `[ADA]` di schema |
 
-| Atribut | Tipe Data Usulan | Key / Constraint | Keterangan |
-|---|---|---|---|
-| `id` | `UUID` | `PK`, `NOT NULL` | Pengenal unik pesanan |
-| `customer_id` | `UUID` | `FK -> customers(id)`, `NOT NULL` | Pelanggan pembuat pesanan |
-| `order_number` | `VARCHAR(40)` | `UNIQUE`, `NOT NULL` | Nomor referensi pesanan |
-| `total_amount` | `DECIMAL(12,2)` | `NOT NULL`, `CHECK (total_amount >= 0)` | Total harga pesanan |
-| `status` | `VARCHAR(20)` | `NOT NULL` | `PENDING`, `PAID`, `FAILED`, `EXPIRED`, `CANCELLED` |
-| `expires_at` | `TIMESTAMPTZ` | `NOT NULL` | Batas waktu pembayaran |
-| `created_at` | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT now()` | Waktu pesanan dibuat |
-| `updated_at` | `TIMESTAMPTZ` | `NOT NULL` | Waktu pembaruan status |
+### 1.7 `transactions` (Model `Transaction`)
 
----
+| Kolom | Nama Prisma | Tipe PostgreSQL/Prisma | Nullable | Default | Key/Constraint | Deskripsi | Sumber Data | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `id` | `UUID` / `String` | Tidak | `uuid()` | `PK` | Pengenal unik transaksi | Generated UUID | `[ADA]` di schema |
+| `order_id` | `orderId` | `UUID` / `String` | Tidak | — | `FK -> orders(id)`, `UNIQUE` | Pesanan yang dilunasi (1-to-1, `onDelete: Restrict`) | Backend Atomik | `[ADA]` di schema |
+| `payment_id` | `paymentId` | `UUID` / `String` | Tidak | — | `FK -> payments(id)`, `UNIQUE` | Pembayaran terverifikasi (1-to-1, `onDelete: Restrict`) | Backend Atomik | `[ADA]` di schema |
+| `user_id` | `userId` | `UUID` / `String` | Tidak | — | `FK -> users(id)`, `INDEX` | Pemilik transaksi (`onDelete: Restrict`) | `Order.userId` | `[ADA]` di schema |
+| `transaction_code` | `transactionCode` | `VARCHAR(50)` / `String` | Tidak | — | `UNIQUE` | Kode transaksi resmi | Generated Backend | `[ADA]` di schema |
+| `amount` | `amount` | `DECIMAL(12,2)` / `Decimal` | Tidak | — | `NOT NULL` | Nilai transaksi final | `Payment.amount` | `[ADA]` di schema |
+| `recorded_at` | `recordedAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | `now()` | `NOT NULL` | Waktu transaksi dicatat | Sistem DB | `[ADA]` di schema |
 
-## 6. `order_details` (Detail Pesanan)
-**Fungsi:** Menyimpan daftar e-book yang dipesan dalam satu pesanan beserta *snapshot* harga.
+### 1.8 `ebook_accesses` (Model `EbookAccess`)
 
-| Atribut | Tipe Data Usulan | Key / Constraint | Keterangan |
-|---|---|---|---|
-| `id` | `UUID` | `PK`, `NOT NULL` | Pengenal unik item pesanan |
-| `order_id` | `UUID` | `FK -> orders(id)`, `NOT NULL` | Relasi ke pesanan |
-| `ebook_id` | `UUID` | `FK -> ebooks(id)`, `NOT NULL` | Relasi ke e-book |
-| `unit_price` | `DECIMAL(12,2)` | `NOT NULL`, `CHECK (unit_price >= 0)` | Snapshot harga e-book saat checkout |
-| `created_at` | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT now()` | Waktu dibuat |
-
-*Constraint tambahan usulan:* `UNIQUE (order_id, ebook_id)` karena pembelian produk digital e-book umumnya bernilai kuantitas 1 per judul per pesanan (`[RENCANA]`).
-
----
-
-## 7. `payments` (Pembayaran)
-**Fungsi:** Menyimpan informasi metode, status, dan bukti/referensi verifikasi pembayaran.
-
-| Atribut | Tipe Data Usulan | Key / Constraint | Keterangan |
-|---|---|---|---|
-| `id` | `UUID` | `PK`, `NOT NULL` | Pengenal unik pembayaran |
-| `order_id` | `UUID` | `FK -> orders(id)`, `NOT NULL` | Pesanan yang dibayar |
-| `payment_method` | `VARCHAR(50)` | `NOT NULL` | Metode pembayaran (mis. VA, QRIS, simulasi) |
-| `amount` | `DECIMAL(12,2)` | `NOT NULL`, `CHECK (amount >= 0)` | Nominal yang dibayarkan |
-| `status` | `VARCHAR(20)` | `NOT NULL` | `PENDING`, `VERIFIED`, `FAILED`, `EXPIRED` |
-| `external_ref` | `VARCHAR(120)` | `NULL` | ID referensi gateway/simulasi pembayaran |
-| `paid_at` | `TIMESTAMPTZ` | `NULL` | Waktu pembayaran terverifikasi |
-| `created_at` | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT now()` | Waktu dibuat |
-| `updated_at` | `TIMESTAMPTZ` | `NOT NULL` | Waktu diperbarui |
+| Kolom | Nama Prisma | Tipe PostgreSQL/Prisma | Nullable | Default | Key/Constraint | Deskripsi | Sumber Data | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `id` | `UUID` / `String` | Tidak | `uuid()` | `PK` | Pengenal unik hak akses e-book | Generated UUID | `[ADA]` di schema |
+| `user_id` | `userId` | `UUID` / `String` | Tidak | — | `FK -> users(id)`, `UNIQUE(userId, ebookId)` | Pemilik hak akses (`onDelete: Restrict`) | `Order.userId` | `[ADA]` di schema |
+| `ebook_id` | `ebookId` | `UUID` / `String` | Tidak | — | `FK -> ebooks(id)`, `INDEX`, `UNIQUE(userId, ebookId)` | E-book yang berhak diakses (`onDelete: Restrict`) | `OrderItem.ebookId` | `[ADA]` di schema |
+| `order_id` | `orderId` | `UUID` / `String` | Tidak | — | `FK -> orders(id)` | Pesanan sumber hak akses (`onDelete: Restrict`) | `Order.id` | `[ADA]` di schema |
+| `granted_at` | `grantedAt` | `TIMESTAMPTZ` / `DateTime` | Tidak | `now()` | `NOT NULL` | Waktu hak akses diterbitkan | Sistem DB | `[ADA]` di schema |
+| `is_revoked` | `isRevoked` | `BOOLEAN` / `Boolean` | Tidak | `false` | `NOT NULL` | Penanda pencabutan akses (`true` = ditolak saat minta signed URL) | Admin / Sistem | `[ADA]` di schema |
 
 ---
 
-## 8. `transactions` (Transaksi)
-**Fungsi:** Mencatat buku besar transaksi yang berhasil diverifikasi sebagai dasar riwayat pembelian dan laporan penjualan.
+## 2. Kolom & Entitas Rencana (`[RENCANA]`)
 
-| Atribut | Tipe Data Usulan | Key / Constraint | Keterangan |
-|---|---|---|---|
-| `id` | `UUID` | `PK`, `NOT NULL` | Pengenal unik transaksi |
-| `order_id` | `UUID` | `FK -> orders(id)`, `UNIQUE`, `NOT NULL` | Pesanan terkait (1-to-1) |
-| `payment_id` | `UUID` | `FK -> payments(id)`, `UNIQUE`, `NOT NULL` | Pembayaran terverifikasi terkait |
-| `customer_id` | `UUID` | `FK -> customers(id)`, `NOT NULL` | Pelanggan terkait |
-| `transaction_code` | `VARCHAR(50)` | `UNIQUE`, `NOT NULL` | Kode transaksi resmi |
-| `amount` | `DECIMAL(12,2)` | `NOT NULL` | Nilai transaksi final |
-| `recorded_at` | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT now()` | Waktu transaksi dicatat |
+Entitas/kolom berikut belum ada di `schema.prisma` dan berstatus `[RENCANA]`:
+- `SawCriterionConfig` (`code`, `name`, `type`, `weight`, `isActive`, `version`) — menunggu Keputusan #5 & #9.
+- `SawCalculationSnapshot` (`criteriaVersion`, `executedAt`, `resultsJson`) — menunggu Keputusan #11.
+- `Review` (`userId`, `ebookId`, `rating`, `comment`) — menunggu Keputusan #6 & #7.
 
 ---
 
-## 9. `ebook_accesses` (Hak Akses E-Book)
-**Fungsi:** Menyimpan izin akses pelanggan terhadap e-book yang sudah dibeli.
+## 3. Kolom yang Dilarang Diterima dari Klien Publik
 
-| Atribut | Tipe Data Usulan | Key / Constraint | Keterangan |
-|---|---|---|---|
-| `id` | `UUID` | `PK`, `NOT NULL` | Pengenal unik hak akses |
-| `customer_id` | `UUID` | `FK -> customers(id)`, `NOT NULL` | Pemilik hak akses |
-| `ebook_id` | `UUID` | `FK -> ebooks(id)`, `NOT NULL` | E-book yang dapat diakses |
-| `order_id` | `UUID` | `FK -> orders(id)`, `NOT NULL` | Pesanan sumber hak akses |
-| `granted_at` | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT now()` | Waktu hak akses aktif |
-| `is_revoked` | `BOOLEAN` | `NOT NULL`, `DEFAULT false` | Penanda pencabutan akses jika terjadi sengketa/refund |
-
-*Constraint tambahan usulan:* `UNIQUE (customer_id, ebook_id)`.
+Backend wajib mengabaikan atau menolak apabila klien publik (`mobile` / `pengunjung-web`) mengirim nilai langsung untuk kolom berikut:
+1. `User.role` & `User.isActive` (mencegah eskalasi hak akses menjadi `ADMIN`).
+2. `Order.totalAmount`, `Order.status`, `OrderItem.unitPrice` (harga & total wajib dihitung di backend).
+3. `Payment.status`, `Payment.paidAt`, `Transaction.*` (status lunas hanya berasal dari webhook gateway terverifikasi).
+4. `EbookAccess.isRevoked` & `EbookAccess.grantedAt` (akses hanya diterbitkan backend setelah lunas atau diubah oleh `ADMIN`).
+5. `Ebook.ratingAvg`, `Ebook.salesCount`, serta bobot/skor akhir SAW.
