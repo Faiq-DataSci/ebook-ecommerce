@@ -1,0 +1,79 @@
+@import './variables.css';
+@import './utilities.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--nb-paper);
+  color: var(--nb-black);
+  font-family: var(--nb-font-body);
+  line-height: 1.55;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  border-radius: var(--nb-radius);
+}
+
+:focus-visible {
+  outline: 3px solid var(--nb-focus);
+  outline-offset: 3px;
+}
+
+.nb-skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--nb-space-4);
+  z-index: 1000;
+  background: var(--nb-yellow);
+  color: var(--nb-black);
+  border: var(--nb-border);
+  box-shadow: var(--nb-shadow);
+  padding: var(--nb-space-3) var(--nb-space-4);
+  font-family: var(--nb-font-heading);
+  font-weight: 700;
+}
+
+.nb-skip-link:focus-visible {
+  top: var(--nb-space-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
