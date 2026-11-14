@@ -1,0 +1,158 @@
+:root {
+  /* Neubrutalism Palette (Google Stitch Reference) */
+  --nb-paper: #FFFDF5;
+  --nb-white: #FFFFFF;
+  --nb-black: #000000;
+  --nb-yellow: #FFD23F;
+  --nb-pink: #FF6B6B;
+  --nb-red-hover: #FA5252;
+  --nb-blue: #74B9FF;
+  --nb-green: #88D498;
+  --nb-orange: #FFA552;
+  --nb-lavender: #B8A9FA;
+  --nb-muted: #E8E4D8;
+  --nb-text-muted: #404040;
+  --nb-text-subtle: #525252;
+  --nb-focus: #1D4ED8;
+
+  /* Submenu Hover Accents */
+  --nb-hover-amber: #FEF3C7;
+  --nb-hover-sky: #E0F2FE;
+  --nb-hover-purple: #F3E8FF;
+  --nb-hover-emerald: #D1FAE5;
+  --nb-hover-row: #FFFBEB;
+
+  /* Typography */
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, Consolas, monospace;
+  --font-display: 'Syne', 'Space Grotesk', sans-serif;
+
+  /* Borders */
+  --nb-border-1: 1px solid #000000;
+  --nb-border-15: 1.5px solid #000000;
+  --nb-border-2: 2px solid #000000;
+  --nb-border-25: 2.5px solid #000000;
+  --nb-border-3: 3px solid #000000;
+
+  /* Hard Offset Shadows (Zero Blur) */
+  --nb-shadow-1: 1px 1px 0 0 #000000;
+  --nb-shadow-15: 1.5px 1.5px 0 0 #000000;
+  --nb-shadow-xs: 2px 2px 0 0 #000000;
+  --nb-shadow-25: 2.5px 2.5px 0 0 #000000;
+  --nb-shadow-sm: 3px 3px 0 0 #000000;
+  --nb-shadow: 4px 4px 0 0 #000000;
+  --nb-shadow-md: 5px 5px 0 0 #000000;
+  --nb-shadow-lg: 6px 6px 0 0 #000000;
+
+  /* Layout Dimensions */
+  --sidebar-width-expanded: 260px;
+  --sidebar-width-collapsed: 72px;
+  --header-height: 64px;
+
+  /* Tactile Neubrutalist Motion */
+  --nb-ease-snap: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --nb-duration-fast: 100ms;
+  --nb-duration-normal: 200ms;
+}
+
+*,
+*::before,
+*::after {
+  border-radius: 0px !important;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--nb-paper);
+  background-image: radial-gradient(#000000 0.95px, transparent 0.95px);
+  background-size: 20px 20px;
+  font-family: var(--font-body);
+  color: var(--nb-black);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-mono-nb {
+  font-family: var(--font-mono);
+}
+
+.font-display-nb {
+  font-family: var(--font-display);
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 600,
+    'GRAD' 0,
+    'opsz' 24;
+  user-select: none;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tactile Neubrutalism Press & Hover Physics */
+.nb-btn {
+  transition:
+    transform var(--nb-duration-fast) var(--nb-ease-snap),
+    box-shadow var(--nb-duration-fast) var(--nb-ease-snap),
+    background-color var(--nb-duration-fast) ease,
+    color var(--nb-duration-fast) ease;
+}
+
+.nb-btn:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--nb-shadow-md) !important;
+}
+
+.nb-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: var(--nb-shadow-1) !important;
+}
+
+.nb-btn-logout:hover {
+  background-color: var(--nb-red-hover) !important;
+  color: var(--nb-white) !important;
+  transform: translate(-2px, -2px);
+  box-shadow: var(--nb-shadow-md) !important;
+}
+
+.nb-btn-logout:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--nb-shadow-1) !important;
+}
+
+/* Keyboard Focus Visibility (WCAG 2.2 AA) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--nb-focus) !important;
+  outline-offset: 2px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
