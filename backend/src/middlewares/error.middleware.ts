@@ -1,10 +1,11 @@
 import type { NextFunction, Request, Response } from 'express'
 import { ZodError } from 'zod'
+import { Prisma } from '../generated/prisma/client.js'
 import { AppError } from '../utils/app-error.js'
 
 /**
- * Global Express error handler that returns sanitized error responses
- * without leaking stack traces or database details to clients.
+ * Global Express error handler returning sanitized JSON responses
+ * without leaking stack traces or internal database details.
  */
 export function errorHandler(
   err: unknown,
@@ -27,6 +28,17 @@ export function errorHandler(
     return
   }
 
+  if (err instanceof SyntaxError && 'body' in err) {
+    res.status(400).json({
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Format JSON pada request body tidak valid',
+      },
+    })
+    return
+  }
+
   if (err instanceof AppError) {
     res.status(err.statusCode).json({
       success: false,
@@ -36,6 +48,41 @@ export function errorHandler(
       },
     })
     return
+  }
+
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    if (err.code === 'P2002') {
+      res.status(409).json({
+        success: false,
+        error: {
+          code: 'CONFLICT',
+          message: 'Data sudah terdaftar atau duplikat',
+        },
+      })
+      return
+    }
+
+    if (err.code === 'P2003') {
+      res.status(409).json({
+        success: false,
+        error: {
+          code: 'CONFLICT',
+          message: 'Operasi ditolak karena data masih direferensikan oleh entitas lain',
+        },
+      })
+      return
+    }
+
+    if (err.code === 'P2025') {
+      res.status(404).json({
+        success: false,
+        error: {
+          code: 'NOT_FOUND',
+          message: 'Data yang diminta tidak ditemukan',
+        },
+      })
+      return
+    }
   }
 
   console.error('Unhandled server error:', err)

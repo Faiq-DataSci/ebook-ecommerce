@@ -28,13 +28,13 @@ export async function authenticate(
 ): Promise<void> {
   const authHeader = req.headers.authorization
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    next(new AppError(401, 'UNAUTHORIZED', 'Token autentikasi diperlukan'))
+    next(new AppError(401, 'UNAUTHENTICATED', 'Token autentikasi diperlukan'))
     return
   }
 
   const token = authHeader.slice('Bearer '.length).trim()
   if (!token) {
-    next(new AppError(401, 'UNAUTHORIZED', 'Token autentikasi tidak valid'))
+    next(new AppError(401, 'UNAUTHENTICATED', 'Token autentikasi tidak valid'))
     return
   }
 
@@ -43,7 +43,7 @@ export async function authenticate(
     const { data, error } = await supabase.auth.getUser(token)
 
     if (error || !data.user) {
-      next(new AppError(401, 'UNAUTHORIZED', 'Sesi tidak valid atau kedaluwarsa'))
+      next(new AppError(401, 'UNAUTHENTICATED', 'Sesi tidak valid atau kedaluwarsa'))
       return
     }
 
@@ -67,7 +67,7 @@ export async function authenticate(
 export function authorize(...allowedRoles: UserRole[]) {
   return (req: Request, _res: Response, next: NextFunction): void => {
     if (!req.user) {
-      next(new AppError(401, 'UNAUTHORIZED', 'Autentikasi diperlukan'))
+      next(new AppError(401, 'UNAUTHENTICATED', 'Autentikasi diperlukan'))
       return
     }
 

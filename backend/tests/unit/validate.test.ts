@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import { describe, expect, it, vi } from 'vitest';
 import { ZodError, z } from 'zod';
-import { validate } from '../../src/middleware/validate.js';
+import { validate } from '../../src/middlewares/validate.middleware.js';
 import { sendSuccess } from '../../src/utils/response.js';
 
 describe('validate middleware', () => {
