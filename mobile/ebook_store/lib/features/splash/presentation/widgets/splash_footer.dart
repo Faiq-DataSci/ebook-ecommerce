@@ -12,10 +12,7 @@ import 'splash_painters.dart';
 class SplashFooter extends StatefulWidget {
   final VoidCallback? onStartReading;
 
-  const SplashFooter({
-    super.key,
-    this.onStartReading,
-  });
+  const SplashFooter({super.key, this.onStartReading});
 
   @override
   State<SplashFooter> createState() => _SplashFooterState();
@@ -158,13 +155,14 @@ class _SplashFooterState extends State<SplashFooter>
                         'Memuat koleksi buku digital & pustaka...',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTheme.labelSm(
-                          AppColors.nbBlack,
-                          fontSize: 12.0,
-                        ).copyWith(
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.2,
-                        ),
+                        style:
+                            AppTheme.labelSm(
+                              AppColors.nbBlack,
+                              fontSize: 12.0,
+                            ).copyWith(
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.2,
+                            ),
                       ),
                     ),
                   ],
@@ -176,9 +174,7 @@ class _SplashFooterState extends State<SplashFooter>
                 style: AppTheme.dataMono(
                   AppColors.nbBlack,
                   fontSize: 12.0,
-                ).copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                ).copyWith(fontWeight: FontWeight.w700),
               ),
             ],
           ),
@@ -208,10 +204,7 @@ class _SplashFooterState extends State<SplashFooter>
                     decoration: const BoxDecoration(
                       color: AppColors.nbGreen,
                       border: Border(
-                        right: BorderSide(
-                          color: AppColors.nbBlack,
-                          width: 2.0,
-                        ),
+                        right: BorderSide(color: AppColors.nbBlack, width: 2.0),
                       ),
                     ),
                     child: ClipRect(
@@ -242,17 +235,14 @@ class _SplashFooterState extends State<SplashFooter>
             padding: const EdgeInsets.only(top: 8.0),
             decoration: const BoxDecoration(
               border: Border(
-                top: BorderSide(
-                  color: AppColors.nbBlack,
-                  width: 1.5,
-                ),
+                top: BorderSide(color: AppColors.nbBlack, width: 1.5),
               ),
             ),
             child: Row(
               children: [
                 Expanded(
                   child: _buildFeaturePill(
-                    label: 'EPUB · PDF',
+                    label: 'PDF',
                     color: AppColors.nbYellow,
                   ),
                 ),
@@ -286,18 +276,12 @@ class _SplashFooterState extends State<SplashFooter>
   }
 
   /// Single feature pill widget with hard border and auto-scaling label.
-  Widget _buildFeaturePill({
-    required String label,
-    required Color color,
-  }) {
+  Widget _buildFeaturePill({required String label, required Color color}) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4.5, horizontal: 2.0),
       decoration: BoxDecoration(
         color: color,
-        border: Border.all(
-          color: AppColors.nbBlack,
-          width: 1.5,
-        ),
+        border: Border.all(color: AppColors.nbBlack, width: 1.5),
       ),
       alignment: Alignment.center,
       child: FittedBox(
@@ -308,9 +292,7 @@ class _SplashFooterState extends State<SplashFooter>
           style: AppTheme.dataMono(
             AppColors.nbBlack,
             fontSize: 10.5,
-          ).copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          ).copyWith(fontWeight: FontWeight.w700),
         ),
       ),
     );

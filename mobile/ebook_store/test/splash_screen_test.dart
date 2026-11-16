@@ -52,7 +52,7 @@ void main() {
         expect(find.text('88%'), findsOneWidget);
 
         // 4 Customer-Centric Feature Pills (SPK SAW and DRM SAFE removed!)
-        expect(find.text('EPUB · PDF'), findsOneWidget);
+        expect(find.text('PDF'), findsOneWidget);
         expect(find.text('BACA OFFLINE'), findsOneWidget);
         expect(find.text('MARKA BUKU'), findsOneWidget);
         expect(find.text('SYNC OTOMATIS'), findsOneWidget);
