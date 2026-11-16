@@ -35,6 +35,27 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<UserEntity> register({
+    required String fullName,
+    required String email,
+    required String password,
+  }) async {
+    final user = await remoteDataSource.register(
+      fullName: fullName,
+      email: email,
+      password: password,
+    );
+
+    // Save session credentials for newly registered customer
+    if (user.token != null) {
+      await localDataSource.saveToken(user.token!);
+      await localDataSource.saveUser(user);
+    }
+
+    return user;
+  }
+
+  @override
   Future<void> logout() async {
     await localDataSource.clearAuth();
   }

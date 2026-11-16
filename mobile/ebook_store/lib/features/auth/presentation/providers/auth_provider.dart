@@ -83,6 +83,108 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<bool> register({
+    required String fullName,
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required bool agreeTerms,
+  }) async {
+    final cleanFullName = fullName.trim();
+    if (cleanFullName.isEmpty) {
+      state = AuthState.error(
+        AuthFailure.invalidInput(
+          title: 'Validasi Nama',
+          message: 'Nama lengkap wajib diisi.',
+        ),
+      );
+      return false;
+    }
+
+    final trimmedEmail = email.trim();
+    if (trimmedEmail.isEmpty) {
+      state = AuthState.error(
+        AuthFailure.invalidInput(
+          title: 'Validasi Email',
+          message: 'Alamat email wajib diisi.',
+        ),
+      );
+      return false;
+    }
+
+    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+    if (!emailRegex.hasMatch(trimmedEmail)) {
+      state = AuthState.error(
+        AuthFailure.invalidInput(
+          title: 'Format Email Salah',
+          message: 'Format alamat email tidak valid.',
+        ),
+      );
+      return false;
+    }
+
+    if (password.isEmpty) {
+      state = AuthState.error(
+        AuthFailure.invalidInput(
+          title: 'Validasi Kata Sandi',
+          message: 'Kata sandi tidak boleh kosong.',
+        ),
+      );
+      return false;
+    }
+
+    if (password.length < 8) {
+      state = AuthState.error(
+        AuthFailure.invalidInput(
+          title: 'Kata Sandi Terlalu Pendek',
+          message: 'Kata sandi minimal 8 karakter.',
+        ),
+      );
+      return false;
+    }
+
+    if (password != confirmPassword) {
+      state = AuthState.error(
+        AuthFailure.invalidInput(
+          title: 'Kata Sandi Berbeda',
+          message: 'Konfirmasi kata sandi belum sama persis.',
+        ),
+      );
+      return false;
+    }
+
+    if (!agreeTerms) {
+      state = AuthState.error(
+        AuthFailure.invalidInput(
+          title: 'Persetujuan Diperlukan',
+          message:
+              'Harap setujui Syarat Lisensi E-Book & Kebijakan Privasi untuk melanjutkan.',
+        ),
+      );
+      return false;
+    }
+
+    state = const AuthState.loading();
+
+    try {
+      final user = await _repository.register(
+        fullName: cleanFullName,
+        email: trimmedEmail,
+        password: password,
+      );
+      state = AuthState.authenticated(user);
+      return true;
+    } on AuthFailure catch (f) {
+      state = AuthState.error(f);
+      return false;
+    } catch (e) {
+      state = AuthState.error(
+        AuthFailure.serverError(message: 'Gagal memproses pendaftaran: $e'),
+      );
+      return false;
+    }
+  }
+
   void clearError() {
     if (state.hasError) {
       state = const AuthState.unauthenticated();

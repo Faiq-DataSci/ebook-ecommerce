@@ -8,6 +8,12 @@ abstract class AuthRemoteDataSource {
     required String email,
     required String password,
   });
+
+  Future<UserModel> register({
+    required String fullName,
+    required String email,
+    required String password,
+  });
 }
 
 /// Remote authentication datasource interacting with Express REST API,
@@ -96,6 +102,71 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       role: UserRole.fromString(simUser['role'] as String),
       isActive: simUser['isActive'] as bool,
       token: simUser['token'] as String,
+    );
+  }
+
+  @override
+  Future<UserModel> register({
+    required String fullName,
+    required String email,
+    required String password,
+  }) async {
+    final cleanEmail = email.trim().toLowerCase();
+    final cleanFullName = fullName.trim();
+
+    // 1. Attempt connection with live Express Backend if enabled
+    if (enableLiveApi) {
+      try {
+        final response = await dio.post(
+          '/auth/register',
+          data: {
+            'fullName': cleanFullName,
+            'email': cleanEmail,
+            'password': password,
+            // Strictly customer registration only
+            'role': 'CUSTOMER',
+          },
+        );
+
+        if ((response.statusCode == 200 || response.statusCode == 201) &&
+            response.data != null) {
+          final data = response.data['data'] as Map<String, dynamic>;
+          return UserModel.fromJson(data);
+        }
+      } on DioException catch (e) {
+        if (e.response != null &&
+            (e.response?.statusCode == 400 ||
+                e.response?.statusCode == 409)) {
+          throw AuthFailure.invalidInput(
+            title: 'Registrasi Gagal',
+            message: e.response?.data?['message']?.toString() ??
+                'Email sudah terdaftar atau format data tidak valid.',
+          );
+        }
+      } catch (_) {
+        // Fallback to local simulated check
+      }
+    }
+
+    // 2. Verified fallback simulation (marked explicitly "DATA SIMULASI")
+    await Future.delayed(const Duration(milliseconds: 350));
+
+    // Reject registration if email matches existing simulated user
+    if (_simulatedUsers.containsKey(cleanEmail)) {
+      throw AuthFailure.invalidInput(
+        title: 'Email Sudah Terdaftar',
+        message:
+            'Alamat email telah terdaftar dalam sistem (DATA SIMULASI). Silakan masuk ke akun Anda atau gunakan email lain.',
+      );
+    }
+
+    return UserModel(
+      id: 'sim-cust-${DateTime.now().millisecondsSinceEpoch}',
+      email: cleanEmail,
+      fullName: '$cleanFullName (DATA SIMULASI)',
+      role: UserRole.customer,
+      isActive: true,
+      token: 'simulated_jwt_token_customer_${DateTime.now().millisecondsSinceEpoch}',
     );
   }
 }

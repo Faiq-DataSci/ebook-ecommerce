@@ -10,6 +10,14 @@ abstract class AuthRepository {
     bool rememberMe = false,
   });
 
+  /// Registers a new customer account.
+  /// Public registration is strictly restricted to customer role (CUSTOMER).
+  Future<UserEntity> register({
+    required String fullName,
+    required String email,
+    required String password,
+  });
+
   /// Logs out the user and clears all cached secure credentials.
   Future<void> logout();
 

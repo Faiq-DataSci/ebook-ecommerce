@@ -13,6 +13,7 @@ import '../widgets/login_hero_zone_a.dart';
 import '../widgets/login_nav_bar.dart';
 import '../widgets/login_painters.dart';
 import '../widgets/login_register_card.dart';
+import 'register_screen.dart';
 
 /// Pixel-perfect Flutter implementation of Google Stitch's design:
 /// Layer: "Login Mobile (Zona A/C) - Neubrutalism Eksklusif"
@@ -154,43 +155,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.nbPaper,
-        shape: const RoundedRectangleBorder(
-          side: BorderSide(color: AppColors.nbBlack, width: 3.0),
-        ),
-        title: const Text(
-          'REGISTRASI PELANGGAN',
-          style: TextStyle(
-            fontFamily: AppTheme.fontHeadline,
-            fontWeight: FontWeight.w800,
-            color: AppColors.nbBlack,
-          ),
-        ),
-        content: const Text(
-          'Formulir pendaftaran akun pelanggan baru sedang disiapkan untuk tahap berikutnya.',
-          style: TextStyle(
-            fontFamily: AppTheme.fontBody,
-            fontSize: 13.0,
-            color: AppColors.nbBlack,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text(
-              'MENGERTI',
-              style: TextStyle(
-                fontFamily: AppTheme.fontHeadline,
-                fontWeight: FontWeight.w700,
-                color: AppColors.nbBlack,
-              ),
-            ),
-          ),
-        ],
-      ),
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RegisterScreen()),
     );
   }
 
