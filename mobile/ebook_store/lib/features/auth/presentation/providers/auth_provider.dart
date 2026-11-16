@@ -64,7 +64,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
 
     // 2. Set loading state
-    state = const AuthState.loading();
+    state = AuthState.loading(failedAttempts: state.failedAttempts);
 
     // 3. Perform authentication
     try {
@@ -75,10 +75,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
       state = AuthState.authenticated(user);
     } on AuthFailure catch (f) {
-      state = AuthState.error(f);
+      state = AuthState.error(f, failedAttempts: state.failedAttempts + 1);
     } catch (e) {
       state = AuthState.error(
-        AuthFailure.serverError(message: 'Gagal memproses autentikasi: $e'),
+        AuthFailure.requestError(message: 'Login belum dapat diproses: $e'),
+        failedAttempts: state.failedAttempts + 1,
       );
     }
   }
@@ -187,7 +188,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   void clearError() {
     if (state.hasError) {
-      state = const AuthState.unauthenticated();
+      state = AuthState.unauthenticated(failedAttempts: state.failedAttempts);
     }
   }
 

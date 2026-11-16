@@ -34,9 +34,13 @@ class HomeHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Text(
-            'BUKUKITA',
-            style: AppTheme.brandTitle(AppColors.nbBlack),
+          Flexible(
+            child: Text(
+              'BUKUKITA',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTheme.brandTitle(AppColors.nbBlack),
+            ),
           ),
           Row(
             mainAxisSize: MainAxisSize.min,

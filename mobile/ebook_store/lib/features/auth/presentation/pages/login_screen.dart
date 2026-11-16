@@ -6,7 +6,9 @@ import '../../../../theme/app_theme.dart';
 import '../../domain/entities/user_entity.dart';
 import '../providers/auth_provider.dart';
 import '../providers/auth_state.dart';
+import '../widgets/login_compliance_panel.dart';
 import '../widgets/login_error_banner.dart';
+import '../widgets/login_error_hero_zone_a.dart';
 import '../widgets/login_footer.dart';
 import '../widgets/login_form_zone_c.dart';
 import '../widgets/login_hero_zone_a.dart';
@@ -198,16 +200,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // 1. Minimal Nav Status Bar
+                      // 1. Navigation Status Bar (Switches to Error Mode when auth fails)
                       LoginNavBar(
                         onClose: widget.onClose,
+                        isErrorState: authState.hasError,
+                        errorCode: authState.failure?.code,
                       ),
 
-                      // 2. Zona A: Expressive Hero Block
-                      const LoginHeroZoneA(),
-
-                      // Conditional Error Notification Banner
-                      if (authState.hasError && authState.failure != null)
+                      // 2. Zona A: Expressive Hero Block / Neubrutalist Error Hero
+                      if (authState.hasError && authState.failure != null) ...[
+                        LoginErrorHeroZoneA(
+                          title: 'GAGAL MASUK',
+                          message: authState.failure!.message,
+                          ribbon: authState.failure!.ribbon ??
+                              'PERINGATAN KEAMANAN',
+                          failedAttempts: authState.failedAttempts,
+                          onDismiss: () {
+                            ref.read(authNotifierProvider.notifier).clearError();
+                          },
+                        ),
+                        const SizedBox(height: 8.0),
+                        // Retain dismissible notification banner
                         LoginErrorBanner(
                           title: authState.failure!.title,
                           message: authState.failure!.message,
@@ -215,12 +228,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ref.read(authNotifierProvider.notifier).clearError();
                           },
                         ),
+                      ] else
+                        const LoginHeroZoneA(),
 
                       const SizedBox(height: 10.0),
 
-                      // 3. Zona C: Formulir Login Container
+                      // 3. Zona C: Formulir Login Container (Supports Error State)
                       LoginFormZoneC(
+                        key: const ValueKey('login_form_zone_c'),
                         isLoading: authState.isLoading,
+                        isErrorState: authState.hasError,
+                        externalError: authState.failure?.message,
+                        externalErrorField: authState.failure?.field,
+                        onClearError: () {
+                          ref.read(authNotifierProvider.notifier).clearError();
+                        },
                         onSubmit: ({
                           required String email,
                           required String password,
@@ -234,13 +256,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         },
                       ),
 
+                      // DRM & Security Compliance Note in Error State
+                      if (authState.hasError) const LoginCompliancePanel(),
+
                       // 4. Kartu Ajakan Daftar Akun Baru
                       LoginRegisterCard(
                         onRegister: _showRegisterDialog,
                       ),
 
-                      // 5. Footer: Catatan Keamanan
-                      const LoginFooter(),
+                      // 5. Footer: Audit Diagnostics in Error State / Security Note in Normal State
+                      if (authState.hasError)
+                        LoginAuditFooter(
+                          traceId:
+                              '#${authState.failure?.code ?? '401'}-AUTH-09941',
+                        )
+                      else
+                        const LoginFooter(),
                     ],
                   ),
                 ),

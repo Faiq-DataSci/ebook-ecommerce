@@ -61,18 +61,21 @@ class FeaturedBooksSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       // 2:3 Book Cover (`w-24` = 96x144, `2px` border, `3px` shadow)
-                      Container(
-                        width: 96,
-                        height: 144,
-                        decoration: AppTheme.brutalBox(
-                          color: AppColors.surfaceContainer,
-                          borderColor: AppColors.nbBlack,
-                          borderWidth: AppTheme.borderDefault,
-                          shadowOffset: 3,
-                        ),
-                        child: StitchBookCover(
-                          assetKey: book.coverAssetKey,
-                          title: book.title,
+                      InkWell(
+                        onTap: onDetailTap,
+                        child: Container(
+                          width: 96,
+                          height: 144,
+                          decoration: AppTheme.brutalBox(
+                            color: AppColors.surfaceContainer,
+                            borderColor: AppColors.nbBlack,
+                            borderWidth: AppTheme.borderDefault,
+                            shadowOffset: 3,
+                          ),
+                          child: StitchBookCover(
+                            assetKey: book.coverAssetKey,
+                            title: book.title,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -108,12 +111,15 @@ class FeaturedBooksSection extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(
-                                    book.title,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTheme.headlineSmMobile(
-                                      AppColors.nbBlack,
+                                  InkWell(
+                                    onTap: onDetailTap,
+                                    child: Text(
+                                      book.title,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTheme.headlineSmMobile(
+                                        AppColors.nbBlack,
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(height: 2),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/constants/app_assets.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../auth/presentation/pages/login_screen.dart';
+import '../../../catalog/presentation/pages/catalog_screen.dart';
+import '../../../catalog/presentation/pages/ebook_detail_screen.dart';
 import '../../data/mock/home_mock_data.dart';
 import '../../domain/models/ebook.dart';
 import '../providers/home_provider.dart';
@@ -78,6 +79,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _openBookDetail(String ebookId) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => EbookDetailScreen(ebookId: ebookId),
       ),
     );
   }
@@ -305,159 +314,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  void _showBookDetailModal(NbPalette palette, Ebook book) {
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: AppTheme.brutalBox(
-              color: palette.surface,
-              borderColor: palette.ink,
-              borderWidth: AppTheme.borderMedium,
-              shadowOffset: 5,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      width: 72,
-                      height: 108,
-                      decoration: AppTheme.brutalBox(
-                        color: palette.coverPlaceholder,
-                        borderColor: palette.ink,
-                        borderWidth: AppTheme.borderDefault,
-                        shadowOffset: 2,
-                      ),
-                      child: StitchBookCover(
-                        assetKey: book.coverAssetKey,
-                        title: book.title,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            book.title,
-                            style: AppTheme.headlineSmMobile(
-                              palette.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Penulis: ${book.author}',
-                            style: AppTheme.bodySm(
-                              palette.textMuted,
-                              fontSize: 13,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'ISBN: ${book.isbn}',
-                            style: AppTheme.dataMono(
-                              palette.textMuted,
-                              fontSize: 11,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: AppTheme.brutalBox(
-                              color: palette.yellow,
-                              borderColor: palette.ink,
-                              borderWidth: AppTheme.borderDefault,
-                              shadowOffset: 2,
-                            ),
-                            child: Text(
-                              book.formattedPrice,
-                              style: AppTheme.dataMono(
-                                AppColors.nbBlack,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => Navigator.of(dialogContext).pop(),
-                        child: Container(
-                          height: 44,
-                          alignment: Alignment.center,
-                          decoration: AppTheme.brutalBox(
-                            color: palette.secondarySurface,
-                            borderColor: palette.ink,
-                            borderWidth: AppTheme.borderDefault,
-                            shadowOffset: 2,
-                          ),
-                          child: Text(
-                            'TUTUP',
-                            style: AppTheme.labelSm(
-                              palette.textPrimary,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          ref.read(homeProvider.notifier).addToCart();
-                          Navigator.of(dialogContext).pop();
-                          _showNeubrutalistSnackBar(
-                            palette,
-                            '${book.title} ditambahkan ke keranjang.',
-                          );
-                        },
-                        child: Container(
-                          height: 44,
-                          alignment: Alignment.center,
-                          decoration: AppTheme.brutalBox(
-                            color: palette.yellow,
-                            borderColor: palette.ink,
-                            borderWidth: AppTheme.borderDefault,
-                            shadowOffset: 2,
-                          ),
-                          child: Text(
-                            '+ KERANJANG',
-                            style: AppTheme.labelSm(
-                              AppColors.nbBlack,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -695,10 +551,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         FeaturedBooksSection(
                           book: state.featuredSawBook,
                           palette: palette,
-                          onDetailTap: () => _showSawDecisionModal(
-                            palette,
-                            state.featuredSawBook,
-                          ),
+                          onDetailTap: () => _openBookDetail(state.featuredSawBook.id),
                           onAddToCartTap: () {
                             notifier.addToCart();
                             _showNeubrutalistSnackBar(
@@ -748,7 +601,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         palette: palette,
         onTap: (index) {
           notifier.selectNavIndex(index);
-          if (index == 3) {
+          if (index == 1) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const CatalogScreen()),
+            );
+          } else if (index == 3) {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const LoginScreen()),
             );
@@ -848,7 +705,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           title: 'Rilisan Terbaru',
           palette: palette,
           actionLabel: 'Lihat Semua',
-          onActionTap: onResetFilters,
+          onActionTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const CatalogScreen()),
+            );
+          },
         ),
         const SizedBox(height: 12),
         if (books.isEmpty)
@@ -896,7 +757,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: BookCard(
                 book: first,
                 palette: palette,
-                onCardTap: () => _showBookDetailModal(palette, first),
+                onCardTap: () => _openBookDetail(first.id),
                 onAddToCartTap: () => onAddBookToCart(first),
               ),
             ),
@@ -906,7 +767,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ? BookCard(
                       book: second,
                       palette: palette,
-                      onCardTap: () => _showBookDetailModal(palette, second),
+                      onCardTap: () => _openBookDetail(second.id),
                       onAddToCartTap: () => onAddBookToCart(second),
                     )
                   : const SizedBox.shrink(),

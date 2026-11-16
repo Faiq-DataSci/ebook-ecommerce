@@ -74,11 +74,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         if (e.response != null && e.response?.statusCode == 401) {
           throw AuthFailure.invalidCredentials(
             message: e.response?.data?['message']?.toString() ??
-                'Kredensial belum terdaftar atau kata sandi tidak cocok.',
+                'Email atau kata sandi tidak cocok. Silakan periksa kembali informasi login Anda.',
+          );
+        } else if (e.response != null &&
+            (e.response?.statusCode ?? 0) >= 500) {
+          throw AuthFailure.serverError(
+            message:
+                'Layanan sedang mengalami gangguan. Silakan coba kembali beberapa saat lagi.',
+          );
+        } else if (e.type == DioExceptionType.connectionError ||
+            e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout) {
+          throw AuthFailure.networkError(
+            message:
+                'Koneksi bermasalah. Periksa jaringan internet Anda dan coba kembali.',
+          );
+        } else {
+          throw AuthFailure.requestError(
+            message: 'Login belum dapat diproses. Silakan coba kembali.',
           );
         }
-        // If endpoint is not yet mounted (404 / connection refused) in current phase,
-        // fallback to validated simulated data per AGENTS.md rule.
       } catch (_) {
         // Fallback to local simulated check
       }
@@ -87,11 +102,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     // 2. Verified fallback simulation (marked explicitly "DATA SIMULASI")
     await Future.delayed(const Duration(milliseconds: 300));
 
+    // Simulated error triggers for testing error state variations
+    if (cleanEmail == 'jaringan@ebookstore.com' ||
+        cleanEmail == 'network-error@test.com') {
+      throw AuthFailure.networkError();
+    }
+    if (cleanEmail == 'server@ebookstore.com' ||
+        cleanEmail == 'server-error@test.com') {
+      throw AuthFailure.serverError();
+    }
+    if (cleanEmail == 'request-error@test.com') {
+      throw AuthFailure.requestError();
+    }
+
     final simUser = _simulatedUsers[cleanEmail];
     if (simUser == null || simUser['password'] != password) {
       throw AuthFailure.invalidCredentials(
         title: 'Kredensial Belum Terdaftar',
-        message: 'Periksa format surel atau masukkan kredensial demo untuk melanjutkan.',
+        message:
+            'Email atau kata sandi tidak cocok. Silakan periksa kembali kredensial Anda atau gunakan opsi pemulihan kata sandi.',
       );
     }
 

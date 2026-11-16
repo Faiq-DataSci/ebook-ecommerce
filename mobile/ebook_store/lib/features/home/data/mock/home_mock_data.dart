@@ -25,7 +25,7 @@ class HomeMockData {
   ];
 
   static const Ebook featuredSawBook = Ebook(
-    id: 'ebook-saw-1',
+    id: 'eb-007',
     title: 'Desain Sistem Modern',
     author: 'Ahmad Fauzi',
     category: 'Teknologi & AI',
@@ -47,7 +47,7 @@ class HomeMockData {
 
   static const List<Ebook> latestReleases = <Ebook>[
     Ebook(
-      id: 'ebook-new-1',
+      id: 'eb-008',
       title: 'Algoritma & Struktur Data Praktis',
       author: 'Budi Santoso',
       category: 'Teknologi & AI',
@@ -59,7 +59,7 @@ class HomeMockData {
       isbn: '978-623-001-204-2',
     ),
     Ebook(
-      id: 'ebook-new-2',
+      id: 'eb-009',
       title: 'Psikologi Produk Digital',
       author: 'Sarah Utami',
       category: 'Desain & UI/UX',

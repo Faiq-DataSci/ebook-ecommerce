@@ -17,6 +17,14 @@ class ApiConfig {
     defaultValue: false,
   );
 
+  /// Sumber data katalog: 'mock' (default simulasi) atau 'remote' (live API).
+  static const String catalogSource = String.fromEnvironment(
+    'CATALOG_SOURCE',
+    defaultValue: 'mock',
+  );
+
+  static bool get useRemoteCatalog => catalogSource.toLowerCase() == 'remote';
+
   static String get baseUrl {
     if (kIsWeb) {
       return 'http://localhost:$defaultPort/api/v1';
