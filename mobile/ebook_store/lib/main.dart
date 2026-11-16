@@ -25,10 +25,12 @@ void main() {
 /// Application wrapper supporting optional `DevicePreview` iPhone frame mode.
 class MyApp extends StatelessWidget {
   final bool enableDevicePreview;
+  final Widget? initialScreen;
 
   const MyApp({
     super.key,
     this.enableDevicePreview = false,
+    this.initialScreen,
   });
 
   @override
@@ -41,8 +43,8 @@ class MyApp extends StatelessWidget {
         isDarkMode: false,
       ),
       storage: DevicePreviewStorage.none(),
-      builder: (context) => const ProviderScope(
-        child: EbookStoreApp(),
+      builder: (context) => ProviderScope(
+        child: EbookStoreApp(home: initialScreen),
       ),
     );
   }

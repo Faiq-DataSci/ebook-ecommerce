@@ -1,6 +1,7 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:ebook_store/main.dart';
 import 'package:ebook_store/providers/home_provider.dart';
+import 'package:ebook_store/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +17,7 @@ Future<void> _pumpAtViewport(
     tester.view.resetDevicePixelRatio();
   });
 
-  await tester.pumpWidget(const MyApp());
+  await tester.pumpWidget(const MyApp(initialScreen: HomeScreen()));
   await tester.pumpAndSettle();
 }
 
@@ -219,7 +220,10 @@ void main() {
           tester.view.resetDevicePixelRatio();
         });
 
-        await tester.pumpWidget(const MyApp(enableDevicePreview: true));
+        await tester.pumpWidget(const MyApp(
+          enableDevicePreview: true,
+          initialScreen: HomeScreen(),
+        ));
         await tester.pumpAndSettle();
 
         expect(find.byType(DevicePreview), findsOneWidget);
