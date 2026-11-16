@@ -1,7 +1,7 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:ebook_store/main.dart';
-import 'package:ebook_store/providers/home_provider.dart';
-import 'package:ebook_store/screens/home/home_screen.dart';
+import 'package:ebook_store/features/home/presentation/providers/home_provider.dart';
+import 'package:ebook_store/features/home/presentation/pages/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

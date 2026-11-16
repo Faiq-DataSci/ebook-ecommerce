@@ -13,7 +13,7 @@ import 'package:ebook_store/features/auth/presentation/widgets/login_form_zone_c
 import 'package:ebook_store/features/auth/presentation/widgets/login_hero_zone_a.dart';
 import 'package:ebook_store/features/auth/presentation/widgets/login_nav_bar.dart';
 import 'package:ebook_store/features/auth/presentation/widgets/login_register_card.dart';
-import 'package:ebook_store/screens/home/home_screen.dart';
+import 'package:ebook_store/features/home/presentation/pages/home_screen.dart';
 
 Widget _buildTestableLoginScreen({
   VoidCallback? onClose,
