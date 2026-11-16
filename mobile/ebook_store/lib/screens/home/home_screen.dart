@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_assets.dart';
 import '../../data/mock/home_mock_data.dart';
+import '../../features/auth/presentation/pages/login_screen.dart';
 import '../../models/ebook.dart';
 import '../../providers/home_provider.dart';
 import '../../theme/app_colors.dart';
@@ -614,10 +615,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 palette,
                 'Keranjang Belanja: ${state.cartCount} item (${HomeMockData.simulationLabel}).',
               ),
-              onProfileTap: () => _showNeubrutalistSnackBar(
-                palette,
-                'Masuk sebagai ${HomeMockData.greetingName} (${HomeMockData.simulationLabel}).',
-              ),
+              onProfileTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                );
+              },
             ),
             // Main Vertical Scrollable Content
             Expanded(
@@ -746,7 +748,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         palette: palette,
         onTap: (index) {
           notifier.selectNavIndex(index);
-          if (index != 0) {
+          if (index == 3) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+            );
+          } else if (index != 0) {
             const labels = <String>['Beranda', 'Katalog', 'Pustaka', 'Profil'];
             _showNeubrutalistSnackBar(
               palette,
