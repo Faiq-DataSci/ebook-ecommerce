@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../screens/home/home_screen.dart';
+import '../../../home/presentation/pages/home_screen.dart';
 import '../../../../theme/app_colors.dart';
 import '../widgets/splash_footer.dart';
 import '../widgets/splash_header.dart';
@@ -9,10 +9,33 @@ import '../widgets/splash_painters.dart';
 /// Pixel-perfect Flutter implementation of Google Stitch's design:
 /// Layer: "Splash Screen Mobile 390x884 - Icon Update"
 /// Project: "Stitch – Sistem Informasi E-Commerce E-Book"
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
+/// Enhanced with automated app loading: boots application smoothly
+/// and navigates directly without requiring manual button click.
+class SplashScreen extends StatefulWidget {
+  final Duration totalDuration;
+  final bool autoNavigate;
+  final VoidCallback? onLoaded;
 
-  void _navigateToHome(BuildContext context) {
+  const SplashScreen({
+    super.key,
+    this.totalDuration = const Duration(milliseconds: 1400),
+    this.autoNavigate = true,
+    this.onLoaded,
+  });
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  void _navigateToHome() {
+    if (!mounted) return;
+    if (widget.onLoaded != null) {
+      widget.onLoaded!();
+      return;
+    }
+    if (!widget.autoNavigate) return;
+
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
@@ -130,9 +153,10 @@ class SplashScreen extends StatelessWidget {
                         child: SplashHeroCard(),
                       ),
 
-                      // Footer: Status monitor, stripes progress bar, and "MULAI MEMBACA" button
+                      // Footer: Status monitor, stripes progress bar, and automated loading indicator
                       SplashFooter(
-                        onStartReading: () => _navigateToHome(context),
+                        totalDuration: widget.totalDuration,
+                        onFinishedLoading: _navigateToHome,
                       ),
                     ],
                   ),

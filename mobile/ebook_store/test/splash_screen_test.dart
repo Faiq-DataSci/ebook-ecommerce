@@ -4,12 +4,12 @@ import 'package:ebook_store/features/splash/presentation/widgets/splash_header.d
 import 'package:ebook_store/features/splash/presentation/widgets/splash_hero_card.dart';
 import 'package:ebook_store/features/splash/presentation/widgets/splash_painters.dart';
 import 'package:ebook_store/main.dart';
-import 'package:ebook_store/screens/home/home_screen.dart';
+import 'package:ebook_store/features/home/presentation/pages/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('Splash Screen Mobile 390x884 - Google Stitch Fidelity Tests', () {
+  group('Splash Screen Mobile 390x884 - Google Stitch Fidelity & Auto-Boot Tests', () {
     testWidgets(
       'Renders all Google Stitch elements accurately at 390x884 resolution',
       (WidgetTester tester) async {
@@ -20,7 +20,7 @@ void main() {
           tester.view.resetDevicePixelRatio();
         });
 
-        await tester.pumpWidget(const MyApp(initialScreen: SplashScreen()));
+        await tester.pumpWidget(const MyApp(initialScreen: SplashScreen(autoNavigate: false)));
         await tester.pump(); // Initial frame
 
         // 1. Header Verification
@@ -45,11 +45,6 @@ void main() {
 
         // 3. Footer Verification
         expect(find.byType(SplashFooter), findsOneWidget);
-        expect(
-          find.text('Memuat koleksi buku digital & pustaka...'),
-          findsOneWidget,
-        );
-        expect(find.text('88%'), findsOneWidget);
 
         // 4 Customer-Centric Feature Pills (SPK SAW and DRM SAFE removed!)
         expect(find.text('PDF'), findsOneWidget);
@@ -61,8 +56,9 @@ void main() {
         expect(find.text('SPK SAW'), findsNothing);
         expect(find.text('DRM SAFE'), findsNothing);
 
-        // CTA Button (Book icon, [ENTER], and version subline are removed!)
-        expect(find.text('MULAI MEMBACA'), findsOneWidget);
+        // Manual button removed per user request (automated loading replaces it)
+        expect(find.text('MULAI MEMBACA'), findsNothing);
+        expect(find.text('MEMUAT APLIKASI...'), findsOneWidget);
         expect(find.text('[ENTER]'), findsNothing);
         expect(find.textContaining('BACA BUKU MOBILE // v2.4'), findsNothing);
 
@@ -86,7 +82,7 @@ void main() {
           tester.view.physicalSize = size;
           tester.view.devicePixelRatio = 1.0;
 
-          await tester.pumpWidget(const MyApp(initialScreen: SplashScreen()));
+          await tester.pumpWidget(const MyApp(initialScreen: SplashScreen(autoNavigate: false)));
           await tester.pump();
 
           expect(tester.takeException(), isNull);
@@ -98,7 +94,7 @@ void main() {
     );
 
     testWidgets(
-      'Tapping MULAI MEMBACA button accelerates progress and triggers navigation to HomeScreen',
+      'Automatically boots application, steps progress, and navigates to HomeScreen without requiring clicks',
       (WidgetTester tester) async {
         tester.view.physicalSize = const Size(390, 884);
         tester.view.devicePixelRatio = 1.0;
@@ -107,27 +103,25 @@ void main() {
           tester.view.resetDevicePixelRatio();
         });
 
-        await tester.pumpWidget(const MyApp(initialScreen: SplashScreen()));
+        await tester.pumpWidget(
+          const MyApp(
+            initialScreen: SplashScreen(
+              totalDuration: Duration(milliseconds: 300),
+            ),
+          ),
+        );
         await tester.pump();
 
-        // Tap the accelerate button repeatedly to reach 100%
-        final buttonFinder = find.text('MULAI MEMBACA');
-        expect(buttonFinder, findsOneWidget);
+        // Initial loading status
+        expect(find.text('MEMUAT APLIKASI...'), findsOneWidget);
+        expect(find.text('MULAI MEMBACA'), findsNothing);
 
-        for (int i = 0; i < 3; i++) {
-          await tester.tap(buttonFinder);
-          await tester.pump();
-        }
+        // Advance timers to complete automated loading sequence
+        await tester.pump(const Duration(milliseconds: 350));
+        await tester.pump(const Duration(milliseconds: 350));
+        await tester.pump(const Duration(milliseconds: 350));
 
-        // Verify progress is 100% SIAP and button updates state
-        expect(find.text('100% SIAP'), findsOneWidget);
-        expect(find.text('MEMBUKA KATALOG PUSTAKA...'), findsOneWidget);
-
-        // Fast forward timers to complete transition
-        await tester.pump(const Duration(milliseconds: 400));
-        await tester.pump(const Duration(milliseconds: 400));
-
-        // Verifies smooth navigation to HomeScreen
+        // Verifies smooth automated navigation to HomeScreen
         expect(find.byType(HomeScreen), findsOneWidget);
         expect(find.text('BUKUKITA'), findsOneWidget);
       },

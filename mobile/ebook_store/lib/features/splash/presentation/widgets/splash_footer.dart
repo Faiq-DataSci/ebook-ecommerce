@@ -4,15 +4,20 @@ import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_theme.dart';
 import 'splash_painters.dart';
 
-/// Lower interactive footer of the Splash Screen.
-/// Contains the system loading monitor card with animated marching diagonal stripes,
-/// 4 customer-centric capability pills (EPUB·PDF, BACA OFFLINE, MARKA BUKU, SYNC OTOMATIS),
-/// and an eye-catching Vibrant Neo-Brutalist "MULAI MEMBACA" CTA button in Coral Pink.
-/// Completely removed book icon, [ENTER] badge, version subline, SPK SAW, and DRM SAFE.
+/// Automated App Loading Footer for Splash Screen.
+/// Automatically steps loading smoothly to 100% to boot the app without requiring manual click,
+/// displaying animated marching diagonal stripes, dynamic system loading status messages,
+/// 4 capability pills (PDF, BACA OFFLINE, MARKA BUKU, SYNC OTOMATIS),
+/// and an automated Neubrutalist loading status indicator in Coral Pink / Mint Green.
 class SplashFooter extends StatefulWidget {
-  final VoidCallback? onStartReading;
+  final VoidCallback? onFinishedLoading;
+  final Duration totalDuration;
 
-  const SplashFooter({super.key, this.onStartReading});
+  const SplashFooter({
+    super.key,
+    this.onFinishedLoading,
+    this.totalDuration = const Duration(milliseconds: 1400),
+  });
 
   @override
   State<SplashFooter> createState() => _SplashFooterState();
@@ -20,24 +25,25 @@ class SplashFooter extends StatefulWidget {
 
 class _SplashFooterState extends State<SplashFooter>
     with SingleTickerProviderStateMixin {
-  int _progress = 88; // Default initial progress from Stitch spec
+  int _progress = 10;
   double _boxAngle = 0;
   Timer? _rotationTimer;
   Timer? _progressTimer;
-  bool _isAccelerated = false;
+  bool _isTransitioning = false;
   late final AnimationController _stripeController;
 
   @override
   void initState() {
     super.initState();
+
     // Repeating controller for the animated marching diagonal stripes
     _stripeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..repeat();
 
-    // Rotate square indicator 90 degrees every 450ms (from Stitch spec)
-    _rotationTimer = Timer.periodic(const Duration(milliseconds: 450), (timer) {
+    // Rotate square indicator 90 degrees every 350ms
+    _rotationTimer = Timer.periodic(const Duration(milliseconds: 350), (_) {
       if (mounted) {
         setState(() {
           _boxAngle = (_boxAngle + 90) % 360;
@@ -45,15 +51,33 @@ class _SplashFooterState extends State<SplashFooter>
       }
     });
 
-    // Subtle simulated progress stepping
-    _progressTimer = Timer.periodic(const Duration(milliseconds: 600), (timer) {
-      if (!mounted) return;
-      if (_progress < 99) {
-        setState(() {
-          _progress += 1;
-        });
-      } else {
+    // Auto-progress evenly dividing totalDuration into 20 steps
+    const totalSteps = 20;
+    final stepInterval = (widget.totalDuration.inMilliseconds / totalSteps).round().clamp(10, 100);
+    const stepAmount = (100 / totalSteps);
+
+    _progressTimer = Timer.periodic(Duration(milliseconds: stepInterval), (timer) {
+      if (!mounted) {
         timer.cancel();
+        return;
+      }
+
+      if (_progress < 100) {
+        setState(() {
+          _progress = (_progress + stepAmount.toInt()).clamp(0, 100);
+        });
+      }
+
+      if (_progress >= 100) {
+        timer.cancel();
+        if (!_isTransitioning) {
+          _isTransitioning = true;
+          Future.delayed(const Duration(milliseconds: 150), () {
+            if (mounted) {
+              widget.onFinishedLoading?.call();
+            }
+          });
+        }
       }
     });
   }
@@ -66,20 +90,15 @@ class _SplashFooterState extends State<SplashFooter>
     super.dispose();
   }
 
-  void _handleAccelerate() {
-    setState(() {
-      _progress = (_progress + 5).clamp(0, 100);
-      if (_progress >= 100) {
-        _isAccelerated = true;
-      }
-    });
-
-    if (_progress >= 100 && widget.onStartReading != null) {
-      Future.delayed(const Duration(milliseconds: 350), () {
-        if (mounted) {
-          widget.onStartReading?.call();
-        }
-      });
+  String _getStatusText() {
+    if (_progress < 35) {
+      return 'Memeriksa status sistem & sesi...';
+    } else if (_progress < 75) {
+      return 'Memuat koleksi buku digital & pustaka...';
+    } else if (_progress < 100) {
+      return 'Menyiapkan antarmuka aplikasi...';
+    } else {
+      return 'Katalog e-book siap dibuka!';
     }
   }
 
@@ -94,8 +113,8 @@ class _SplashFooterState extends State<SplashFooter>
 
         const SizedBox(height: 12.0),
 
-        // Vibrant Neo-Brutalist "MULAI MEMBACA" Action Button (high-impact colorway)
-        _buildActionButton(),
+        // Automated Neubrutalist Loading Status Indicator (no manual click needed)
+        _buildLoadingIndicator(),
       ],
     );
   }
@@ -133,7 +152,7 @@ class _SplashFooterState extends State<SplashFooter>
               Expanded(
                 child: Row(
                   children: [
-                    // Rotating pink square indicator with crisp mechanical ticks
+                    // Rotating square indicator with crisp mechanical ticks
                     AnimatedRotation(
                       turns: _boxAngle / 360.0,
                       duration: const Duration(milliseconds: 200),
@@ -141,7 +160,7 @@ class _SplashFooterState extends State<SplashFooter>
                         width: 14.0,
                         height: 14.0,
                         decoration: BoxDecoration(
-                          color: AppColors.nbPink,
+                          color: isReady ? AppColors.nbGreen : AppColors.nbPink,
                           border: Border.all(
                             color: AppColors.nbBlack,
                             width: 2.0,
@@ -152,17 +171,16 @@ class _SplashFooterState extends State<SplashFooter>
                     const SizedBox(width: 8.0),
                     Expanded(
                       child: Text(
-                        'Memuat koleksi buku digital & pustaka...',
+                        _getStatusText(),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            AppTheme.labelSm(
-                              AppColors.nbBlack,
-                              fontSize: 12.0,
-                            ).copyWith(
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: -0.2,
-                            ),
+                        style: AppTheme.labelSm(
+                          AppColors.nbBlack,
+                          fontSize: 12.0,
+                        ).copyWith(
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.2,
+                        ),
                       ),
                     ),
                   ],
@@ -298,46 +316,74 @@ class _SplashFooterState extends State<SplashFooter>
     );
   }
 
-  /// Primary Neubrutalist CTA button: MULAI MEMBACA.
-  /// Refined colorway in vibrant Coral Pink `#FF6B6B` (switches to Mint Green on completion),
-  /// with bold Ink Black typography, without book icon or [ENTER] label.
-  Widget _buildActionButton() {
-    final isMax = _isAccelerated || _progress >= 100;
-    final bgColor = isMax ? AppColors.nbGreen : AppColors.nbPink;
-    const fgColor = AppColors.nbBlack;
+  /// Automated App Loading Status Indicator.
+  /// Replaces the manual "MULAI MEMBACA" button with continuous, non-blocking feedback.
+  Widget _buildLoadingIndicator() {
+    final isReady = _progress >= 100;
+    final bgColor = isReady ? AppColors.nbGreen : AppColors.nbPink;
 
-    return InkWell(
-      onTap: _handleAccelerate,
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      child: Container(
-        height: 50.0,
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        decoration: BoxDecoration(
-          color: bgColor,
-          border: Border.all(
-            color: AppColors.nbBlack,
-            width: 3.2, // Bold 3.2px outline
-          ),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.nbBlack,
-              offset: Offset(5, 5), // 5px hard offset shadow
-              blurRadius: 0,
-            ),
-          ],
+    return Container(
+      height: 50.0,
+      padding: const EdgeInsets.symmetric(horizontal: 14.0),
+      decoration: BoxDecoration(
+        color: bgColor,
+        border: Border.all(
+          color: AppColors.nbBlack,
+          width: 3.2, // Bold 3.2px outline
         ),
-        child: Center(
-          child: Text(
-            isMax ? 'MEMBUKA KATALOG PUSTAKA...' : 'MULAI MEMBACA',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: AppTheme.labelMd(fgColor).copyWith(
-              fontSize: 15.0,
-              letterSpacing: 1.2,
-              fontWeight: FontWeight.w800,
-            ),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.nbBlack,
+            offset: Offset(5, 5), // 5px hard offset shadow
+            blurRadius: 0,
+          ),
+        ],
+      ),
+      child: Center(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (!isReady) ...[
+                const SizedBox(
+                  width: 16.0,
+                  height: 16.0,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: AppColors.nbBlack,
+                  ),
+                ),
+                const SizedBox(width: 10.0),
+                Text(
+                  'MEMUAT APLIKASI...',
+                  style: AppTheme.labelMd(AppColors.nbBlack).copyWith(
+                    fontSize: 14.0,
+                    letterSpacing: 1.0,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ] else ...[
+                const Text(
+                  '✓',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.nbBlack,
+                  ),
+                ),
+                const SizedBox(width: 8.0),
+                Text(
+                  'APLIKASI SIAP — MEMBUKA KATALOG...',
+                  style: AppTheme.labelMd(AppColors.nbBlack).copyWith(
+                    fontSize: 13.0,
+                    letterSpacing: 0.8,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
       ),
