@@ -1,6 +1,6 @@
 # Rencana Seeding Data (`Database Seeding Plan`)
 
-> **Status Dokumen:** `[ADA]` (Dokumentasi rencana seeding) | **Implementasi Skrip Seed:** `[RENCANA]` (Belum ada skrip seed di `backend/`)
+> **Status Dokumen:** `[ADA]` (Dokumentasi rencana seeding) | **Implementasi Skrip Seed:** `[ADA]` (Tersedia pada [`backend/prisma/seed.ts`](../../backend/prisma/seed.ts) dan [`seed-data.ts`](../../backend/prisma/seed-data.ts))
 > **Peringatan Integritas:** Seluruh data contoh dan skrip seed wajib berlabel **`"DATA SIMULASI"`** dan **dilarang** memakai akun, email, atau kredensial nyata.
 
 ---
@@ -11,22 +11,22 @@
 - **Batasan Keamanan:**
   - Tidak boleh memasukkan password asli, token JWT asli, atau email pengguna sungguhan (gunakan domain contoh non-aktif seperti `simulasi.example.test`).
   - Seluruh record simulasi ditandai jelas dengan prefiks/label `"DATA SIMULASI"` pada judul/nama.
-  - Seed hanya dijalankan di lingkungan pengembangan/staging, **bukan** sebagai data bisnis nyata di production.
+  - Seed hanya dijalankan di lingkungan pengembangan/staging, **bukan** sebagai data bisnis nyata di production (dicegah otomatis oleh pengaman `process.env.NODE_ENV === 'production'` pada `seed.ts`).
 
 ---
 
-## 2. Urutan Seeding Berdasarkan Ketergantungan Foreign Key (`[RENCANA]`)
+## 2. Urutan Seeding Berdasarkan Ketergantungan Foreign Key (`[ADA]` pada `seed.ts`)
 
 | Urutan | Entitas | Tujuan | Ketergantungan | Label Data | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1** | `User` (Admin & Pelanggan simulasi) | Menyediakan akun uji `ADMIN` dan `CUSTOMER` tertaut `supabaseUserId` simulasi | Tidak ada | `"DATA SIMULASI"` | `[RENCANA]` |
-| **2** | `Category` | Menyediakan kategori e-book uji (`Teknologi`, `Bisnis`, dll.) | Tidak ada | `"DATA SIMULASI"` | `[RENCANA]` |
-| **3** | `Ebook` | Menyediakan minimal 3–5 e-book simulasi lengkap dengan `price`, `ratingAvg`, `salesCount`, `storagePath` uji (dataset SAW manual) | `Category` | `"DATA SIMULASI"` | `[RENCANA]` |
-| **4** | `Order` | Menyediakan contoh pesanan simulasi (`PENDING` dan `PAID`) | `User` | `"DATA SIMULASI"` | `[RENCANA]` |
-| **5** | `OrderItem` | Menyediakan rincian item pesanan dengan `unitPrice` snapshot | `Order`, `Ebook` | `"DATA SIMULASI"` | `[RENCANA]` |
-| **6** | `Payment` | Menyediakan rekaman pembayaran simulasi (`PENDING` / `VERIFIED`) | `Order` | `"DATA SIMULASI"` | `[RENCANA]` |
-| **7** | `Transaction` | Menyediakan transaksi resmi simulasi untuk pesanan `PAID` | `Order`, `Payment`, `User` | `"DATA SIMULASI"` | `[RENCANA]` |
-| **8** | `EbookAccess` | Memberikan hak akses baca simulasi untuk pesanan `PAID` (serta 1 contoh `isRevoked = true` untuk uji `403`) | `User`, `Ebook`, `Order` | `"DATA SIMULASI"` | `[RENCANA]` |
+| **1** | `User` (Admin & Pelanggan simulasi) | Menyediakan akun uji `ADMIN` dan `CUSTOMER` tertaut `supabaseUserId` simulasi | Tidak ada | `"DATA SIMULASI"` | `[ADA]` |
+| **2** | `Category` | Menyediakan kategori e-book uji (`Teknologi`, `Bisnis`, dll.) | Tidak ada | `"DATA SIMULASI"` | `[ADA]` |
+| **3** | `Ebook` | Menyediakan minimal 3–5 e-book simulasi lengkap dengan `price`, `ratingAvg`, `salesCount`, `storagePath` uji (dataset SAW manual) | `Category` | `"DATA SIMULASI"` | `[ADA]` |
+| **4** | `Order` | Menyediakan contoh pesanan simulasi (`PENDING` dan `PAID`) | `User` | `"DATA SIMULASI"` | `[ADA]` |
+| **5** | `OrderItem` | Menyediakan rincian item pesanan dengan `unitPrice` snapshot | `Order`, `Ebook` | `"DATA SIMULASI"` | `[ADA]` |
+| **6** | `Payment` | Menyediakan rekaman pembayaran simulasi (`PENDING` / `VERIFIED`) | `Order` | `"DATA SIMULASI"` | `[ADA]` |
+| **7** | `Transaction` | Menyediakan transaksi resmi simulasi untuk pesanan `PAID` | `Order`, `Payment`, `User` | `"DATA SIMULASI"` | `[ADA]` |
+| **8** | `EbookAccess` | Memberikan hak akses baca simulasi untuk pesanan `PAID` (serta 1 contoh `isRevoked = true` untuk uji `403`) | `User`, `Ebook`, `Order` | `"DATA SIMULASI"` | `[ADA]` |
 
 ---
 

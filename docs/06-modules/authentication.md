@@ -1,6 +1,6 @@
 # Modul Autentikasi & Manajemen Pengguna (`Authentication & User Management`)
 
-**Status Implementasi:** `[RENCANA]` — Seluruh modul bisnis dan endpoint autentikasi/pengguna belum diimplementasikan. Fondasi middleware `authenticate` dan `authorize('ADMIN')` sudah `[ADA]` pada [`backend/src/middlewares/auth.middleware.ts`](../../backend/src/middlewares/auth.middleware.ts) dan teruji pada `GET /api/v1/admin/ping` ([`backend/src/app.ts`](../../backend/src/app.ts)).
+**Status Implementasi:** Sebagian `[ADA]` (antarmuka login dan registrasi pelanggan telah `[ADA]` pada [`web/pengunjung-web`](../../web/pengunjung-web) dan [`mobile/ebook_store`](../../mobile/ebook_store); middleware verifikasi JWT `authenticate` dan RBAC `authorize('ADMIN')` sudah `[ADA]` di backend); sebagian `[RENCANA]` (sinkronisasi token Supabase ke tabel `users` PostgreSQL melalui `POST /api/v1/auth/sync` dan manajemen profil pengguna belum diimplementasikan).
 
 ---
 

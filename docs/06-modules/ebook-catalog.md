@@ -1,6 +1,6 @@
 # Modul Katalog E-Book, Kategori, & Rekomendasi SAW (`E-Book Catalog, Category, & SAW`)
 
-**Status Implementasi:** `[RENCANA]` — Seluruh endpoint katalog, kategori, upload PDF, dan perhitungan SAW belum diimplementasikan. Helper `createPrivatePdfSignedUrl` (`backend/src/integrations/storage/supabase-storage.ts`) dan skema Prisma sudah `[ADA]`.
+**Status Implementasi:** Sebagian `[ADA]` (antarmuka etalase katalog, pencarian debounced, filter kategori & harga, dan halaman detail e-book telah `[ADA]` pada [`web/pengunjung-web`](../../web/pengunjung-web) dan [`mobile/ebook_store`](../../mobile/ebook_store); skema Prisma & helper `supabase-storage.ts` `[ADA]`); sebagian `[RENCANA]` (seluruh router, service, dan endpoint REST API katalog, upload PDF, serta mesin kalkulasi SAW backend belum diimplementasikan).
 
 ---
 

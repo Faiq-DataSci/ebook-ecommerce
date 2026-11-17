@@ -3,9 +3,9 @@
 ## A. Identitas Dokumen
 
 - **Judul Proyek:** Sistem Informasi E-Commerce E-Book dan Sistem Pendukung Keputusan (SPK) Metode Simple Additive Weighting (SAW)
-- **Status Proyek Keseluruhan:** `[RENCANA]` — fondasi monorepo, kerangka `backend/`, definisi `schema.prisma`, dan template klien sudah `[ADA]`; seluruh fitur bisnis, migrasi database, integrasi pembayaran, akses PDF privat, dan `SPK SAW` masih `[RENCANA]`.
+- **Status Proyek Keseluruhan:** Sebagian `[ADA]` (fondasi monorepo, kerangka `backend/`, skema & file migrasi awal `schema.prisma`, skrip seeding simulasi, 4 suite unit test Vitest, antarmuka `web/admin-web` Neo-Brutalism, etalase `web/pengunjung-web` 9 layar, modul `mobile/ebook_store` [Splash, Auth, Katalog, Beranda], serta 9 test suite Flutter); sebagian `[RENCANA]` (seluruh REST API bisnis backend, eksekusi migrasi live ke PostgreSQL Supabase remote, integrasi payment gateway nyata, penerbitan signed URL PDF privat backend, dan mesin kalkulasi SPK SAW).
 - **Fungsi Dokumen:** Sumber kebenaran utama (*single source of truth*) dan indeks resmi status proyek.
-- **Tanggal Pembaruan Terakhir:** 14 November 2026
+- **Tanggal Pembaruan Terakhir:** 17 November 2026
 - **Audiens Dokumen:** Dosen pembimbing/penilai akademik, pemilik proyek, tim pengembang (`backend`, `web`, `mobile`), QA, serta pihak nonteknis.
 
 ### Cara Membaca Status
@@ -27,7 +27,7 @@
 - **Peran Backend:** Menjadi pusat otorisasi (`JWT` + `RBAC`), validasi input (**Zod**), pengelolaan pesanan & *webhook* pembayaran idempoten, penerbitan `signed URL`, dan perhitungan `SPK SAW`.
 - **Peran SAW:** Membantu **Pelanggan** memperoleh peringkat rekomendasi `e-book` berbasis kriteria terukur; perhitungan dikunci **hanya di `backend/`** ([ADR-0002](./adr/0002-backend-only-saw.md)).
 - **Batasan Akses PDF:** File PDF disimpan di `bucket privat` dan hanya dapat dibaca di dalam aplikasi (*in-app PDF reader*) via `signed URL` sementara setelah `backend/` memvalidasi `EbookAccess` aktif.
-- **Status Implementasi Umum:** Fondasi teknis `backend/` (`/api/v1/health`, `/api/v1/admin/ping`, middleware dasar, `schema.prisma`, dan 5 unit test Vitest) serta kerangka awal klien sudah `[ADA]`; seluruh modul bisnis masih `[RENCANA]`.
+- **Status Implementasi Umum:** Fondasi teknis `backend/` (`/api/v1/health`, `/api/v1/admin/ping`, middleware dasar, `schema.prisma`, migrasi awal, skrip seeding simulasi, dan 4 file unit test Vitest), antarmuka `web/admin-web` Neo-Brutalism, etalase `web/pengunjung-web` (9 layar lengkap), serta modul `mobile/ebook_store` (Splash, Auth, Katalog, Beranda + 9 test suite) sudah `[ADA]`; seluruh modul bisnis REST API backend, integrasi payment gateway live, dan mesin kalkulasi SAW backend masih `[RENCANA]`.
 
 ---
 
@@ -76,23 +76,23 @@ flowchart LR
 | Area | Status | Bukti atau Catatan | Dokumen Detail |
 |---|---|---|---|
 | **Fondasi Monorepo** | `[ADA]` | Struktur `backend/`, `web/`, `mobile/`, `docs/`, `.gitignore`, `AGENTS.md` | [`application-architecture.md`](./02-architecture/application-architecture.md) |
-| **Backend Express** | `[ADA]` fondasi / `[RENCANA]` bisnis | `GET /api/v1/health`, `GET /api/v1/admin/ping`, env Zod, `error.middleware.ts` di `backend/src/` | [`api-overview.md`](./02-api/api-overview.md) |
-| **Prisma & Schema Database** | `[ADA]` skema / `[RENCANA]` migrasi | `backend/prisma/schema.prisma` (8 model, 3 enum) valid `prisma validate`; `prisma/migrations/` belum ada | [`erd.md`](./01-design/erd.md) |
-| **Autentikasi Supabase** | `[ADA]` keputusan & middleware dasar / `[RENCANA]` sinkronisasi DB | `auth.middleware.ts` memanggil `supabase.auth.getUser(token)`; sinkronisasi tabel `users` belum ada | [`authentication-and-authorization.md`](./02-api/authentication-and-authorization.md) |
-| **Otorisasi Role (`RBAC`)** | `[ADA]` kerangka / `[RENCANA]` penuh | `authorize('ADMIN')` terpasang pada `/api/v1/admin/ping`; endpoint bisnis belum ada | [`authentication-and-authorization.md`](./02-api/authentication-and-authorization.md) |
-| **Katalog & Kategori** | `[RENCANA]` | Belum ada router, service, maupun endpoint katalog/kategori | [`ebook-catalog.md`](./06-modules/ebook-catalog.md) |
-| **Pembayaran** | `[RENCANA]` | Integrasi payment gateway nyata & *webhook* idempoten belum diimplementasikan | [`webhook-contract.md`](./02-api/webhook-contract.md) |
-| **Storage PDF Privat** | `[ADA]` helper dasar / `[RENCANA]` endpoint | `backend/src/integrations/storage/supabase-storage.ts` tersedia; endpoint unggah & bucket privat belum teruji | [`ebook-access.md`](./06-modules/ebook-access.md) |
-| **Akses Signed URL** | `[RENCANA]` | Endpoint `/api/v1/ebooks/{id}/access-url` dan cek `EbookAccess` belum ada | [`sequence-diagram.md`](./01-design/sequence-diagram.md) |
-| **SPK SAW** | `[RENCANA]` | Fungsi SAW, validasi bobot, dan unit test SAW belum diimplementasikan | [`saw-method.md`](./03-saw/saw-method.md) |
-| **Admin Web (`web/admin-web`)** | `[ADA]` template TS / `[RENCANA]` UI bisnis | Template Vite + React + TypeScript (`tsc --noEmit` & `lint` PASS); fitur admin belum dibuat | [`admin-dashboard.md`](./06-modules/admin-dashboard.md) |
-| **Portal Pengunjung Web (`web/pengunjung-web`)** | `[ADA]` template & keputusan #1 / `[RENCANA]` UI bisnis | Template Vite + React (`lint` & `build` PASS); fitur pelanggan web belum dibuat | [`system-scope.md`](./01-project-overview/system-scope.md) |
-| **Mobile Flutter (`mobile/ebook_store`)** | `[ADA]` template + paket / `[RENCANA]` fitur | `pubspec.yaml` memuat `flutter_riverpod`, `dio`, `flutter_secure_storage`; UI masih template | [`application-architecture.md`](./02-architecture/application-architecture.md) |
+| **Backend Express** | `[ADA]` fondasi / `[RENCANA]` bisnis | `GET /api/v1/health`, `GET /api/v1/admin/ping`, env Zod, error handling, rate limiting di `backend/src/`; endpoint bisnis belum ada | [`api-overview.md`](./02-api/api-overview.md) |
+| **Prisma & Schema Database** | `[ADA]` skema, migrasi awal & seeding / `[RENCANA]` migrasi live | `backend/prisma/schema.prisma` valid `prisma validate`; file migrasi `20261116000000_init/` `[ADA]`; skrip `seed.ts` & fixtures `seed-data.ts` `[ADA]`; eksekusi ke database Supabase live `[RENCANA]` | [`erd.md`](./01-design/erd.md) |
+| **Autentikasi Supabase** | `[ADA]` keputusan & middleware dasar + UI klien / `[RENCANA]` sync backend | `auth.middleware.ts` memanggil `supabase.auth.getUser(token)`; UI login/register di `mobile/` & `web/pengunjung-web` `[ADA]`; sinkronisasi tabel `users` backend belum ada | [`authentication-and-authorization.md`](./02-api/authentication-and-authorization.md) |
+| **Otorisasi Role (`RBAC`)** | `[ADA]` kerangka / `[RENCANA]` penuh | `authorize('ADMIN')` terpasang pada `/api/v1/admin/ping`; otorisasi endpoint bisnis belum ada | [`authentication-and-authorization.md`](./02-api/authentication-and-authorization.md) |
+| **Katalog & Kategori** | `[ADA]` UI etalase & mobile / `[RENCANA]` backend | UI penjelajahan katalog, filter kategori, search, dan detail buku `[ADA]` di `web/pengunjung-web` & `mobile/ebook_store`; router & service backend belum ada | [`ebook-catalog.md`](./06-modules/ebook-catalog.md) |
+| **Pembayaran** | `[ADA]` UI simulasi etalase / `[RENCANA]` gateway backend | UI alur pesanan & simulator status bayar `[ADA]` di `web/pengunjung-web`; integrasi payment gateway nyata & webhook idempoten backend belum diimplementasikan | [`webhook-contract.md`](./02-api/webhook-contract.md) |
+| **Storage PDF Privat** | `[ADA]` helper dasar & UI bersyarat / `[RENCANA]` endpoint live | `supabase-storage.ts` tersedia; UI pustaka bersyarat lunas di `web/pengunjung-web` `[ADA]`; endpoint upload & signed URL live belum ada | [`ebook-access.md`](./06-modules/ebook-access.md) |
+| **Akses Signed URL** | `[RENCANA]` | Endpoint `/api/v1/ebooks/{id}/access-url` dan validasi kepemilikan `EbookAccess` di backend belum ada | [`sequence-diagram.md`](./01-design/sequence-diagram.md) |
+| **SPK SAW** | `[ADA]` model dataset & UI preview / `[RENCANA]` kalkulator backend | Dataset uji manual SAW diadopsi di fixtures seed dan pratinjau kartu UI; fungsi kalkulasi SAW backend belum diimplementasikan | [`saw-method.md`](./03-saw/saw-method.md) |
+| **Admin Web (`web/admin-web`)** | `[ADA]` UI konsol Neo-Brutalism / `[RENCANA]` API backend | Konsol admin Neo-Brutalism lengkap (`AdminLayout`, `AdminSidebar`, `AdminHeader`, `DashboardPage`, KPI, grafik omzet, tabel transaksi berlabel `"DATA SIMULASI"`; `lint` & `tsc` PASS); modul submenu operasional & koneksi API backend `[RENCANA]` | [`admin-dashboard.md`](./06-modules/admin-dashboard.md) |
+| **Portal Pengunjung Web (`web/pengunjung-web`)** | `[ADA]` UI etalase 9 layar / `[RENCANA]` API backend | Etalase pelanggan lengkap 9 layar (Home, Catalog, Book Detail, Login, Register, Library, Account, Orders, Transaction Detail; `lint` & `typecheck` PASS); koneksi REST API backend `[RENCANA]` | [`system-scope.md`](./01-project-overview/system-scope.md) |
+| **Mobile Flutter (`mobile/ebook_store`)** | `[ADA]` modul Splash, Auth, Katalog, Beranda / `[RENCANA]` API backend | Modul Splash screen, Auth (Login & Register), Katalog (list, filter, detail), Beranda Neubrutalism, 9 test suite; koneksi REST API backend `[RENCANA]` | [`application-architecture.md`](./02-architecture/application-architecture.md) |
 | **Dokumentasi API** | `[ADA]` rancangan OpenAPI 3.1 / `[RENCANA]` implementasi | `docs/02-api/` lengkap (OpenAPI 3.1, kontrak webhook, katalog error, keterlacakan) | [`api-spec.yaml`](./02-api/api-spec.yaml) |
-| **Dokumentasi Desain** | `[ADA]` dokumen desain / `[RENCANA]` implementasi | `docs/01-design/` lengkap (Use Case, Activity, Sequence, Class, ERD, DFD, Component, Architecture) | [`design-traceability.md`](./01-design/design-traceability.md) |
-| **Pengujian** | `[ADA]` tes fondasi / `[RENCANA]` tes bisnis | 2 file (5 tes) Vitest backend PASS; lint/build web PASS; `flutter analyze` & `flutter test` PASS | [`test-results.md`](./09-testing/test-results.md) |
+| **Dokumentasi Desain** | `[ADA]` dokumen desain / `[RENCANA]` implementasi | `docs/01-design/` lengkap (Use Case, Activity, Sequence, Class, ERD, DFD, Component, Architecture, UI/UX) | [`design-traceability.md`](./01-design/design-traceability.md) |
+| **Pengujian** | `[ADA]` tes fondasi & UI klien / `[RENCANA]` tes bisnis | 4 file unit test Vitest backend PASS; lint & typecheck web PASS; 9 test suite Flutter `[ADA]`; tes integrasi endpoint bisnis backend `[RENCANA]` | [`test-results.md`](./09-testing/test-results.md) |
 | **Deployment** | `[RENCANA]` | Panduan konseptual tersedia; hosting backend menunggu Keputusan #10 | [`deployment.md`](./05-deployment/deployment.md) |
-| **Audit Keamanan** | `[ADA]` aturan `.gitignore` / `[RENCANA]` audit runtime | Kontrol keamanan runtime belum dapat diverifikasi karena fitur bisnis masih `[RENCANA]` | [`security-overview.md`](./07-security/security-overview.md) |
+| **Audit Keamanan** | `[ADA]` aturan `.gitignore` / `[RENCANA]` audit runtime | Aturan pencegahan secret di Git & klien `[ADA]`; audit runtime JWT & RBAC live `[RENCANA]` | [`security-overview.md`](./07-security/security-overview.md) |
 
 ---
 
@@ -145,10 +145,10 @@ Mengacu pada [ADR-0003](./adr/0003-admin-web-sebelum-mobile.md) dan [`project-pl
 
 | Fase | Tujuan | Output Utama | Ketergantungan | Kriteria Selesai | Status |
 |---|---|---|---|---|---|
-| **Fase 0 — Fondasi** | Menyiapkan struktur monorepo, skema awal, dan kerangka aplikasi. | Express + Zod + `schema.prisma`, 5 unit test, template Vite & Flutter. | — | `typecheck`, `lint`, `build`, `prisma:validate`, dan tes dasar PASS. | `[ADA]` |
-| **Fase 1 — Backend** | Membangun seluruh REST API, migrasi DB, integrasi Supabase/Gateway, dan `SPK SAW`. | Migrasi Prisma, endpoint auth/katalog/order/webhook/`signed URL`/SAW/admin. | Penguncian keputusan terbuka #5–#7, #9, #11. | Seluruh unit & integration test backend PASS + uji konektivitas DB berhasil. | `[RENCANA]` |
-| **Fase 2 — Admin Web** | Menyediakan antarmuka operasional **Admin** bergaya Neo-Brutalism. | `web/admin-web` terhubung penuh ke API backend nyata. | Fase 1 selesai & teruji. | Admin dapat CRUD katalog/PDF & pantau transaksi; `lint` & `build` PASS. | `[RENCANA]` |
-| **Fase 3 — Mobile & Web Pengunjung** | Menyediakan aplikasi **Pelanggan** di Android (`ebook_store`) dan web (`pengunjung-web`). | Autentikasi, katalog, rekomendasi SAW, checkout, bayar, *in-app PDF reader*. | Fase 1 & Fase 2 (data katalog nyata) siap. | Alur *end-to-end* beli hingga baca PDF lulus; `flutter analyze` & `test` PASS. | `[RENCANA]` |
+| **Fase 0 — Fondasi** | Menyiapkan struktur monorepo, skema awal, dan kerangka aplikasi. | Express + Zod + `schema.prisma`, unit test Vitest, template Vite & Flutter. | — | `typecheck`, `lint`, `build`, `prisma:validate`, dan tes dasar PASS. | `[ADA]` |
+| **Fase 1 — Backend** | Membangun seluruh REST API, migrasi DB, integrasi Supabase/Gateway, dan `SPK SAW`. | Migrasi Prisma awal & skrip seeding `[ADA]`; endpoint auth/katalog/order/webhook/`signed URL`/SAW/admin `[RENCANA]`. | Penguncian keputusan terbuka #5–#7, #9, #11. | Seluruh unit & integration test backend PASS + uji konektivitas DB berhasil. | Sebagian `[ADA]` (migrasi & seed) / `[RENCANA]` (API) |
+| **Fase 2 — Admin Web** | Menyediakan antarmuka operasional **Admin** bergaya Neo-Brutalism. | `web/admin-web` konsol dashboard Neo-Brutalism `[ADA]`; terhubung penuh ke API backend nyata `[RENCANA]`. | Fase 1 selesai & teruji. | Admin dapat CRUD katalog/PDF & pantau transaksi; `lint` & `build` PASS. | Sebagian `[ADA]` (UI) / `[RENCANA]` (API) |
+| **Fase 3 — Mobile & Web Pengunjung** | Menyediakan aplikasi **Pelanggan** di Android (`ebook_store`) dan web (`pengunjung-web`). | Etalase 9 layar pengunjung web `[ADA]`; modul Splash, Auth, Katalog, Beranda mobile `[ADA]`; integrasi API backend & *in-app PDF reader* live `[RENCANA]`. | Fase 1 & Fase 2 (data katalog nyata) siap. | Alur *end-to-end* beli hingga baca PDF lulus; `flutter analyze` & `test` PASS. | Sebagian `[ADA]` (UI) / `[RENCANA]` (API) |
 | **Fase 4 — Pengujian Terpadu, Keamanan & Deployment** | Memverifikasi kualitas, keamanan, dan kesiapan rilis sistem. | Laporan uji `test-cases.md`, audit secret/RBAC/PDF privat, konfigurasi deploy. | Fase 1–3 selesai + Keputusan #10. | Nol kebocoran secret, seluruh skenario `test-cases.md` lulus. | `[RENCANA]` |
 
 ---

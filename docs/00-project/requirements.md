@@ -89,12 +89,12 @@ Merujuk pada [`ADR-0002`](../adr/0002-backend-only-saw.md) dan [`saw-method.md`]
 
 | ID | Referensi `business-requirements.md` | Entitas Prisma (`schema.prisma`) | Rancangan Endpoint (`api-endpoints.md`) | Aplikasi Target | Kasus Uji (`test-cases.md`) | Status |
 |---|---|---|---|---|---|---|
-| **FR-C01, FR-C02** | `BR-C01` | `User` | `POST /auth/register`, `POST /auth/login`, `GET /users/me` | Mobile, Pengunjung Web, Backend | Auth & Profile Tests | `[RENCANA]` |
-| **FR-C03, FR-C04, FR-C05** | `BR-C02`, `BR-C03`, `BR-C04` | `Category`, `Ebook` | `GET /categories`, `GET /ebooks`, `GET /ebooks/:id` | Mobile, Pengunjung Web, Backend | Catalog & Search Tests | `[RENCANA]` |
-| **FR-C06, FR-S01..S06** | `BR-C03` | `Ebook`, `Category` *(+ model SAW `[RENCANA]`)* | `GET /recommendations/saw` *(rancangan)* | Mobile, Pengunjung Web, Backend | SAW Unit & Manual Match Tests | `[RENCANA]` |
-| **FR-C07, FR-C08, FR-C09** | `BR-C05`, `BR-C06`, `BR-C07` | `Order`, `OrderItem`, `Payment` | `POST /orders`, `POST /payments`, `POST /payments/webhook` | Mobile, Pengunjung Web, Backend | Order & Payment Webhook Tests | `[RENCANA]` |
-| **FR-C10, FR-C11** | `BR-C08`, `BR-C09` | `Transaction`, `EbookAccess` | `GET /orders/me`, `GET /ebooks/:id/access-url` | Mobile, Pengunjung Web, Backend | Access Control & Signed URL Tests | `[RENCANA]` |
-| **FR-A01, FR-A02** | `BR-A01`, `BR-A02` | `User`, `Order`, `Transaction`, `Ebook` | `POST /auth/login`, `GET /admin/dashboard` | Admin Web, Backend | RBAC Admin (`403`) & Dashboard Tests | `[RENCANA]` |
+| **FR-C01, FR-C02** | `BR-C01` | `User` | `POST /auth/register`, `POST /auth/login`, `GET /users/me` | Mobile, Pengunjung Web, Backend | Auth & Profile Tests | `[ADA]` UI Klien / `[RENCANA]` Backend |
+| **FR-C03, FR-C04, FR-C05** | `BR-C02`, `BR-C03`, `BR-C04` | `Category`, `Ebook` | `GET /categories`, `GET /ebooks`, `GET /ebooks/:id` | Mobile, Pengunjung Web, Backend | Catalog & Search Tests | `[ADA]` UI Klien / `[RENCANA]` Backend |
+| **FR-C06, FR-S01..S06** | `BR-C03` | `Ebook`, `Category` *(+ model SAW `[RENCANA]`)* | `GET /recommendations/saw` *(rancangan)* | Mobile, Pengunjung Web, Backend | SAW Unit & Manual Match Tests | `[ADA]` UI Preview & Seed / `[RENCANA]` Backend |
+| **FR-C07, FR-C08, FR-C09** | `BR-C05`, `BR-C06`, `BR-C07` | `Order`, `OrderItem`, `Payment` | `POST /orders`, `POST /payments`, `POST /payments/webhook` | Mobile, Pengunjung Web, Backend | Order & Payment Webhook Tests | `[ADA]` UI Pengunjung Web / `[RENCANA]` Backend |
+| **FR-C10, FR-C11** | `BR-C08`, `BR-C09` | `Transaction`, `EbookAccess` | `GET /orders/me`, `GET /ebooks/:id/access-url` | Mobile, Pengunjung Web, Backend | Access Control & Signed URL Tests | `[ADA]` UI Pengunjung Web / `[RENCANA]` Backend |
+| **FR-A01, FR-A02** | `BR-A01`, `BR-A02` | `User`, `Order`, `Transaction`, `Ebook` | `POST /auth/login`, `GET /admin/dashboard` | Admin Web, Backend | RBAC Admin (`403`) & Dashboard Tests | `[ADA]` UI Admin Web / `[RENCANA]` Backend |
 | **FR-A03, FR-A04** | `BR-A03`, `BR-A04` | `Category`, `Ebook` | `POST/PATCH/DELETE /admin/categories`, `/admin/ebooks` | Admin Web, Backend | Admin CRUD & Storage Upload Tests | `[RENCANA]` |
 | **FR-A05..A09** | `BR-A06`–`BR-A10` | `User`, `Order`, `Payment`, `Transaction` | `GET /admin/customers`, `/admin/orders`, `/admin/reports/sales` | Admin Web, Backend | Admin Monitoring & Report Tests | `[RENCANA]` |
 | **FR-A10, FR-A11** | — | `EbookAccess` *(+ model bobot SAW `[RENCANA]`)* | `PUT /admin/saw/weights`, `PATCH /admin/accesses/:id` | Admin Web, Backend | SAW Weight Validation & Revoke Tests | `[RENCANA]` |

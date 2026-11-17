@@ -5,7 +5,7 @@
 - **Apa proyek ini:** Sistem informasi e-commerce penjualan buku elektronik (`e-book`) berbasis *single-seller B2C* yang dilengkapi Sistem Pendukung Keputusan (`SPK SAW`) untuk rekomendasi `e-book`.
 - **Tujuan sistem:** Mempermudah **Pelanggan** menemukan, membeli, dan membaca `e-book` secara aman di dalam aplikasi, serta membantu **Admin** mengelola katalog, transaksi, laporan penjualan, dan bobot rekomendasi secara terpusat.
 - **Pengguna utama:** **Pelanggan** (`mobile/ebook_store` dan `web/pengunjung-web`) serta **Admin** (`web/admin-web`).
-- **Status umum proyek:** `[RENCANA]` — fondasi `backend/` (`/api/v1/health`, `/api/v1/admin/ping`, middleware dasar, `schema.prisma`, dan 5 unit test) serta template awal klien sudah `[ADA]`, sedangkan seluruh fitur bisnis belum diimplementasikan (`[RENCANA]`).
+- **Status umum proyek:** Sebagian `[ADA]` (fondasi `backend/`, skema & file migrasi awal Prisma, skrip seeding berlabel `"DATA SIMULASI"`, 4 file unit test Vitest, antarmuka `web/admin-web` Neo-Brutalism, etalase `web/pengunjung-web` 9 layar, modul `mobile/ebook_store` [Splash, Auth, Katalog, Beranda], serta 9 test suite Flutter); sebagian `[RENCANA]` (seluruh REST API bisnis backend, eksekusi migrasi live ke PostgreSQL Supabase remote, integrasi payment gateway nyata, signed URL PDF privat backend, dan mesin kalkulasi SPK SAW).
 - **Sumber kebenaran utama:** [`docs-proyek-ebook-ecommerce.md`](./docs-proyek-ebook-ecommerce.md).
 
 ---
@@ -91,12 +91,13 @@ docs/
 
 | Area | Teknologi | Status Berdasarkan Bukti |
 |---|---|---|
-| **Backend** | Node.js, Express, TypeScript, Zod, Prisma 7 (ESM) | `[ADA]` di `backend/package.json` & `backend/src/` |
-| **Database** | PostgreSQL Supabase | `[ADA]` definisi di `backend/prisma/schema.prisma`; migrasi `[RENCANA]` |
-| **Storage** | Supabase Storage privat (`signed URL`) | `[ADA]` helper dasar di `backend/src/integrations/storage/`; bucket & endpoint `[RENCANA]` |
-| **Admin Web** | React, TypeScript, Vite (Neo-Brutalism) | `[ADA]` template TypeScript di `web/admin-web/package.json`; UI bisnis `[RENCANA]` |
-| **Mobile** | Flutter, Riverpod, Dio (Android) | `[ADA]` template & paket di `mobile/ebook_store/pubspec.yaml`; fitur `[RENCANA]` |
-| **SPK** | Metode SAW di `backend/` | Aturan arsitektur terkunci ([ADR-0002](./adr/0002-backend-only-saw.md)); implementasi `[RENCANA]` |
+| **Backend** | Node.js, Express, TypeScript, Zod, Prisma 7 (ESM) | `[ADA]` di `backend/package.json`, `src/`, dan 4 file test Vitest; endpoint bisnis `[RENCANA]` |
+| **Database** | PostgreSQL Supabase | `[ADA]` skema di `backend/prisma/schema.prisma`, file migrasi awal `20261116000000_init/`, skrip `seed.ts` & fixtures `seed-data.ts`; eksekusi live `[RENCANA]` |
+| **Storage** | Supabase Storage privat (`signed URL`) | `[ADA]` helper dasar di `backend/src/integrations/storage/`; bucket live & endpoint signed URL `[RENCANA]` |
+| **Admin Web** | React, TypeScript, Vite (Neo-Brutalism) | `[ADA]` konsol admin Neo-Brutalism di `web/admin-web/src/` (`AdminLayout`, `AdminSidebar`, `DashboardPage` berlabel `"DATA SIMULASI"`; `lint` & `tsc` PASS); modul CRUD & integrasi API `[RENCANA]` |
+| **Pengunjung Web** | React, TypeScript, Vite (Neubrutalism) | `[ADA]` etalase pelanggan 9 layar di `web/pengunjung-web/src/` berlabel `"DATA SIMULASI"` (`lint` & `typecheck` PASS); integrasi API `[RENCANA]` |
+| **Mobile** | Flutter, Riverpod, Dio (Android) | `[ADA]` modul Splash, Auth (Login, Register), Katalog, Beranda di `mobile/ebook_store/lib/` + 9 test suite; integrasi API `[RENCANA]` |
+| **SPK** | Metode SAW di `backend/` | Aturan arsitektur terkunci ([ADR-0002](./adr/0002-backend-only-saw.md)); dataset diadopsi di seed & UI; kalkulator backend `[RENCANA]` |
 
 ---
 

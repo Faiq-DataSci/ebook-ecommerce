@@ -9,22 +9,30 @@ Aplikasi mobile Flutter untuk **Sistem Informasi E-Commerce E-Book & Sistem Pend
 ## Status Implementasi
 
 ### `[ADA]` Sudah Tersedia Saat Ini
-- **Beranda Mobile (Neubrutalism):** Implementasi UI Light Mode (*Newsprint Palette* `#FFFDF5`) di `lib/screens/home/home_screen.dart` dan `lib/widgets/home/` yang mencakup:
+- **Arsitektur Modular 3 Lapis (`lib/features/`):** Struktur fitur bersih memisahkan `data/` (models, datasources, repository impl), `domain/` (entities, repository contracts), dan `presentation/` (pages, widgets, providers) sesuai panduan `mobile/AGENTS.md`.
+- **Splash Screen:** `lib/features/splash/presentation/pages/splash_screen.dart` dan widget terkait sebagai loading awal aplikasi.
+- **Autentikasi (Login & Registrasi):** 
+  - `lib/features/auth/presentation/pages/login_screen.dart` dan `register_screen.dart`.
+  - Panel validasi, banner error, kontrol visibilitas kata sandi, dan penyimpanan token aman dengan `FlutterSecureStorage` via `auth_local_datasource.dart`.
+  - State management autentikasi menggunakan `auth_provider.dart`.
+- **Katalog & Detail E-Book:**
+  - `lib/features/catalog/presentation/pages/catalog_screen.dart` dan `ebook_detail_screen.dart`.
+  - Fitur pencarian terfilter, filter rentang harga modal sheet, pill kategori, dan active filter chips.
+  - Data model `catalog_ebook_model.dart`, `catalog_category_model.dart`, dan mock datasource berlabel `"DATA SIMULASI"`.
+- **Beranda Mobile (Neubrutalism):** Implementasi UI Light Mode (*Newsprint Palette* `#FFFDF5`) di `lib/features/home/presentation/pages/home_screen.dart` yang mencakup:
   - Header (`BUKUKITA`), tombol indikator mode terang, badge keranjang, sapaan pengguna, dan badge `KURASI PINTAR`.
-  - Search bar (`Cari judul, penulis, ISBN...`) dengan filter langsung.
-  - Hero Banner (`ASISTEN BACAAN` / `Bingung Pilih Buku?`) dan modal `REKOMENDASI TERKURASI`.
+  - Search bar dengan filter langsung, Hero Banner rekomendasi terkurasi, dan modal dialog.
   - Bagian `KATEGORI PILIHAN` (6 bidang: Semua, Teknologi & AI, Bisnis & Finansial, Desain & UI/UX, Sains & Riset, Sastra & Fiksi).
-  - Kartu Rekomendasi Terbaik `#1` (`Rekomendasi Terbaik Untukmu`), `Rilisan Terbaru`, `FLASH SALE & BUNDEL HEMAT`, serta Bottom Navigation (`Beranda`, `Katalog`, `Pustaka`, `Profil`).
-- **State Management (`flutter_riverpod`):** `HomeNotifier` di `lib/providers/home_provider.dart` mengelola pencarian, pemilihan kategori, tab navigasi, penghitung keranjang, dan 4 status tampilan (`loaded`, `loading`, `empty`, `error` lengkap dengan tombol coba lagi).
-- **Konfigurasi HTTP & Lingkungan (`dio`):** `ApiConfig` (`lib/core/config/api_config.dart`) dan `dioClientProvider` (`lib/core/network/dio_client.dart`) sudah disiapkan secara terpusat.
-- **Data Simulasi (`DATA SIMULASI`):** `HomeMockData` (`lib/data/mock/home_mock_data.dart`) menyediakan data contoh berlabel eksplisit `"DATA SIMULASI"` sebelum integrasi API penuh.
-- **Pratinjau & Pengujian:** Dukungan `DevicePreview` (default iPhone 13 pada mode non-release) di `lib/main.dart` serta widget test di `test/widget_test.dart`.
+  - Kartu Rekomendasi Terbaik `#1`, Rilisan Terbaru, Flash Sale, dan Bottom Navigation.
+- **State Management (`flutter_riverpod`):** Provider `home_provider.dart`, `catalog_provider.dart`, dan `auth_provider.dart` mengelola seluruh interaksi UI.
+- **Konfigurasi HTTP & Lingkungan (`dio`):** `ApiConfig` (`lib/core/config/api_config.dart`) dan `dioClientProvider` (`lib/core/network/dio_client.dart`) siap pakai.
+- **Data Simulasi (`DATA SIMULASI`):** Data mock terpusat berlabel eksplisit `"DATA SIMULASI"` sebelum integrasi API penuh.
+- **Suite Pengujian Terpadu (9 File Tes):** Seluruh file pengujian di `test/` (`splash_screen_test.dart`, `login_screen_test.dart`, `register_screen_test.dart`, `login_error_state_test.dart`, `catalog_screen_test.dart`, `catalog_filter_test.dart`, `catalog_model_test.dart`, `home_book_detail_test.dart`, `widget_test.dart`).
 
 ### `[RENCANA]` Tahap Pengembangan Berikutnya
-- **Integrasi Backend REST API (`/api/v1`):** Menghubungkan katalog, detail buku, keranjang, transaksi, dan hasil rekomendasi SAW langsung ke backend Express + TypeScript.
-- **Autentikasi & Penyimpanan Aman:** Login/registrasi pengguna dengan penyimpanan token menggunakan `flutter_secure_storage`.
-- **Halaman Lanjutan:** Implementasi penuh layar Katalog, Pustaka Saya, Profil, Checkout, dan pembaca PDF melalui *signed URL* sementara dari backend.
-- **Arsitektur 3 Lapis per Fitur:** Penataan modul fitur ke `lib/features/<nama>/` (`data/`, `domain/`, `presentation/`) sesuai panduan di `mobile/AGENTS.md`.
+- **Integrasi Backend REST API Nyata (`/api/v1`):** Menghubungkan katalog, autentikasi Supabase, pesanan, dan hasil rekomendasi SAW langsung ke backend Express + TypeScript.
+- **Pembaca PDF Dalam Aplikasi (*In-App PDF Reader*):** Membuka file PDF terenkripsi/privat melalui *signed URL* sementara dari backend setelah status pesanan lunas terverifikasi.
+- **Checkout & Alur Pembayaran:** Integrasi formulir checkout dan pembayaran Midtrans Snap.
 
 ---
 
@@ -55,24 +63,18 @@ lib/
 │   │   └── app_assets.dart           # Konstanta path aset gambar/font
 │   └── network/
 │       └── dio_client.dart           # Provider Dio terpusat (dioClientProvider)
-├── data/
-│   └── mock/
-│       └── home_mock_data.dart       # Data placeholder berlabel "DATA SIMULASI"
-├── models/
-│   ├── category.dart                 # Model kategori e-book
-│   └── ebook.dart                    # Model e-book, bundel, dan breakdown SAW
-├── providers/
-│   └── home_provider.dart            # StateNotifierProvider untuk layar Beranda
-├── screens/
-│   └── home/
-│       └── home_screen.dart          # Layar utama Beranda Mobile (Neubrutalism)
-├── theme/
-│   ├── app_colors.dart               # Token warna Neubrutalism (NbPalette)
-│   └── app_theme.dart                # Tema Material & helper AppTheme.brutalBox
-└── widgets/
-    ├── common/
-    │   └── iphone_preview_frame.dart # Frame pratinjau iPhone
-    └── home/                         # Komponen modular Beranda (header, banner, kartu, dll.)
+│   ├── utils/
+│   │   └── rupiah_formatter.dart     # Formatter nominal Rupiah
+│   └── widgets/
+│       └── iphone_preview_frame.dart # Frame pratinjau iPhone
+├── features/
+│   ├── auth/                         # Data, Domain, Presentation (Login, Register, Token Storage)
+│   ├── catalog/                      # Data, Domain, Presentation (Katalog, Filter, Detail E-Book)
+│   ├── home/                         # Data, Domain, Presentation (Beranda, Banner, Rekomendasi)
+│   └── splash/                       # Presentation (Splash screen & transisi)
+└── theme/
+    ├── app_colors.dart               # Token warna Neubrutalism (NbPalette)
+    └── app_theme.dart                # Tema Material & helper AppTheme.brutalBox
 ```
 
 ---

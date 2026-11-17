@@ -7,8 +7,11 @@
 
 ## 1. Status Saat Ini (`[ADA]` vs `[RENCANA]`)
 
-- **Sudah `[ADA]`:** [`backend/prisma/schema.prisma`](../../backend/prisma/schema.prisma) (8 model, 3 enum), [`backend/prisma.config.ts`](../../backend/prisma.config.ts) (Prisma 7 menunjuk direktori `prisma/migrations`), dan [`backend/src/config/prisma.ts`](../../backend/src/config/prisma.ts). Perintah `npx prisma validate` telah terbukti lulus di [`test-results.md`](../09-testing/test-results.md).
-- **Masih `[RENCANA]`:** Direktori `backend/prisma/migrations/` belum ada dan belum ada migrasi yang dijalankan ke PostgreSQL Supabase.
+- **Sudah `[ADA]`:** 
+  1. [`backend/prisma/schema.prisma`](../../backend/prisma/schema.prisma) (8 model, 3 enum), [`backend/prisma.config.ts`](../../backend/prisma.config.ts) (Prisma 7 menunjuk direktori `prisma/migrations`), dan [`backend/src/config/prisma.ts`](../../backend/src/config/prisma.ts). Perintah `npx prisma validate` telah terbukti lulus di [`test-results.md`](../09-testing/test-results.md).
+  2. Direktori [`backend/prisma/migrations/20261116000000_init/`](../../backend/prisma/migrations/20261116000000_init) berisi file SQL migrasi awal `migration.sql` serta `migration_lock.toml`.
+  3. Kode Prisma Client ter-generate di [`backend/src/generated/prisma/`](../../backend/src/generated/prisma).
+- **Masih `[RENCANA]`:** Eksekusi migrasi langsung (`prisma migrate deploy`) ke instance remote PostgreSQL Supabase belum dijalankan dan membutuhkan verifikasi koneksi jaringan/kredensial live.
 
 ---
 
@@ -24,8 +27,8 @@
 
 | Tahap | Aktivitas | Prasyarat | Artefak | Validasi | Risiko | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **M-01** | **Migrasi Awal 8 Model Inti** (`User`, `Category`, `Ebook`, `Order`, `OrderItem`, `Payment`, `Transaction`, `EbookAccess`) | `DATABASE_URL` / `DIRECT_URL` valid; `prisma validate` lulus | `prisma/migrations/<timestamp>_init/` | Verifikasi tabel, enum, FK, dan indeks di PostgreSQL | Koneksi gagal atau konflik tabel lama di Supabase | `[RENCANA]` |
-| **M-02** | **Sinkronisasi Prisma Client** (`npx prisma generate`) | Migrasi `M-01` atau skema final siap | `backend/src/generated/prisma/` | `npm run typecheck` lulus | Ketidakcocokan versi client dengan schema | `[RENCANA]` |
+| **M-01** | **Migrasi Awal 8 Model Inti** (`User`, `Category`, `Ebook`, `Order`, `OrderItem`, `Payment`, `Transaction`, `EbookAccess`) | `DATABASE_URL` / `DIRECT_URL` valid; `prisma validate` lulus | `prisma/migrations/20261116000000_init/` | Verifikasi tabel, enum, FK, dan indeks di PostgreSQL | Koneksi gagal atau konflik tabel lama di Supabase | `[ADA]` file SQL / `[RENCANA]` deploy live |
+| **M-02** | **Sinkronisasi Prisma Client** (`npx prisma generate`) | Migrasi `M-01` atau skema final siap | `backend/src/generated/prisma/` | `npm run typecheck` lulus | Ketidakcocokan versi client dengan schema | `[ADA]` |
 | **M-03** | **Migrasi Model Tambahan SAW & Ulasan** (`SawCriterionConfig`, `SawCalculationSnapshot`, `Review`) | Keputusan Terbuka #5, #6, #7, #9, #11 telah dikunci | `prisma/migrations/<timestamp>_saw_and_reviews/` | `prisma validate` + unit/integration test backend | Migrasi berulang bila kriteria SAW berubah | `[RENCANA]` |
 | **M-04** | **Migrasi Check Constraint / Indeks Lanjutan** (opsional jika diperlukan) | Pengujian beban & kebutuhan laporan penjualan | Migrasi SQL tambahan | Uji query & constraint negatif ditolak | Lock tabel sementara jika data sudah besar | `[RENCANA]` |
 

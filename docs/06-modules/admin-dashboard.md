@@ -1,6 +1,6 @@
 # Modul Dashboard Admin & Laporan Penjualan (`Admin Dashboard & Sales Reporting`)
 
-**Status Implementasi:** `[RENCANA]` — Endpoint dashboard & laporan penjualan serta UI bisnis `web/admin-web` belum diimplementasikan. Endpoint uji otorisasi `GET /api/v1/admin/ping` sudah `[ADA]` pada [`backend/src/app.ts`](../../backend/src/app.ts).
+**Status Implementasi:** Sebagian `[ADA]` (UI konsol admin Neo-Brutalism pada [`web/admin-web`](../../web/admin-web) mencakup `AdminLayout`, `AdminSidebar`, `AdminHeader`, `DashboardPage`, dan `DashboardContent` dengan metrik ringkasan berlabel `"DATA SIMULASI"`; endpoint otorisasi `GET /api/v1/admin/ping` sudah `[ADA]`); sebagian `[RENCANA]` (endpoint agregasi bisnis `/api/v1/admin/dashboard` dan `/api/v1/admin/reports/sales` di backend belum diimplementasikan).
 
 ---
 
