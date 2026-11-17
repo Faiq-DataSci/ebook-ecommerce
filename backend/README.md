@@ -4,22 +4,7 @@
 The **backend** is the core of the e‑book e‑commerce system. It exposes a **RESTful API** that powers the mobile app, the admin web UI, and performs **Simple Additive Weighting (SAW)** calculations for recommendation scores. All business logic, authentication, and data persistence live here.
 
 ---
-## Architecture Diagram
-```mermaid
-flowchart LR
-    Mobile[Mobile (Flutter)] -->|HTTPS| API[API Gateway]
-    Web[Web Admin (React)] -->|HTTPS| API
-    API --> Auth[Auth Service]
-    API --> Books[Books Service]
-    API --> Orders[Orders Service]
-    API --> SAW[SAW Engine]
-    Auth --> DB[(PostgreSQL)]
-    Books --> DB
-    Orders --> DB
-    SAW --> DB
-    Books --> PDF[PDF Bucket]
-    Orders --> PDF
-```
+
 ---
 ## Tech Stack
 - **Node.js (ESM)** – runtime
