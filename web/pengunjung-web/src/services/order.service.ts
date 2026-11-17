@@ -88,7 +88,7 @@ export const orderService = {
 
     return paidOrders.map((order) => {
       const existingAccess = INITIAL_PURCHASED_LIBRARY.find(
-        (item) => item.bookId === order.bookId,
+        (item: PurchasedBookAccess) => item.bookId === order.bookId,
       );
       if (existingAccess) {
         return existingAccess;

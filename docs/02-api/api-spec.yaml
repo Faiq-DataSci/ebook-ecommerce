@@ -77,8 +77,8 @@ paths:
     post:
       tags: [Auth]
       summary: Sinkronisasi profil pengguna Supabase Auth ke database aplikasi
-      description: "[RENCANA] Memverifikasi Bearer JWT Supabase Auth dan menyinkronkan record User di PostgreSQL tanpa menyimpan password di backend."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Memverifikasi Bearer JWT Supabase Auth dan menyinkronkan record User di PostgreSQL tanpa menyimpan password di backend."
+      x-implementation-status: "[ADA]"
       x-required-role: CUSTOMER | ADMIN
       security:
         - bearerAuth: []
@@ -109,8 +109,8 @@ paths:
     get:
       tags: [Profile]
       summary: Lihat profil pengguna aktif
-      description: "[RENCANA] Mengambil profil pengguna terautentikasi berdasarkan Bearer JWT."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Mengambil profil pengguna terautentikasi berdasarkan Bearer JWT."
+      x-implementation-status: "[ADA]"
       x-required-role: CUSTOMER | ADMIN
       security:
         - bearerAuth: []
@@ -126,8 +126,8 @@ paths:
     patch:
       tags: [Profile]
       summary: Perbarui profil pengguna aktif
-      description: "[RENCANA] Memperbarui fullName dan phone milik pengguna aktif (tidak dapat mengubah role atau isActive)."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Memperbarui fullName dan phone milik pengguna aktif (tidak dapat mengubah role atau isActive)."
+      x-implementation-status: "[ADA]"
       x-required-role: CUSTOMER | ADMIN
       security:
         - bearerAuth: []
@@ -161,8 +161,8 @@ paths:
     get:
       tags: [Categories]
       summary: Daftar kategori e-book aktif
-      description: "[RENCANA] Mengambil seluruh kategori aktif untuk filter katalog."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Mengambil seluruh kategori aktif untuk filter katalog."
+      x-implementation-status: "[ADA]"
       x-required-role: PUBLIC
       responses:
         "200":
@@ -176,8 +176,8 @@ paths:
     get:
       tags: [Ebooks]
       summary: Daftar dan pencarian katalog e-book aktif
-      description: "[RENCANA] Menampilkan katalog e-book dengan isActive=true tanpa mengekspos storagePath privat."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Menampilkan katalog e-book dengan isActive=true tanpa mengekspos storagePath privat."
+      x-implementation-status: "[ADA]"
       x-required-role: PUBLIC
       parameters:
         - $ref: "#/components/parameters/PageParam"
@@ -203,8 +203,8 @@ paths:
     get:
       tags: [Ebooks]
       summary: Detail e-book
-      description: "[RENCANA] Menampilkan metadata lengkap e-book aktif tanpa storagePath privat."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Menampilkan metadata lengkap e-book aktif tanpa storagePath privat."
+      x-implementation-status: "[ADA]"
       x-required-role: PUBLIC
       parameters:
         - $ref: "#/components/parameters/UuidIdParam"
@@ -251,8 +251,8 @@ paths:
     post:
       tags: [Orders]
       summary: Buat pesanan baru (checkout)
-      description: "[RENCANA] Membuat Order PENDING beserta OrderItem; totalAmount dan unitPrice dihitung dari harga Ebook di database."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Membuat Order PENDING beserta OrderItem; totalAmount dan unitPrice dihitung dari harga Ebook di database."
+      x-implementation-status: "[ADA]"
       x-required-role: CUSTOMER
       security:
         - bearerAuth: []
@@ -291,8 +291,8 @@ paths:
     get:
       tags: [Orders]
       summary: Daftar pesanan milik pelanggan aktif
-      description: "[RENCANA] Mengambil riwayat pesanan milik userId dari JWT."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Mengambil riwayat pesanan milik userId dari JWT."
+      x-implementation-status: "[ADA]"
       x-required-role: CUSTOMER
       security:
         - bearerAuth: []
@@ -314,8 +314,8 @@ paths:
     get:
       tags: [Orders]
       summary: Detail pesanan milik pelanggan aktif
-      description: "[RENCANA] Menampilkan detail pesanan apabila dimiliki oleh userId pada JWT."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Menampilkan detail pesanan apabila dimiliki oleh userId pada JWT."
+      x-implementation-status: "[ADA]"
       x-required-role: CUSTOMER
       security:
         - bearerAuth: []
@@ -401,8 +401,8 @@ paths:
     post:
       tags: [Webhooks]
       summary: Callback webhook dari Payment Gateway
-      description: "[RENCANA] Menerima notifikasi status pembayaran dari Payment Gateway (tanpa JWT pelanggan), wajib verifikasi signature dan bersifat idempoten."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Menerima notifikasi status pembayaran dari Payment Gateway (tanpa JWT pelanggan), wajib verifikasi signature dan bersifat idempoten."
+      x-implementation-status: "[ADA]"
       x-required-role: PAYMENT_GATEWAY
       parameters:
         - name: X-Webhook-Signature
@@ -442,8 +442,8 @@ paths:
     get:
       tags: [Ebook Access]
       summary: Minta signed URL sementara untuk membaca PDF
-      description: "[RENCANA] Memverifikasi EbookAccess aktif (!isRevoked) untuk (userId, ebookId) lalu menerbitkan signed URL sementara dari bucket privat."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Memverifikasi EbookAccess aktif (!isRevoked) untuk (userId, ebookId) lalu menerbitkan signed URL sementara dari bucket privat."
+      x-implementation-status: "[ADA]"
       x-required-role: CUSTOMER
       security:
         - bearerAuth: []

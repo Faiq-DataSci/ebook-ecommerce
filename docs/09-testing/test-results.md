@@ -12,7 +12,7 @@ Validasi Prisma memuat skema dan konfigurasi; file migrasi awal `20261116000000_
 | Komponen | Perintah | Hasil | Catatan |
 |---|---|---|---|
 | Backend typecheck | `npm run typecheck` | **PASS** | `tsc --noEmit`, tanpa error |
-| Backend test | `npm run test` | **PASS** | 4 file suite tes (Vitest): `health.test.ts`, `validate.test.ts`, `error-middleware.test.ts`, `seed-data.test.ts` |
+| Backend test | `npm run test` | **PASS** | 13 file suite tes (Vitest): 83 skenario pengujian unit & integrasi lulus 100% |
 | Backend build | `npm run build` | **PASS** | `tsc` menghasilkan `dist/` |
 | Backend Prisma schema | `npm run prisma:validate` | **PASS** | `"The schema at prisma\schema.prisma is valid 🚀"` |
 | Admin Web lint | `npm run lint` | **PASS** | ESLint tanpa temuan |
@@ -31,6 +31,15 @@ Validasi Prisma memuat skema dan konfigurasi; file migrasi awal `20261116000000_
 | 2 | `backend/tests/unit/validate.test.ts` | Middleware validasi input Zod & helper respons `sendSuccess` | Unit | **PASS** |
 | 3 | `backend/tests/unit/error-middleware.test.ts` | Transformasi `AppError`, `ZodError`, dan unhandled error ke respons terstandar | Unit | **PASS** |
 | 4 | `backend/tests/unit/seed-data.test.ts` | Invarian label `"DATA SIMULASI"`, hak akses `EbookAccess` hanya untuk pesanan `PAID`, serta konsistensi total order | Unit | **PASS** |
+| 5 | `backend/tests/unit/user.service.test.ts` | Sinkronisasi Supabase Auth, pemeriksaan aktivasi akun, dan pembaruan profil pengguna | Unit | **PASS** |
+| 6 | `backend/tests/unit/catalog.service.test.ts` | Query kategori aktif, pagination katalog, filter, sanitasi `storagePath`, dan 404 handler | Unit | **PASS** |
+| 7 | `backend/tests/unit/order.service.test.ts` | Perhitungan total harga server, validasi e-book aktif, larangan duplikasi akses, paginasi, dan proteksi IDOR | Unit | **PASS** |
+| 8 | `backend/tests/unit/payment.service.test.ts` | Verifikasi signature HMAC SHA512, penanganan idempoten, mismatch amount, dan transaksi status pembayaran | Unit | **PASS** |
+| 9 | `backend/tests/unit/ebook-access.service.test.ts` | Otorisasi unduh PDF privat, status dicabut (`isRevoked`), bypass admin, dan signed URL Supabase Storage | Unit | **PASS** |
+| 10 | `backend/tests/unit/saw.service.test.ts` | Engine kalkulator SAW: normalisasi Benefit/Cost, validasi bobot total 1.0, tie-breaker A-Z, dan kecocokan exact dataset `perhitungan-manual.md` | Unit | **PASS** |
+| 11 | `backend/tests/integration/user-auth-routes.test.ts` | Guard 401 dan flow endpoint `/api/v1/auth/sync` serta `/api/v1/users/me` | Integration (Supertest) | **PASS** |
+| 12 | `backend/tests/integration/catalog-routes.test.ts` | Endpoint publik `/api/v1/categories`, `/api/v1/ebooks`, dan `/api/v1/ebooks/:id` | Integration (Supertest) | **PASS** |
+| 13 | `backend/tests/integration/order-payment-routes.test.ts` | Endpoint `/api/v1/orders`, `/api/v1/orders/me`, `/api/v1/orders/:id`, `/api/v1/payments/webhook`, dan `/api/v1/ebooks/:id/access-url` | Integration (Supertest) | **PASS** |
 
 ---
 

@@ -1,7 +1,7 @@
 # Perhitungan Manual Metode SAW (`DATA SIMULASI`)
 
 > **PERINGATAN INTEGRITAS DATA:** Seluruh judul e-book, harga, rating, jumlah terjual, bobot, skor, dan hasil ranking pada dokumen ini adalah **`DATA SIMULASI`** untuk keperluan verifikasi matematis dan acuan pembuatan unit test backend.
-> **Status Dokumen:** `[ADA]` (Contoh perhitungan manual `DATA SIMULASI`) | **Status Unit Test Backend:** `[RENCANA]` (Belum ada implementasi `saw.service` maupun unit test SAW yang dijalankan)
+> **Status Dokumen:** `[ADA]` (Contoh perhitungan manual `DATA SIMULASI`) | **Status Unit Test Backend:** `[ADA]` (Terverifikasi 100% pada `backend/tests/unit/saw.service.test.ts`)
 
 ---
 
@@ -140,4 +140,4 @@ Rumus: $V_i = (0.40 \times r_{i1}) + (0.35 \times r_{i2}) + (0.25 \times r_{i3})
 }
 ```
 
-> **Catatan Verifikasi:** Contoh perhitungan manual di atas telah diverifikasi secara aritmetika, tetapi **tidak membuktikan implementasi kode** sebelum `saw.service` dan unit test backend benar-benar ditulis serta dijalankan lulus.
+> **Catatan Verifikasi:** Implementasi fungsi murni pada `backend/src/services/saw.service.ts` telah diverifikasi secara matematis dengan 14 unit test di `backend/tests/unit/saw.service.test.ts` dan hasilnya identik 100% dengan perhitungan manual di atas (`A3 -> A1 -> A2`).

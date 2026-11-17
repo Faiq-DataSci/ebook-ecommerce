@@ -1,173 +1,194 @@
-import { SearchBar } from '../../../components/shared/SearchBar';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../../constants/routes';
+import { useAuth } from '../../auth/hooks/useAuth';
+import type { Book } from '../../../types/book.types';
+import { useCatalog } from '../hooks/useCatalog';
+import { CatalogHero } from '../components/CatalogHero';
+import { CatalogFilters } from '../components/CatalogFilters';
+import { CatalogControlBar } from '../components/CatalogControlBar';
+import { BookGrid } from '../components/BookGrid';
+import { CatalogSkeleton } from '../components/CatalogSkeleton';
+import { CatalogBottomBanner } from '../components/CatalogBottomBanner';
+import { CatalogToast } from '../components/CatalogToast';
 import { Pagination } from '../../../components/shared/Pagination';
 import { EmptyState } from '../../../components/shared/EmptyState';
-import { Badge, SimulationBadge } from '../../../components/ui/Badge';
-import { Button } from '../../../components/ui/Button';
-import { Spinner } from '../../../components/ui/Spinner';
-import { CatalogFilters } from '../components/CatalogFilters';
-import { SortSelector } from '../components/SortSelector';
-import { BookGrid } from '../components/BookGrid';
-import { useCatalog } from '../hooks/useCatalog';
+import { APP_CONFIG } from '../../../constants/app.constants';
 
 export function CatalogPage() {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
   const {
     books,
+    allBooks,
     totalCount,
     filteredCount,
     categories,
-    authors,
+    categoryCounts,
     filters,
     currentPage,
     totalPages,
+    viewMode,
     viewState,
-    setViewState,
+    toasts,
+    setViewMode,
     updateFilter,
+    setPricePreset,
+    toggleFormat,
+    clearSearch,
+    clearCategory,
+    clearPrice,
+    clearRating,
+    clearAuthor,
     updateSort,
     resetFilters,
+    showToast,
+    dismissToast,
+    addToCart,
+    retryFetch,
   } = useCatalog();
 
+  const handleBuyClick = (book: Book) => {
+    if (!isAuthenticated) {
+      showToast(
+        'Silakan masuk ke akun pelanggan untuk melanjutkan proses pembelian.',
+        'yellow',
+      );
+      setTimeout(() => {
+        navigate(
+          `${ROUTES.LOGIN}?redirect=${encodeURIComponent(ROUTES.BOOK_DETAIL(book.id))}`,
+        );
+      }, 700);
+    } else {
+      navigate(ROUTES.BOOK_DETAIL(book.id));
+    }
+  };
+
+  const handleApplyFeedback = () => {
+    showToast(
+      `Filter diperbarui: ${filteredCount} e-book ditemukan.`,
+      'yellow',
+    );
+  };
+
+  const handleExploreTopRecommendations = () => {
+    updateSort('saw_desc');
+    showToast(
+      'Menampilkan koleksi e-book terbaik berdasarkan kepuasan pembaca dan kualitas materi.',
+      'yellow',
+    );
+  };
+
   return (
-    <div className="nb-section" style={{ backgroundColor: 'var(--nb-paper)' }}>
+    <div
+      style={{
+        backgroundColor: 'var(--nb-paper)',
+        minHeight: 'calc(100vh - 80px)',
+        paddingBlock: 'var(--nb-space-6)',
+      }}
+    >
       <div className="nb-container">
-        <div
-          style={{
-            backgroundColor: 'var(--nb-white)',
-            border: 'var(--nb-border-thick)',
-            boxShadow: 'var(--nb-shadow-lg)',
-            padding: 'var(--nb-space-6)',
-            marginBottom: 'var(--nb-space-8)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 'var(--nb-space-4)',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 'var(--nb-space-3)',
-            }}
-          >
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              <SimulationBadge />
-              <Badge tone="blue">
-                Placeholder Total Katalog: {totalCount} Judul Contoh
-              </Badge>
-            </div>
+        {/* 1. Editorial Hero Header */}
+        <CatalogHero />
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              <Button
-                variant={viewState === 'ready' ? 'primary' : 'secondary'}
-                onClick={() => setViewState('ready')}
-              >
-                State Normal
-              </Button>
-              <Button
-                variant={viewState === 'loading' ? 'primary' : 'secondary'}
-                onClick={() => setViewState('loading')}
-              >
-                Uji Loading
-              </Button>
-              <Button
-                variant={viewState === 'error' ? 'destructive' : 'secondary'}
-                onClick={() => setViewState('error')}
-              >
-                Uji Error
-              </Button>
-            </div>
-          </div>
-
-          <div>
-            <h1 className="nb-h1" style={{ marginBottom: '6px' }}>
-              Katalog E-Book Digital
-            </h1>
-            <p className="nb-body" style={{ color: 'var(--nb-text-muted)' }}>
-              Telusuri daftar buku elektronik berdasarkan kategori, penulis, atau
-              rentang harga. Kontrol pencarian, filter, dan pengurutan ini
-              berjalan pada data simulasi lokal sebagai rancangan antarmuka
-              (belum terhubung ke endpoint pencarian backend).
-            </p>
-          </div>
-
-          <SearchBar
-            value={filters.search}
-            onChange={(value) => updateFilter('search', value)}
-            placeholder="Cari judul e-book atau nama penulis..."
-          />
-        </div>
-
+        {/* 2. Loading State */}
         {viewState === 'loading' && (
-          <Spinner label="Memuat daftar katalog e-book..." />
+          <div className="nb-catalog-layout">
+            <div className="nb-catalog-sidebar-col">
+              <div
+                className="nb-skeleton"
+                style={{ height: '520px', width: '100%' }}
+              />
+            </div>
+            <div className="nb-catalog-content-col">
+              <div
+                className="nb-skeleton"
+                style={{ height: '70px', width: '100%', marginBottom: '16px' }}
+              />
+              <CatalogSkeleton viewMode={viewMode} count={6} />
+            </div>
+          </div>
         )}
 
+        {/* 3. Error State */}
         {viewState === 'error' && (
           <EmptyState
             tone="pink"
             title="Gagal Memuat Katalog E-Book"
-            description="Koneksi ke layanan katalog gagal pada mode simulasi uji error ini. Tekan tombol di bawah untuk memulihkan tampilan katalog."
+            description="Layanan katalog tidak dapat diakses atau terjadi kendala jaringan saat memuat daftar buku digital. Silakan coba muat ulang."
             actionLabel="Coba Muat Ulang Katalog"
-            onAction={() => setViewState('ready')}
+            onAction={retryFetch}
           />
         )}
 
+        {/* 4. Ready / Success State */}
         {viewState === 'ready' && (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: 'var(--nb-space-6)',
-              alignItems: 'start',
-            }}
-          >
-            <div style={{ maxWidth: '360px', width: '100%' }}>
+          <div className="nb-catalog-layout">
+            {/* Left Column: Filter Sidebar */}
+            <div className="nb-catalog-sidebar-col">
               <CatalogFilters
                 categories={categories}
-                authors={authors}
+                categoryCounts={categoryCounts}
+                totalBooksCount={allBooks.length}
+                filteredCount={filteredCount}
                 filters={filters}
                 onChangeFilter={updateFilter}
+                onSetPricePreset={setPricePreset}
+                onToggleFormat={toggleFormat}
                 onReset={resetFilters}
+                onApplyFeedback={handleApplyFeedback}
               />
             </div>
 
-            <div style={{ gridColumn: 'span 2', minWidth: 0 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 'var(--nb-space-3)',
-                  padding: 'var(--nb-space-4)',
-                  backgroundColor: 'var(--nb-white)',
-                  border: 'var(--nb-border)',
-                  boxShadow: 'var(--nb-shadow-sm)',
-                  marginBottom: 'var(--nb-space-6)',
-                }}
-              >
-                <p className="nb-mono" style={{ fontSize: '0.875rem' }}>
-                  Menampilkan {books.length} dari {filteredCount} e-book yang
-                  sesuai
-                </p>
-                <SortSelector
-                  value={filters.sortBy}
-                  onChange={updateSort}
-                />
-              </div>
+            {/* Right Column: Catalog Content Area */}
+            <section
+              aria-label="Daftar Katalog E-Book"
+              className="nb-catalog-content-col"
+            >
+              {/* Top Control Bar */}
+              <CatalogControlBar
+                filteredCount={filteredCount}
+                totalCount={totalCount}
+                categories={categories}
+                filters={filters}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                onSortChange={updateSort}
+                onClearSearch={clearSearch}
+                onClearCategory={clearCategory}
+                onClearPrice={clearPrice}
+                onClearRating={clearRating}
+                onClearAuthor={clearAuthor}
+                onResetAll={resetFilters}
+              />
 
-              <BookGrid books={books} onResetFilters={resetFilters} />
+              {/* Product Grid / List */}
+              <BookGrid
+                books={books}
+                viewMode={viewMode}
+                onResetFilters={resetFilters}
+                onBuyClick={handleBuyClick}
+                onAddToCart={addToCart}
+              />
 
+              {/* Bottom Pagination */}
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 totalItems={filteredCount}
+                pageSize={APP_CONFIG.CATALOG_PAGE_SIZE}
                 onPageChange={(page) => updateFilter('page', page)}
               />
-            </div>
+
+              {/* Reassurance Banner */}
+              <CatalogBottomBanner onOpenCalculator={handleExploreTopRecommendations} />
+            </section>
           </div>
         )}
       </div>
+
+      {/* 5. Interactive Toast Notifications */}
+      <CatalogToast toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
 }

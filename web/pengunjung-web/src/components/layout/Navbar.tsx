@@ -117,8 +117,7 @@ export function Navbar() {
           }}
         >
           <span className="nb-label" style={{ fontSize: '0.8125rem' }}>
-            {APP_CONFIG.SIMULATION_LABEL}: Etalase Pelanggan Web (Tanpa Modul
-            Admin & Tanpa Perhitungan SAW)
+            {APP_CONFIG.SIMULATION_LABEL}: Etalase Toko Digital Pelanggan Web & Transaksi B2C
           </span>
           <span className="nb-mono" style={{ fontSize: '0.75rem' }}>
             Toko Tunggal B2C E-Book Digital

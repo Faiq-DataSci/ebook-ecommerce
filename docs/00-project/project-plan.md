@@ -69,13 +69,13 @@ Kondisi aktual yang telah diverifikasi pada repository (lihat [`test-results.md`
 - **Backend:** Express 5, TypeScript ESM, validasi env Zod, middleware error/rate-limit/auth dasar, helper Supabase Storage, endpoint `/api/v1/health`, `prisma/schema.prisma` (model `User`, `Category`, `Ebook`, `Order`, `OrderItem`, `Payment`, `Transaction`, `EbookAccess`), serta 5 unit test Vitest lulus.
 - **Web & Mobile:** Kerangka awal Vite + React di `web/admin-web/` dan `web/pengunjung-web/`, serta kerangka Flutter di `mobile/ebook_store/` sudah tersedia.
 
-### Fase 1 — Backend API, Migrasi DB, Transaksi & SPK SAW (`[RENCANA]`)
-1. **Migrasi & Seed Database:** Membuat migrasi awal Prisma (`prisma/migrations/`), menerapkan ke PostgreSQL Supabase, dan menyediakan skrip seed berlabel `"DATA SIMULASI"` untuk kategori, e-book uji, dan akun uji.
-2. **Autentikasi & Otorisasi:** Middleware verifikasi JWT Supabase Auth di backend, sinkronisasi data pengguna ke tabel `users`, dan penjagaan endpoint berdasarkan `UserRole` (`CUSTOMER` / `ADMIN`).
-3. **Katalog, Kategori & Storage Privat:** Endpoint publik katalog/detail/kategori dan endpoint admin untuk CRUD kategori, e-book, serta unggah PDF ke Supabase Storage bucket privat.
-4. **Pesanan, Pembayaran & Akses E-Book:** Alur pembuatan order (`PENDING`), integrasi payment gateway (Midtrans/Xendit), endpoint webhook terverifikasi signature yang secara atomik memperbarui `Payment` (`VERIFIED`), `Order` (`PAID`), membuat `Transaction`, dan menerbitkan `EbookAccess`, serta endpoint *signed URL* sementara.
-5. **Modul SPK SAW:** Implementasi fungsi murni SAW di backend (validasi bobot `Σ w_j = 1`, normalisasi Benefit/Cost, perhitungan preferensi `V_i`, tie-breaker alfabetis judul, snapshot hasil) beserta unit test yang cocok dengan perhitungan manual.
-6. **Dashboard & Laporan Admin:** Endpoint agregasi ringkasan penjualan, status pesanan, dan laporan periode.
+### Fase 1 — Backend API, Migrasi DB, Transaksi & SPK SAW (`Sebagian [ADA]` / `Sebagian [RENCANA]`)
+1. **Migrasi & Seed Database (`[ADA]`):** Migrasi awal Prisma (`prisma/migrations/20261116000000_init/`), skrip seeding berlabel `"DATA SIMULASI"` untuk kategori, e-book, dan pengguna.
+2. **Autentikasi & Otorisasi (`[ADA]`):** Middleware verifikasi JWT Supabase Auth di backend, endpoint sinkronisasi profil `/api/v1/auth/sync` dan manajemen profil `/api/v1/users/me`, serta otorisasi berdasarkan `UserRole` (`CUSTOMER` / `ADMIN`).
+3. **Katalog & Kategori Publik (`[ADA]`):** Endpoint publik `/api/v1/categories`, `/api/v1/ebooks`, `/api/v1/ebooks/:id` (dengan sanitasi agar `storagePath` privat tidak pernah bocor). Endpoint CRUD admin e-book/kategori `[RENCANA]`.
+4. **Pesanan, Pembayaran Webhook & Akses E-Book (`[ADA]`):** Endpoint `/api/v1/orders`, `/api/v1/orders/me`, `/api/v1/orders/:id`, webhook payment gateway terverifikasi HMAC SHA512 & idempoten `/api/v1/payments/webhook`, serta penerbitan *signed URL* privat dengan batas waktu `/api/v1/ebooks/:id/access-url`.
+5. **Modul SPK SAW (`[RENCANA]`):** Implementasi fungsi murni SAW di backend (validasi bobot `Σ w_j = 1`, normalisasi Benefit/Cost, perhitungan preferensi `V_i`, tie-breaker alfabetis judul, snapshot hasil) beserta unit test yang cocok dengan perhitungan manual.
+6. **Dashboard & Laporan Admin (`[RENCANA]`):** Endpoint agregasi ringkasan penjualan, status pesanan, dan laporan periode.
 - **Gate Keluar Fase 1:** Seluruh endpoint lulus `typecheck`, unit & integration test (Vitest + Supertest), dan uji konektivitas ke Supabase berhasil sebelum Fase 2 dimulai.
 
 ### Fase 2 — Admin Web (`web/admin-web/`) (`[RENCANA]`)

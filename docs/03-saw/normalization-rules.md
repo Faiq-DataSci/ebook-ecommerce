@@ -1,6 +1,6 @@
 # Aturan Normalisasi Metode SAW
 
-> **Status Dokumen:** `[ADA]` (Dokumentasi aturan normalisasi) | **Implementasi Kode:** `[RENCANA]`
+> **Status Dokumen:** `[ADA]` (Dokumentasi aturan normalisasi) | **Implementasi Kode:** `[ADA]` (`backend/src/services/saw.service.ts` terverifikasi unit test)
 > **Referensi:** [`saw-method.md`](./saw-method.md), [`saw-recommendation-workflow.md`](../03-business-process/saw-recommendation-workflow.md)
 
 ---
