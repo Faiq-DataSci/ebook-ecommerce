@@ -6,44 +6,18 @@ The **backend** is the core of the e‑book e‑commerce system. It exposes a **
 ---
 ## Architecture Diagram
 ```mermaid
-flowchart TD
-    %% Clients
-    subgraph Clients[Clients]
-        Mobile[Mobile (Flutter)]
-        Web[Web Admin (React)]
-    end
-
-    %% API layer with a gateway
-    subgraph API[Backend API (Express)]
-        Gateway[API Gateway]
-        Auth[Auth Service]
-        Books[Books Service]
-        Orders[Orders Service]
-        SAW[SAW Engine]
-    end
-
-    %% Persistence
-    subgraph DB[PostgreSQL (Supabase)]
-        DB[(Database)]
-    end
-    subgraph Storage[Supabase Storage]
-        PDF[PDF Bucket]
-    end
-
-    %% Interaction flow
-    Mobile -->|HTTPS| Gateway
-    Web -->|HTTPS| Gateway
-    Gateway --> Auth
-    Gateway --> Books
-    Gateway --> Orders
-    Gateway --> SAW
-
-    Auth --> DB
+flowchart LR
+    Mobile[Mobile (Flutter)] -->|HTTPS| API[API Gateway]
+    Web[Web Admin (React)] -->|HTTPS| API
+    API --> Auth[Auth Service]
+    API --> Books[Books Service]
+    API --> Orders[Orders Service]
+    API --> SAW[SAW Engine]
+    Auth --> DB[(PostgreSQL)]
     Books --> DB
     Orders --> DB
     SAW --> DB
-
-    Books --> PDF
+    Books --> PDF[PDF Bucket]
     Orders --> PDF
 ```
 ---

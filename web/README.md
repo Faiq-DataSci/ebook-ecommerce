@@ -11,6 +11,22 @@ The **web admin** interface of the e‑book e‑commerce project is a single‑p
 - **Axios** – HTTP client (wrapped with JWT handling)
 - **Tailwind CSS** – utility‑first styling (used to implement neo‑brutalism)
 
+## Architecture Diagram
+```mermaid
+flowchart LR
+    UI[React UI] -->|HTTPS| API[API Gateway]
+    API --> Auth[Auth Service]
+    API --> Books[Books Service]
+    API --> Orders[Orders Service]
+    API --> SAW[SAW Engine]
+    Auth --> DB[(PostgreSQL)]
+    Books --> DB
+    Orders --> DB
+    SAW --> DB
+    Books --> PDF[PDF Bucket]
+    Orders --> PDF
+```
+
 ## Project Structure
 ```
 web/

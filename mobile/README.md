@@ -6,22 +6,20 @@ The **mobile** application is the user‑facing client of the e‑book e‑comme
 ---
 ## Architecture Diagram
 ```mermaid
-flowchart TD
-    subgraph FlutterApp[Mobile App]
-        UI[UI Layer (Screens, Widgets)]
-        State[State Management (Riverpod)]
-        Net[Network Layer (Dio)]
-    end
-    subgraph Backend[Backend API]
-        Auth[Auth Service]
-        Books[Books Service]
-        Orders[Orders Service]
-        SAW[SAW Engine]
-    end
-    UI --> State --> Net --> Auth & Books & Orders & SAW
-    Net -->|HTTPS| Backend
-    SAW -->|JSON| UI
-    Books -->|PDF signed URLs| Supabase[Supabase Storage]
+flowchart LR
+    UI[UI Layer (Screens, Widgets)] -->|State Management| State[Riverpod]
+    State -->|Network Layer| Net[Dio]
+    Net -->|HTTPS| API[API Gateway]
+    API --> Auth[Auth Service]
+    API --> Books[Books Service]
+    API --> Orders[Orders Service]
+    API --> SAW[SAW Engine]
+    Auth --> DB[(PostgreSQL)]
+    Books --> DB
+    Orders --> DB
+    SAW --> DB
+    Books --> PDF[PDF Bucket]
+    Orders --> PDF
 ```
 ---
 ## Tech Stack
