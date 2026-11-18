@@ -26,7 +26,6 @@ interface CatalogFiltersProps {
     value: CatalogFilterState[K],
   ) => void;
   onSetPricePreset: (preset: PricePreset) => void;
-  onToggleFormat?: (format: string) => void;
   onReset: () => void;
   onApplyFeedback?: () => void;
 }
@@ -39,7 +38,6 @@ export function CatalogFilters({
   filters,
   onChangeFilter,
   onSetPricePreset,
-  onToggleFormat,
   onReset,
   onApplyFeedback,
 }: CatalogFiltersProps) {
@@ -51,8 +49,7 @@ export function CatalogFilters({
     (filters.minPrice || filters.maxPrice || (filters.pricePreset && filters.pricePreset !== 'all')
       ? 1
       : 0) +
-    (filters.minRating && filters.minRating > 0 ? 1 : 0) +
-    (filters.selectedFormats && filters.selectedFormats.length > 0 ? 1 : 0);
+    (filters.minRating && filters.minRating > 0 ? 1 : 0);
 
   const isPriceInvalid =
     Boolean(filters.minPrice && filters.maxPrice) &&
@@ -276,27 +273,12 @@ export function CatalogFilters({
           }}
         >
           {/* Opsi: Semua Kategori */}
-          <label
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '8px',
-              padding: '6px 8px',
-              cursor: 'pointer',
-              userSelect: 'none',
-              backgroundColor:
-                filters.categoryId === '' ? 'var(--nb-yellow)' : 'transparent',
-              border:
-                filters.categoryId === ''
-                  ? '2px solid var(--nb-black)'
-                  : '1px solid transparent',
-              boxShadow:
-                filters.categoryId === '' ? '2px 2px 0 0 var(--nb-black)' : 'none',
-              fontWeight: filters.categoryId === '' ? 700 : 500,
-              fontSize: '0.8125rem',
-              transition: 'background-color 100ms ease-out',
-            }}
+          <button
+            type="button"
+            role="radio"
+            aria-checked={filters.categoryId === ''}
+            onClick={() => onChangeFilter('categoryId', '')}
+            className={`nb-category-item-row ${filters.categoryId === '' ? 'is-active' : ''}`}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div
@@ -331,34 +313,22 @@ export function CatalogFilters({
             >
               ({totalBooksCount})
             </span>
-          </label>
+          </button>
 
           {/* Opsi: Daftar Kategori */}
           {categories.map((cat) => {
             const isSelected = filters.categoryId === cat.id;
             const count = categoryCounts[cat.id] ?? cat.bookCount ?? 0;
             return (
-              <label
+              <button
                 key={cat.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '8px',
-                  padding: '6px 8px',
-                  cursor: 'pointer',
-                  userSelect: 'none',
-                  backgroundColor: isSelected
-                    ? 'var(--nb-yellow)'
-                    : 'transparent',
-                  border: isSelected
-                    ? '2px solid var(--nb-black)'
-                    : '1px solid transparent',
-                  boxShadow: isSelected ? '2px 2px 0 0 var(--nb-black)' : 'none',
-                  fontWeight: isSelected ? 700 : 500,
-                  fontSize: '0.8125rem',
-                  transition: 'background-color 100ms ease-out',
-                }}
+                type="button"
+                role="checkbox"
+                aria-checked={isSelected}
+                onClick={() =>
+                  onChangeFilter('categoryId', isSelected ? '' : cat.id)
+                }
+                className={`nb-category-item-row ${isSelected ? 'is-active' : ''}`}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div
@@ -393,7 +363,7 @@ export function CatalogFilters({
                 >
                   ({count})
                 </span>
-              </label>
+              </button>
             );
           })}
         </div>
@@ -674,85 +644,7 @@ export function CatalogFilters({
         </div>
       </div>
 
-      {/* 6. Format & Keamanan */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          borderTop: '2px solid var(--nb-black)',
-          paddingTop: '0.875rem',
-        }}
-      >
-        <span
-          className="nb-label"
-          style={{
-            textTransform: 'uppercase',
-            fontSize: '0.75rem',
-            letterSpacing: '0.04em',
-            color: 'var(--nb-black)',
-          }}
-        >
-          Format & Keamanan
-        </span>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          {[
-            { id: 'PDF', label: 'PDF Vector (High-Res)', code: 'PDF' },
-            { id: 'EPUB', label: 'EPUB 3.0 (Reflowable)', code: 'EPUB' },
-            { id: 'GIT', label: 'Termasuk Git Repo / Code', code: 'REPO' },
-            { id: 'DRM', label: 'Watermark Kriptografis', code: 'DRM' },
-          ].map((item) => {
-            const isChecked = filters.selectedFormats?.includes(item.id) ?? false;
-            return (
-              <label
-                key={item.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '8px',
-                  cursor: 'pointer',
-                  fontSize: '0.8125rem',
-                  padding: '5px 8px',
-                  backgroundColor: isChecked ? 'rgba(184, 169, 250, 0.3)' : 'transparent',
-                  border: isChecked ? '1px solid var(--nb-black)' : '1px solid transparent',
-                  fontWeight: isChecked ? 700 : 400,
-                  userSelect: 'none',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <input
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => onToggleFormat?.(item.id)}
-                    style={{
-                      accentColor: 'var(--nb-black)',
-                      cursor: 'pointer',
-                      width: '15px',
-                      height: '15px',
-                    }}
-                  />
-                  <span>{item.label}</span>
-                </div>
-                <span
-                  className="nb-mono"
-                  style={{
-                    fontSize: '0.625rem',
-                    fontWeight: 700,
-                    padding: '1px 5px',
-                    backgroundColor: 'var(--nb-paper)',
-                    border: '1px solid var(--nb-black)',
-                  }}
-                >
-                  {item.code}
-                </span>
-              </label>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 7. Action Buttons */}
+      {/* 6. Action Buttons */}
       <div
         style={{
           display: 'flex',
@@ -961,7 +853,7 @@ export function CatalogFilters({
             }}
           >
             Setiap e-book dinilai secara objektif berdasarkan kepuasan pembaca asli,
-            keterjangkauan harga, dan kedalaman materi — bebas dari ulasan palsu atau
+            keterjangkauan harga, dan kedalaman materi bebas dari ulasan palsu atau
             promosi berbayar.
           </p>
           <div
@@ -983,7 +875,7 @@ export function CatalogFilters({
                 padding: '2px 6px',
               }}
             >
-              100% LEGAL DRM
+              100% PRODUK ASLI
             </span>
             <span
               className="nb-mono"

@@ -25,6 +25,7 @@ export function PurchasedBookCard({
 
   return (
     <article
+      className="ebook-card"
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -32,8 +33,6 @@ export function PurchasedBookCard({
         gap: 'var(--nb-space-4)',
         padding: 'var(--nb-space-5)',
         backgroundColor: 'var(--nb-white)',
-        border: 'var(--nb-border)',
-        boxShadow: 'var(--nb-shadow)',
       }}
     >
       <div

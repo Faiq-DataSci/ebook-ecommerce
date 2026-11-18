@@ -3,7 +3,7 @@ export interface Category {
   name: string;
   slug: string;
   description: string;
-  accentColor: 'yellow' | 'blue' | 'orange' | 'green' | 'pink' | 'white';
+  accentColor: 'yellow' | 'blue' | 'orange' | 'green' | 'pink' | 'white' | 'lavender';
   bookCount: number;
   isSimulation: boolean;
 }

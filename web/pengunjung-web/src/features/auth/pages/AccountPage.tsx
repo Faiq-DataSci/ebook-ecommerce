@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, useReducedMotion, type Variants } from 'motion/react';
 import {
   BookMarked,
   Calendar,
@@ -29,9 +30,45 @@ import { Button } from '../../../components/ui/Button';
 import { Card } from '../../../components/ui/Card';
 import { Spinner } from '../../../components/ui/Spinner';
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+const riseVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: 'easeOut',
+    },
+  },
+};
+
+const cardItemVariants: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: 'easeOut',
+    },
+  },
+};
+
 export function AccountPage() {
   const { customer, logout, apiHealth } = useAuth();
   const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [libraryItems, setLibraryItems] = useState<PurchasedBookAccess[]>([]);
@@ -124,74 +161,84 @@ export function AccountPage() {
     <div className="nb-section" style={{ backgroundColor: 'var(--nb-paper)' }}>
       <div className="nb-container nb-stack-6">
         {/* Header Akun Pelanggan */}
-        <Card tone="yellow" zone="B" padding="lg">
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 'var(--nb-space-4)',
-            }}
-          >
-            <div className="nb-stack-2">
-              <div className="nb-cluster">
-                <SimulationBadge />
-                <Badge tone="white">Peran: {customer?.role ?? 'CUSTOMER'}</Badge>
+        <motion.div
+          initial={reduceMotion ? false : 'hidden'}
+          animate="visible"
+          variants={riseVariants}
+        >
+          <Card tone="yellow" zone="B" padding="lg">
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 'var(--nb-space-4)',
+              }}
+            >
+              <div className="nb-stack-2">
+                <div className="nb-cluster">
+                  <SimulationBadge />
+                  <Badge tone="white">Peran: {customer?.role ?? 'CUSTOMER'}</Badge>
+                </div>
+                <h1 className="nb-h1">Akun Pelanggan Saya</h1>
+                <p className="nb-body">
+                  Kelola informasi profil pelanggan, pantau ringkasan hak akses
+                  pustaka digital, dan periksa transaksi e-book Anda.
+                </p>
               </div>
-              <h1 className="nb-h1">Akun Pelanggan Saya</h1>
-              <p className="nb-body">
-                Kelola informasi profil pelanggan, pantau ringkasan hak akses
-                pustaka digital, dan periksa transaksi e-book Anda.
-              </p>
-            </div>
 
-            <div className="nb-cluster">
-              <Button
-                variant="secondary"
-                leftIcon={
-                  <BookMarked size={18} strokeWidth={2.25} aria-hidden="true" />
-                }
-                onClick={() => navigate(ROUTES.LIBRARY)}
-              >
-                Buka Pustaka Saya
-              </Button>
-              <Button
-                variant="blue"
-                leftIcon={
-                  <ReceiptText
-                    size={18}
-                    strokeWidth={2.25}
-                    aria-hidden="true"
-                  />
-                }
-                onClick={() => navigate(ROUTES.ORDERS)}
-              >
-                Riwayat Pembelian
-              </Button>
-              <Button
-                variant="destructive"
-                leftIcon={
-                  <LogOut size={18} strokeWidth={2.25} aria-hidden="true" />
-                }
-                onClick={handleLogout}
-              >
-                Keluar Akun
-              </Button>
+              <div className="nb-cluster">
+                <Button
+                  variant="secondary"
+                  leftIcon={
+                    <BookMarked size={18} strokeWidth={2.25} aria-hidden="true" />
+                  }
+                  onClick={() => navigate(ROUTES.LIBRARY)}
+                >
+                  Buka Pustaka Saya
+                </Button>
+                <Button
+                  variant="blue"
+                  leftIcon={
+                    <ReceiptText
+                      size={18}
+                      strokeWidth={2.25}
+                      aria-hidden="true"
+                    />
+                  }
+                  onClick={() => navigate(ROUTES.ORDERS)}
+                >
+                  Riwayat Pembelian
+                </Button>
+                <Button
+                  variant="destructive"
+                  leftIcon={
+                    <LogOut size={18} strokeWidth={2.25} aria-hidden="true" />
+                  }
+                  onClick={handleLogout}
+                >
+                  Keluar Akun
+                </Button>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
         {/* Grid Profil & Ringkasan Metrik */}
-        <div
+        <motion.div
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
             gap: 'var(--nb-space-6)',
           }}
+          initial={reduceMotion ? false : 'hidden'}
+          animate="visible"
+          variants={containerVariants}
         >
           {/* Kartu Identitas Pelanggan */}
-          <Card tone="white" zone="B" padding="lg">
+          <motion.div variants={cardItemVariants}>
+            <Card tone="white" zone="B" padding="lg">
             <div className="nb-stack-4">
               <div
                 style={{
@@ -351,8 +398,10 @@ export function AccountPage() {
               </div>
             </div>
           </Card>
+        </motion.div>
 
-          {/* Kartu Ringkasan Hak Akses & Transaksi */}
+        {/* Kartu Ringkasan Hak Akses & Transaksi */}
+        <motion.div variants={cardItemVariants}>
           <Card tone="white" zone="B" padding="lg">
             <div className="nb-stack-4">
               <div>
@@ -487,9 +536,16 @@ export function AccountPage() {
               )}
             </div>
           </Card>
-        </div>
+        </motion.div>
+      </motion.div>
 
-        {/* Seksi Pesanan Terbaru Pelanggan */}
+      {/* Seksi Pesanan Terbaru Pelanggan */}
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+        whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.35, ease: 'easeOut' }}
+      >
         <Card tone="white" zone="C" padding="lg">
           <div className="nb-stack-4">
             <div
@@ -595,6 +651,7 @@ export function AccountPage() {
             )}
           </div>
         </Card>
+      </motion.div>
       </div>
     </div>
   );

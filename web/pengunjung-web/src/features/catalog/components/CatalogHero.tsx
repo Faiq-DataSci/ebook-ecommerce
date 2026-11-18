@@ -1,86 +1,103 @@
-import { BookOpen } from 'lucide-react';
+import {
+  Award,
+  BookOpen,
+  ShieldCheck,
+  Sparkles,
+  Zap,
+} from 'lucide-react';
+import { motion, useReducedMotion, type Variants } from 'motion/react';
 import { SimulationBadge } from '../../../components/ui/Badge';
 
+const heroVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+const riseVariants: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: 'easeOut',
+    },
+  },
+};
+
 export function CatalogHero() {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <header className="nb-catalog-hero">
+    <motion.header
+      className="nb-catalog-hero"
+      initial={reduceMotion ? false : 'hidden'}
+      animate="visible"
+      variants={heroVariants}
+    >
       {/* Background Watermark Art */}
       <div className="nb-catalog-hero-watermark" aria-hidden="true">
-        <BookOpen size={240} strokeWidth={1} />
+        <BookOpen size={260} strokeWidth={0.8} />
       </div>
 
-      <div style={{ position: 'relative', zIndex: 10, maxWidth: '896px' }}>
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            gap: '8px',
-            marginBottom: '12px',
-          }}
-        >
-          <div
-            className="nb-mono"
-            style={{
-              display: 'inline-block',
-              backgroundColor: 'var(--nb-yellow)',
-              border: 'var(--nb-border-thin)',
-              boxShadow: 'var(--nb-shadow-sm)',
-              padding: '4px 12px',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              color: 'var(--nb-black)',
-            }}
-          >
-            STOREFRONT RESMI • BACA BUKU PRESS
-          </div>
-          <SimulationBadge />
+      <div className="nb-hero-grid">
+        {/* Headline, Badges, Description & Value Props */}
+        <div className="nb-hero-left">
+          {/* Badges Row */}
+          <motion.div className="nb-hero-badges-row" variants={riseVariants}>
+            <span className="nb-hero-storefront-badge">
+              <BookOpen size={14} strokeWidth={2.5} />
+              STOREFRONT RESMI • BACA BUKU PRESS
+            </span>
+            <SimulationBadge />
+            <span className="nb-hero-edition-badge">
+              <Sparkles size={13} strokeWidth={2.5} />
+              EDISI RESMI 2026
+            </span>
+          </motion.div>
+
+          {/* Display Headline with Neubrutalism Highlight Block */}
+          <motion.h1 className="nb-hero-title" variants={riseVariants}>
+            KATALOG LENGKAP{' '}
+            <span className="nb-hero-highlight">
+              E-BOOK
+            </span>
+          </motion.h1>
+
+          {/* Description with Neubrutalist Pill */}
+          <motion.p className="nb-hero-description" variants={riseVariants}>
+            Jelajahi koleksi buku terverifikasi dengan lisensi DRM legal kriptografis,
+            penilaian objektif berbasis{' '}
+            <span className="nb-hero-text-pill">
+              <Sparkles size={13} strokeWidth={2.5} />
+              Kurasi Cerdas Objektif
+            </span>
+            , dan akses berkas seketika tanpa proteksi kadaluarsa.
+          </motion.p>
+
+          {/* Value Proposition Perks */}
+          <motion.div className="nb-hero-perks" variants={riseVariants}>
+            <div className="nb-hero-perk-item">
+              <Zap size={14} strokeWidth={2.5} />
+              <span>Akses Seketika</span>
+            </div>
+            <div className="nb-hero-perk-item">
+              <Award size={14} strokeWidth={2.5} />
+              <span>Kurasi Objektif</span>
+            </div>
+            <div className="nb-hero-perk-item">
+              <ShieldCheck size={14} strokeWidth={2.5} />
+              <span>Bebas Proteksi Kadaluarsa</span>
+            </div>
+          </motion.div>
         </div>
-
-        <h1
-          className="nb-h1"
-          style={{
-            fontSize: 'clamp(2rem, 3.8vw, 2.75rem)',
-            lineHeight: 1.1,
-            textTransform: 'uppercase',
-            letterSpacing: '-0.01em',
-            color: 'var(--nb-black)',
-            marginBottom: '12px',
-            fontWeight: 800,
-          }}
-        >
-          KATALOG LENGKAP E-BOOK
-        </h1>
-
-        <p
-          className="nb-body-lg"
-          style={{
-            color: 'var(--nb-text-muted)',
-            fontSize: 'clamp(1rem, 1.2vw, 1.125rem)',
-            lineHeight: 1.6,
-            maxWidth: '768px',
-          }}
-        >
-          Jelajahi koleksi buku terverifikasi dengan lisensi DRM legal kriptografis,
-          penilaian objektif berbasis{' '}
-          <span
-            style={{
-              backgroundColor: 'var(--nb-yellow)',
-              padding: '2px 8px',
-              border: '1px solid var(--nb-black)',
-              fontFamily: 'var(--nb-font-heading)',
-              fontWeight: 700,
-              color: 'var(--nb-black)',
-              fontSize: '0.875rem',
-              textTransform: 'uppercase',
-            }}
-          >
-            Kurasi Cerdas Objektif
-          </span>
-          , dan akses berkas seketika tanpa proteksi kadaluarsa.
-        </p>
       </div>
-    </header>
+    </motion.header>
   );
 }

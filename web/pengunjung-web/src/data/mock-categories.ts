@@ -3,8 +3,8 @@ import type { Category } from '../types/book.types';
 export const MOCK_CATEGORIES: Category[] = [
   {
     id: 'cat-technology',
-    name: 'Rekayasa Software & Backend',
-    slug: 'software-backend',
+    name: 'Teknologi',
+    slug: 'teknologi',
     description:
       'Rekayasa perangkat lunak, arsitektur sistem terdistribusi, dan backend modern.',
     accentColor: 'blue',
@@ -13,18 +13,18 @@ export const MOCK_CATEGORIES: Category[] = [
   },
   {
     id: 'cat-ai',
-    name: 'Sains Data & AI',
-    slug: 'data-science-ai',
+    name: 'AI & Data',
+    slug: 'ai-data',
     description:
       'Kecerdasan buatan, machine learning, deep learning, dan pemodelan data.',
-    accentColor: 'lavender' as unknown as Category['accentColor'],
+    accentColor: 'lavender',
     bookCount: 284,
     isSimulation: true,
   },
   {
     id: 'cat-design',
-    name: 'Desain UI/UX & Produk',
-    slug: 'ui-ux-design',
+    name: 'Desain',
+    slug: 'desain',
     description:
       'Desain antarmuka, sistem desain token, interaksi, dan riset pengalaman pengguna.',
     accentColor: 'yellow',
@@ -33,8 +33,8 @@ export const MOCK_CATEGORIES: Category[] = [
   },
   {
     id: 'cat-business',
-    name: 'Bisnis, Startup & Keuangan',
-    slug: 'business-startup',
+    name: 'Bisnis',
+    slug: 'bisnis',
     description:
       'Manajemen keuangan, bootstrapping startup, strategi produk, dan model bisnis digital.',
     accentColor: 'green',
@@ -43,8 +43,8 @@ export const MOCK_CATEGORIES: Category[] = [
   },
   {
     id: 'cat-devops',
-    name: 'DevOps, Cloud & Cyber Sec',
-    slug: 'devops-cybersec',
+    name: 'DevOps',
+    slug: 'devops',
     description:
       'Kubernetes, otomatisasi CI/CD, cloud computing, dan keamanan siber esensial.',
     accentColor: 'pink',
@@ -53,8 +53,8 @@ export const MOCK_CATEGORIES: Category[] = [
   },
   {
     id: 'cat-fiction',
-    name: 'Sastra Klasik & Spekulatif',
-    slug: 'sastra-spekulatif',
+    name: 'Novel',
+    slug: 'novel',
     description:
       'Karya fiksi spekulatif, novel kontemporer, dan antologi sastra terkurasi.',
     accentColor: 'white',
@@ -63,8 +63,8 @@ export const MOCK_CATEGORIES: Category[] = [
   },
   {
     id: 'cat-education',
-    name: 'Pendidikan & Riset Terbuka',
-    slug: 'pendidikan-riset',
+    name: 'Pendidikan',
+    slug: 'pendidikan',
     description:
       'Metodologi penelitian, kurikulum pendidikan tinggi, dan literasi ilmiah.',
     accentColor: 'orange',

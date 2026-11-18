@@ -47,8 +47,7 @@ export function CatalogControlBar({
       filters.minPrice ||
       filters.maxPrice ||
       (filters.pricePreset && filters.pricePreset !== 'all') ||
-      (filters.minRating && filters.minRating > 0) ||
-      (filters.selectedFormats && filters.selectedFormats.length > 0),
+      (filters.minRating && filters.minRating > 0),
   );
 
   let priceLabel = '';

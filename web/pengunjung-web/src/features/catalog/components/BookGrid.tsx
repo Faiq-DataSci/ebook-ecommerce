@@ -1,3 +1,4 @@
+import { motion, useReducedMotion, type Variants } from 'motion/react';
 import type { Book, CatalogViewMode } from '../../../types/book.types';
 import { BookCard } from '../../../components/shared/BookCard';
 import { EmptyState } from '../../../components/shared/EmptyState';
@@ -10,6 +11,29 @@ interface BookGridProps {
   onAddToCart?: (book: Book) => void;
 }
 
+const gridContainerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.02,
+    },
+  },
+};
+
+const cardItemVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: 'easeOut',
+    },
+  },
+};
+
 export function BookGrid({
   books,
   viewMode = 'grid',
@@ -17,6 +41,8 @@ export function BookGrid({
   onBuyClick,
   onAddToCart,
 }: BookGridProps) {
+  const reduceMotion = useReducedMotion();
+
   if (books.length === 0) {
     return (
       <EmptyState
@@ -30,41 +56,49 @@ export function BookGrid({
 
   if (viewMode === 'list') {
     return (
-      <div
+      <motion.div
         id="catalog-grid"
         style={{
           display: 'flex',
           flexDirection: 'column',
           gap: 'var(--nb-space-4)',
         }}
+        initial={reduceMotion ? false : 'hidden'}
+        animate="visible"
+        variants={gridContainerVariants}
       >
         {books.map((book) => (
-          <BookCard
-            key={book.id}
-            book={book}
-            viewMode="list"
-            onBuyClick={onBuyClick}
-            onAddToCart={onAddToCart}
-          />
+          <motion.div key={book.id} variants={cardItemVariants}>
+            <BookCard
+              book={book}
+              viewMode="list"
+              onBuyClick={onBuyClick}
+              onAddToCart={onAddToCart}
+            />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div
+    <motion.div
       id="catalog-grid"
       className="nb-catalog-grid"
+      initial={reduceMotion ? false : 'hidden'}
+      animate="visible"
+      variants={gridContainerVariants}
     >
       {books.map((book) => (
-        <BookCard
-          key={book.id}
-          book={book}
-          viewMode="grid"
-          onBuyClick={onBuyClick}
-          onAddToCart={onAddToCart}
-        />
+        <motion.div key={book.id} variants={cardItemVariants}>
+          <BookCard
+            book={book}
+            viewMode="grid"
+            onBuyClick={onBuyClick}
+            onAddToCart={onAddToCart}
+          />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }

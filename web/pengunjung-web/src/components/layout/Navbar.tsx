@@ -1,6 +1,7 @@
-import { useState, type FormEvent } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useEffect, useState, type FormEvent } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
+  AlertTriangle,
   BookMarked,
   BookOpen,
   Check,
@@ -8,12 +9,14 @@ import {
   Download,
   Home,
   Info,
+  Lock,
   LogIn,
   LogOut,
   Menu,
   ReceiptText,
   Search,
   Smartphone,
+  Sparkles,
   UserCheck,
   UserPlus,
   X,
@@ -26,12 +29,44 @@ import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 
 export function Navbar() {
-  const { customer, isAuthenticated, logout } = useAuth();
+  const { customer, isAuthenticated, logout, loginWithDemoAccount } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [quickSearch, setQuickSearch] = useState('');
   const [downloadModalOpen, setDownloadModalOpen] = useState(false);
   const [apkSimulated, setApkSimulated] = useState(false);
+  const [isDemoLoggingIn, setIsDemoLoggingIn] = useState(false);
+
+  const isHomeActive = location.pathname === ROUTES.HOME;
+  const isCatalogActive =
+    location.pathname === ROUTES.CATALOG ||
+    location.pathname.startsWith(`${ROUTES.CATALOG}/`);
+  const isLibraryActive = location.pathname.startsWith(ROUTES.LIBRARY);
+  const isAccountActive = location.pathname.startsWith(ROUTES.ACCOUNT);
+
+  // Close flyout on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen]);
+
+  // Lock body scroll when flyout drawer is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
 
   const handleQuickSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -41,6 +76,20 @@ export function Navbar() {
       navigate(`${ROUTES.CATALOG}?q=${encodeURIComponent(trimmed)}`);
     } else {
       navigate(ROUTES.CATALOG);
+    }
+  };
+
+  const handleChipClick = (keyword: string) => {
+    setMobileMenuOpen(false);
+    navigate(`${ROUTES.CATALOG}?q=${encodeURIComponent(keyword)}`);
+  };
+
+  const handleDemoLogin = async () => {
+    setIsDemoLoggingIn(true);
+    try {
+      await loginWithDemoAccount();
+    } finally {
+      setIsDemoLoggingIn(false);
     }
   };
 
@@ -98,30 +147,78 @@ export function Navbar() {
         zIndex: 500,
       }}
     >
-      {/* Top Status Strip */}
+      {/* Top Running Status Marquee Strip */}
       <div
-        style={{
-          backgroundColor: 'var(--nb-orange)',
-          borderBottom: 'var(--nb-border-thin)',
-          paddingBlock: '6px',
-        }}
+        className="nb-marquee-strip"
+        role="region"
+        aria-label="Informasi Status Toko Berjalan"
       >
-        <div
-          className="nb-container"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '8px',
-          }}
-        >
-          <span className="nb-label" style={{ fontSize: '0.8125rem' }}>
-            {APP_CONFIG.SIMULATION_LABEL}: Etalase Toko Digital Pelanggan Web & Transaksi B2C
-          </span>
-          <span className="nb-mono" style={{ fontSize: '0.75rem' }}>
-            Toko Tunggal B2C E-Book Digital
-          </span>
+        <div className="nb-marquee-track">
+          {/* Iterasi 1 */}
+          <div className="nb-marquee-group" aria-hidden="false">
+            <div className="nb-marquee-item">
+              <span className="nb-marquee-badge">
+                <AlertTriangle size={12} strokeWidth={2.5} aria-hidden="true" />
+                {APP_CONFIG.SIMULATION_LABEL}
+              </span>
+              <span>Etalase Toko Digital Pelanggan Web &amp; Transaksi B2C</span>
+            </div>
+
+            <span className="nb-marquee-star" aria-hidden="true">✦</span>
+
+            <div className="nb-marquee-item">
+              <span className="nb-marquee-tag">
+                <BookOpen size={12} strokeWidth={2.5} aria-hidden="true" />
+                Toko Tunggal B2C E-Book Digital
+              </span>
+              <span>Akses Berkas PDF Instan &amp; Hak Baca Digital Seumur Hidup</span>
+            </div>
+
+            <span className="nb-marquee-star" aria-hidden="true">✦</span>
+
+            <div className="nb-marquee-item">
+              <span className="nb-marquee-badge" style={{ backgroundColor: 'var(--nb-black)', color: 'var(--nb-green)' }}>
+                <Sparkles size={12} strokeWidth={2.5} aria-hidden="true" />
+                TERVERIFIKASI SISTEM
+              </span>
+              <span>Katalog Literatur Teknik &amp; Sistem Informasi Resmi</span>
+            </div>
+
+            <span className="nb-marquee-star" aria-hidden="true">✦</span>
+          </div>
+
+          {/* Iterasi 2 (Clone untuk Infinite Seamless Loop) */}
+          <div className="nb-marquee-group" aria-hidden="true">
+            <div className="nb-marquee-item">
+              <span className="nb-marquee-badge">
+                <AlertTriangle size={12} strokeWidth={2.5} aria-hidden="true" />
+                {APP_CONFIG.SIMULATION_LABEL}
+              </span>
+              <span>Etalase Toko Digital Pelanggan Web &amp; Transaksi B2C</span>
+            </div>
+
+            <span className="nb-marquee-star" aria-hidden="true">✦</span>
+
+            <div className="nb-marquee-item">
+              <span className="nb-marquee-tag">
+                <BookOpen size={12} strokeWidth={2.5} aria-hidden="true" />
+                Toko Tunggal B2C E-Book Digital
+              </span>
+              <span>Akses Berkas PDF Instan &amp; Hak Baca Digital Seumur Hidup</span>
+            </div>
+
+            <span className="nb-marquee-star" aria-hidden="true">✦</span>
+
+            <div className="nb-marquee-item">
+              <span className="nb-marquee-badge" style={{ backgroundColor: 'var(--nb-black)', color: 'var(--nb-green)' }}>
+                <Sparkles size={12} strokeWidth={2.5} aria-hidden="true" />
+                TERVERIFIKASI SISTEM
+              </span>
+              <span>Katalog Literatur Teknik &amp; Sistem Informasi Resmi</span>
+            </div>
+
+            <span className="nb-marquee-star" aria-hidden="true">✦</span>
+          </div>
         </div>
       </div>
 
@@ -148,370 +245,611 @@ export function Navbar() {
             <span>{APP_CONFIG.BRAND_NAME}</span>
           </Link>
 
-          {/* Desktop Center Navigation */}
+          {/* Desktop Center Navigation (Clean & Compact to Prevent Overflow) */}
           <nav aria-label="Navigasi utama toko" className="nb-nav-desktop">
             <NavLink
               to={ROUTES.HOME}
               end
               className={({ isActive }) =>
-                `nb-nav-item ${isActive ? 'nb-nav-item--active' : ''}`.trim()
+                `nb-nav-item nb-nav-item--home ${isActive ? 'nb-nav-item--home-active' : ''}`.trim()
               }
             >
               <Home size={16} strokeWidth={2.25} aria-hidden="true" />
               <span>Beranda</span>
             </NavLink>
 
+            {/* Katalog E-Book (Selalu Tampil untuk Semua Pengunjung Termasuk Tanpa Akun) */}
             <NavLink
               to={ROUTES.CATALOG}
               className={({ isActive }) =>
-                `nb-nav-item ${isActive ? 'nb-nav-item--active' : ''}`.trim()
+                `nb-nav-item nb-nav-item--catalog ${isActive ? 'nb-nav-item--catalog-active' : ''}`.trim()
               }
             >
               <Compass size={16} strokeWidth={2.25} aria-hidden="true" />
               <span>Katalog E-Book</span>
             </NavLink>
 
-            <button
-              type="button"
-              onClick={handleOpenDownloadModal}
-              className="nb-nav-item nb-nav-item--app"
-            >
-              <Smartphone size={16} strokeWidth={2.25} aria-hidden="true" />
-              <span>Download Apps E-Book Store</span>
-            </button>
-
-            {isAuthenticated && (
+            {isAuthenticated ? (
               <>
                 <NavLink
                   to={ROUTES.LIBRARY}
                   className={({ isActive }) =>
-                    `nb-nav-item ${isActive ? 'nb-nav-item--library-active' : ''}`.trim()
+                    `nb-nav-item nb-nav-item--library ${isActive ? 'nb-nav-item--library-active' : ''}`.trim()
                   }
                 >
                   <BookMarked size={16} strokeWidth={2.25} aria-hidden="true" />
-                  <span>Pustaka Saya</span>
+                  <span>Pustaka</span>
                 </NavLink>
 
                 <NavLink
                   to={ROUTES.ACCOUNT}
                   className={({ isActive }) =>
-                    `nb-nav-item ${isActive ? 'nb-nav-item--orders-active' : ''}`.trim()
+                    `nb-nav-item nb-nav-item--account ${isActive ? 'nb-nav-item--account-active' : ''}`.trim()
                   }
                 >
                   <UserCheck size={16} strokeWidth={2.25} aria-hidden="true" />
                   <span>Akun</span>
                 </NavLink>
               </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={handleOpenDownloadModal}
+                  className="nb-nav-item nb-nav-item--app"
+                >
+                  <Smartphone size={16} strokeWidth={2.25} aria-hidden="true" />
+                  <span>Download Apps</span>
+                </button>
+
+                <Link
+                  to={`${ROUTES.HOME}#tentang-toko`}
+                  className="nb-nav-item"
+                >
+                  <Info size={16} strokeWidth={2.25} aria-hidden="true" />
+                  <span>Alur & Panduan</span>
+                </Link>
+              </>
             )}
           </nav>
 
-          {/* Right Action Cluster */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Button
-              variant="secondary"
+          {/* Right Action Cluster: Search & Menu Button + Auth Controls */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            {/* Dedicated "Cari & Menu" Button */}
+            <button
+              type="button"
               onClick={() => setMobileMenuOpen((prev) => !prev)}
+              className={`nb-search-menu-btn ${mobileMenuOpen ? 'is-active' : ''}`}
               aria-expanded={mobileMenuOpen}
-              aria-controls="nb-header-drawer"
-              leftIcon={
-                mobileMenuOpen ? (
-                  <X size={18} strokeWidth={2.5} aria-hidden="true" />
-                ) : (
-                  <Menu size={18} strokeWidth={2.5} aria-hidden="true" />
-                )
-              }
+              aria-controls="nb-menu-flyout"
+              aria-label="Buka pencarian dan menu navigasi"
             >
-              {mobileMenuOpen ? 'Tutup Panel' : 'Cari & Menu'}
-            </Button>
-
-            <div className="nb-nav-auth-desktop">
-              {isAuthenticated && customer ? (
+              {mobileMenuOpen ? (
                 <>
-                  <NavLink
-                    to={ROUTES.ORDERS}
-                    className={({ isActive }) =>
-                      `nb-nav-item ${isActive ? 'nb-nav-item--active' : ''}`.trim()
-                    }
-                  >
-                    <ReceiptText
-                      size={16}
-                      strokeWidth={2.25}
-                      aria-hidden="true"
-                    />
-                    <span>Riwayat Pembelian</span>
-                  </NavLink>
-                  <Button
-                    variant="destructive"
-                    onClick={handleLogout}
-                    leftIcon={
-                      <LogOut size={16} strokeWidth={2.25} aria-hidden="true" />
-                    }
-                  >
-                    Keluar
-                  </Button>
+                  <X size={16} strokeWidth={2.5} aria-hidden="true" />
+                  <span className="nb-search-menu-btn-text">Tutup Menu</span>
                 </>
               ) : (
                 <>
-                  <Link to={ROUTES.LOGIN} className="nb-nav-item">
-                    <LogIn size={16} strokeWidth={2.25} aria-hidden="true" />
-                    <span>Masuk</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <Search size={15} strokeWidth={2.5} aria-hidden="true" />
+                    <span style={{ opacity: 0.6 }}>|</span>
+                    <Menu size={15} strokeWidth={2.5} aria-hidden="true" />
+                  </div>
+                  <span className="nb-search-menu-btn-text">Cari &amp; Menu</span>
+                </>
+              )}
+            </button>
+
+            {/* Auth Controls: Compact Icon Buttons when Logged In / Stylish Buttons for Tanpa Akun */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+              {isAuthenticated && customer ? (
+                <>
+                  <Link
+                    to={ROUTES.ACCOUNT}
+                    className="nb-icon-btn nb-icon-btn--account"
+                    title={`Akun Saya: ${customer.fullName} (${customer.email})`}
+                    aria-label={`Akun Saya: ${customer.fullName}`}
+                  >
+                    <UserCheck size={18} strokeWidth={2.5} aria-hidden="true" />
+                    <span className="nb-icon-dot-badge" aria-hidden="true" />
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="nb-icon-btn nb-icon-btn--logout"
+                    title="Keluar Akun"
+                    aria-label="Keluar Akun"
+                  >
+                    <LogOut size={17} strokeWidth={2.25} aria-hidden="true" />
+                  </button>
+                </>
+              ) : (
+                <div className="nb-guest-auth-group">
+                  <Link
+                    to={ROUTES.LOGIN}
+                    className="nb-guest-nav-link"
+                    title="Masuk ke Akun Pelanggan"
+                    aria-label="Masuk ke Akun Pelanggan"
+                  >
+                    <LogIn size={15} strokeWidth={2.25} aria-hidden="true" />
+                    <span className="nb-guest-nav-text">Masuk</span>
                   </Link>
                   <Link
                     to={ROUTES.REGISTER}
-                    className="nb-nav-item nb-nav-item--active"
+                    className="nb-guest-nav-link nb-guest-nav-link--register"
+                    title="Daftar Pelanggan Baru"
+                    aria-label="Daftar Pelanggan Baru"
                   >
-                    <UserPlus size={16} strokeWidth={2.25} aria-hidden="true" />
-                    <span>Daftar</span>
+                    <UserPlus size={15} strokeWidth={2.25} aria-hidden="true" />
+                    <span className="nb-guest-nav-text">Daftar</span>
                   </Link>
-                </>
+                </div>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Expandable Search & Responsive Navigation Drawer */}
+      {/* Flyout Search & Menu Drawer Overlay (Sleek, Responsive & Highly Attractive) */}
       {mobileMenuOpen && (
         <div
-          id="nb-header-drawer"
-          style={{
-            backgroundColor: 'var(--nb-white)',
-            borderTop: 'var(--nb-border)',
-            paddingBlock: 'var(--nb-space-5)',
-          }}
+          className="nb-menu-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Panel Pencarian dan Menu Toko"
         >
-          <div className="nb-container nb-stack-4">
-            {/* Quick Search Bar */}
-            <form
-              role="search"
-              onSubmit={handleQuickSearch}
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 'var(--nb-space-2)',
-              }}
-            >
-              <label
-                htmlFor="nb-quick-search-input"
-                className="nb-label"
-                style={{ width: '100%' }}
-              >
-                Cari Cepat Judul atau Penulis E-Book
-              </label>
-              <div
-                style={{
-                  flex: '1 1 240px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  border: 'var(--nb-border)',
-                  backgroundColor: 'var(--nb-paper)',
-                  paddingLeft: '12px',
-                }}
-              >
-                <Search size={18} strokeWidth={2.5} aria-hidden="true" />
-                <input
-                  id="nb-quick-search-input"
-                  type="search"
-                  value={quickSearch}
-                  onChange={(e) => setQuickSearch(e.target.value)}
-                  placeholder="Ketik judul e-book lalu tekan Cari..."
+          {/* Backdrop with Blur */}
+          <div
+            className="nb-menu-backdrop"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+
+          {/* Slide-out Panel */}
+          <div className="nb-menu-panel" id="nb-menu-flyout">
+            {/* Panel Header */}
+            <div className="nb-menu-panel-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
                   style={{
-                    width: '100%',
-                    minHeight: '44px',
-                    paddingInline: '10px',
-                    border: 'none',
-                    background: 'transparent',
+                    backgroundColor: 'var(--nb-black)',
+                    color: 'var(--nb-yellow)',
+                    padding: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
-                />
+                >
+                  <BookOpen size={20} strokeWidth={2.5} aria-hidden="true" />
+                </div>
+                <div>
+                  <h3 className="nb-h3" style={{ fontSize: '1rem', lineHeight: 1.1 }}>
+                    {APP_CONFIG.BRAND_NAME}
+                  </h3>
+                  <p className="nb-mono" style={{ fontSize: '0.6875rem' }}>
+                    Pusat Pencarian & Navigasi Toko
+                  </p>
+                </div>
               </div>
-              <Button type="submit" variant="primary">
-                Cari di Katalog
-              </Button>
-            </form>
 
-            {/* Structured Navigation Grid inside Drawer */}
-            <div
-              style={{
-                paddingTop: 'var(--nb-space-3)',
-                borderTop: 'var(--nb-border-thin)',
-              }}
-            >
-              <p
-                className="nb-label"
-                style={{
-                  marginBottom: 'var(--nb-space-2)',
-                  color: 'var(--nb-text-muted)',
-                }}
+              <Button
+                variant="secondary"
+                onClick={() => setMobileMenuOpen(false)}
+                leftIcon={<X size={16} strokeWidth={2.5} />}
               >
-                Pintas Navigasi Etalase & Aplikasi
-              </p>
-              <div className="nb-nav-drawer-grid">
-                <NavLink
-                  to={ROUTES.HOME}
-                  end
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `nb-nav-item ${isActive ? 'nb-nav-item--active' : ''}`.trim()
-                  }
-                  style={{ justifyContent: 'flex-start' }}
-                >
-                  <Home size={16} strokeWidth={2.25} aria-hidden="true" />
-                  <span>Beranda Storefront</span>
-                </NavLink>
-
-                <NavLink
-                  to={ROUTES.CATALOG}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `nb-nav-item ${isActive ? 'nb-nav-item--active' : ''}`.trim()
-                  }
-                  style={{ justifyContent: 'flex-start' }}
-                >
-                  <Compass size={16} strokeWidth={2.25} aria-hidden="true" />
-                  <span>Jelajahi Katalog E-Book</span>
-                </NavLink>
-
-                <button
-                  type="button"
-                  onClick={handleOpenDownloadModal}
-                  className="nb-nav-item nb-nav-item--app"
-                  style={{ justifyContent: 'flex-start' }}
-                >
-                  <Smartphone size={16} strokeWidth={2.25} aria-hidden="true" />
-                  <span>Download Apps E-Book Store</span>
-                </button>
-
-                <Link
-                  to={`${ROUTES.HOME}#tentang-toko`}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="nb-nav-item"
-                  style={{ justifyContent: 'flex-start' }}
-                >
-                  <Info size={16} strokeWidth={2.25} aria-hidden="true" />
-                  <span>Alur Pembelian & Hak Akses</span>
-                </Link>
-
-                {isAuthenticated && (
-                  <>
-                    <NavLink
-                      to={ROUTES.LIBRARY}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={({ isActive }) =>
-                        `nb-nav-item ${isActive ? 'nb-nav-item--library-active' : ''}`.trim()
-                      }
-                      style={{ justifyContent: 'flex-start' }}
-                    >
-                      <BookMarked
-                        size={16}
-                        strokeWidth={2.25}
-                        aria-hidden="true"
-                      />
-                      <span>Pustaka Saya</span>
-                    </NavLink>
-
-                    <NavLink
-                      to={ROUTES.ACCOUNT}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={({ isActive }) =>
-                        `nb-nav-item ${isActive ? 'nb-nav-item--orders-active' : ''}`.trim()
-                      }
-                      style={{ justifyContent: 'flex-start' }}
-                    >
-                      <UserCheck
-                        size={16}
-                        strokeWidth={2.25}
-                        aria-hidden="true"
-                      />
-                      <span>Akun ({customer?.fullName ?? 'Pelanggan'})</span>
-                    </NavLink>
-
-                    <NavLink
-                      to={ROUTES.ORDERS}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={({ isActive }) =>
-                        `nb-nav-item ${isActive ? 'nb-nav-item--active' : ''}`.trim()
-                      }
-                      style={{ justifyContent: 'flex-start' }}
-                    >
-                      <ReceiptText
-                        size={16}
-                        strokeWidth={2.25}
-                        aria-hidden="true"
-                      />
-                      <span>Riwayat Pembelian</span>
-                    </NavLink>
-                  </>
-                )}
-              </div>
+                Tutup
+              </Button>
             </div>
 
-            {/* Footer Row of Drawer: Simulation Status & Mobile Auth Controls */}
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 'var(--nb-space-3)',
-                paddingTop: 'var(--nb-space-3)',
-                borderTop: 'var(--nb-border-thin)',
-              }}
-            >
-              <SimulationBadge />
+            {/* Panel Body */}
+            <div className="nb-menu-panel-body">
+              {/* 1. Quick Search Box */}
+              <form
+                role="search"
+                onSubmit={handleQuickSearch}
+                className="nb-menu-search-box"
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label htmlFor="menu-search-input" className="nb-label">
+                    Cari Judul / Penulis E-Book
+                  </label>
+                  <span className="nb-mono" style={{ fontSize: '0.6875rem', color: 'var(--nb-text-muted)' }}>
+                    Katalog Digital B2C
+                  </span>
+                </div>
 
-              <div className="nb-cluster">
+                <div className="nb-search-input-group">
+                  <Search size={18} strokeWidth={2.5} aria-hidden="true" />
+                  <input
+                    id="menu-search-input"
+                    type="search"
+                    value={quickSearch}
+                    onChange={(e) => setQuickSearch(e.target.value)}
+                    placeholder="Ketik judul buku, nama penulis, atau topik..."
+                    autoFocus
+                    style={{
+                      width: '100%',
+                      minHeight: '44px',
+                      paddingInline: '10px',
+                      border: 'none',
+                      background: 'transparent',
+                      fontFamily: 'var(--nb-font-body)',
+                      fontSize: '0.9375rem',
+                      outline: 'none',
+                    }}
+                  />
+                  {quickSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setQuickSearch('')}
+                      aria-label="Bersihkan pencarian"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        padding: '8px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
+
+                <Button type="submit" variant="primary">
+                  Cari di Katalog Sekarang
+                </Button>
+
+                {/* Popular Keywords / Chips */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center', marginTop: '4px' }}>
+                  <span className="nb-mono" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
+                    Pencarian Cepat:
+                  </span>
+                  {[
+                    'Algoritma SAW',
+                    'Pemrograman',
+                    'Sistem Informasi',
+                    'Basis Data',
+                    'Arsitektur',
+                  ].map((keyword) => (
+                    <button
+                      key={keyword}
+                      type="button"
+                      onClick={() => handleChipClick(keyword)}
+                      className="nb-search-chip"
+                    >
+                      #{keyword}
+                    </button>
+                  ))}
+                </div>
+              </form>
+
+              {/* 2. Dynamic Session & Authentication Card */}
+              <div
+                style={{
+                  backgroundColor: isAuthenticated ? 'var(--nb-paper)' : 'var(--nb-white)',
+                  border: 'var(--nb-border)',
+                  boxShadow: 'var(--nb-shadow-sm)',
+                  padding: 'var(--nb-space-4)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                  <SimulationBadge />
+                  {isAuthenticated ? (
+                    <span className="nb-nav-badge-pill nb-nav-badge-pill--green">
+                      ✨ Sesi Akun Aktif (+Katalog & Akun)
+                    </span>
+                  ) : (
+                    <span className="nb-nav-badge-pill" style={{ backgroundColor: 'var(--nb-yellow)' }}>
+                      Mode Pengunjung Tamu
+                    </span>
+                  )}
+                </div>
+
                 {isAuthenticated && customer ? (
                   <>
-                    <Link
-                      to={ROUTES.ACCOUNT}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="nb-nav-item"
-                    >
-                      <UserCheck
-                        size={16}
-                        strokeWidth={2.25}
-                        aria-hidden="true"
-                      />
-                      <span>Akun: {customer.fullName}</span>
-                    </Link>
-                    <Button
-                      variant="destructive"
-                      onClick={handleLogout}
-                      leftIcon={
-                        <LogOut
-                          size={16}
-                          strokeWidth={2.25}
-                          aria-hidden="true"
-                        />
-                      }
-                    >
-                      Keluar Akun
-                    </Button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span className="nb-user-avatar" style={{ width: '36px', height: '36px', fontSize: '1rem' }}>
+                        {customer.fullName.charAt(0).toUpperCase()}
+                      </span>
+                      <div>
+                        <p className="nb-label" style={{ fontSize: '0.9375rem' }}>
+                          {customer.fullName}
+                        </p>
+                        <p className="nb-mono" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
+                          {customer.email} • Peran: {customer.role}
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="nb-body-sm" style={{ color: 'var(--nb-text-muted)' }}>
+                      Menu navigasi <strong>Katalog E-Book</strong> dan <strong>Akun Pelanggan</strong> telah ditambahkan dan aktif untuk akun Anda.
+                    </p>
+
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate(ROUTES.ACCOUNT);
+                        }}
+                        leftIcon={<UserCheck size={16} />}
+                      >
+                        Buka Akun Saya
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={handleLogout}
+                        leftIcon={<LogOut size={16} />}
+                      >
+                        Keluar Akun
+                      </Button>
+                    </div>
                   </>
                 ) : (
                   <>
-                    <Link
-                      to={ROUTES.LOGIN}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="nb-nav-item"
-                    >
-                      <LogIn size={16} strokeWidth={2.25} aria-hidden="true" />
-                      <span>Masuk Akun</span>
-                    </Link>
-                    <Link
-                      to={ROUTES.REGISTER}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="nb-nav-item nb-nav-item--active"
-                    >
-                      <UserPlus
-                        size={16}
-                        strokeWidth={2.25}
-                        aria-hidden="true"
-                      />
-                      <span>Daftar Pelanggan</span>
-                    </Link>
+                    <div>
+                      <h4 className="nb-h4" style={{ fontSize: '0.9375rem', marginBottom: '2px' }}>
+                        Masuk Akun untuk Akses Pustaka Saya & Akun
+                      </h4>
+                      <p className="nb-body-sm" style={{ color: 'var(--nb-text-muted)' }}>
+                        Katalog terbuka bebas untuk seluruh pengunjung. Masuk akun untuk membaca e-book di{' '}
+                        <strong>Pustaka Saya</strong> dan mengelola <strong>Akun Pelanggan</strong>.
+                      </p>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate(ROUTES.LOGIN);
+                        }}
+                        leftIcon={<LogIn size={16} />}
+                      >
+                        Masuk Akun
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate(ROUTES.REGISTER);
+                        }}
+                        leftIcon={<UserPlus size={16} />}
+                      >
+                        Daftar Baru
+                      </Button>
+                      <Button
+                        variant="blue"
+                        isLoading={isDemoLoggingIn}
+                        onClick={handleDemoLogin}
+                        leftIcon={<Sparkles size={16} />}
+                      >
+                        Coba Demo Akun (1-Klik)
+                      </Button>
+                    </div>
                   </>
                 )}
               </div>
+
+              {/* 3. Navigation Grid Tiles */}
+              <div>
+                <p
+                  className="nb-label"
+                  style={{
+                    marginBottom: 'var(--nb-space-3)',
+                    color: 'var(--nb-text-muted)',
+                    textTransform: 'uppercase',
+                    fontSize: '0.75rem',
+                  }}
+                >
+                  Pintas Navigasi Menu Toko
+                </p>
+
+                <div className="nb-menu-tile-grid">
+                  {/* Beranda */}
+                  <Link
+                    to={ROUTES.HOME}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`nb-menu-tile ${isHomeActive ? 'nb-menu-tile--home-active' : ''}`}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Home size={18} strokeWidth={2.5} />
+                      <span className="nb-nav-badge-pill" style={{ backgroundColor: 'var(--nb-yellow)' }}>
+                        {isHomeActive ? 'Aktif' : 'Beranda'}
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Beranda Storefront</h4>
+                      <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
+                        Etalase utama dan buku unggulan
+                      </p>
+                    </div>
+                  </Link>
+
+                  {/* Katalog E-Book (Terbuka untuk Semua Pengunjung Termasuk Tanpa Akun) */}
+                  <Link
+                    to={ROUTES.CATALOG}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`nb-menu-tile ${isCatalogActive ? 'nb-menu-tile--catalog-active' : 'nb-menu-tile--unlocked-catalog'}`}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Compass size={18} strokeWidth={2.5} />
+                      <span className="nb-nav-badge-pill nb-nav-badge-pill--blue">
+                        {isCatalogActive ? 'Aktif' : 'Katalog'}
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Katalog E-Book</h4>
+                      <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
+                        Filter kategori & rekomendasi SAW
+                      </p>
+                    </div>
+                  </Link>
+
+                  {/* Pustaka Saya (Tepat di Sebelah Kanan Katalog E-Book) */}
+                  {isAuthenticated ? (
+                    <Link
+                      to={ROUTES.LIBRARY}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`nb-menu-tile ${isLibraryActive ? 'nb-menu-tile--library-active' : ''}`}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <BookMarked size={18} strokeWidth={2.5} />
+                        <span className="nb-nav-badge-pill nb-nav-badge-pill--green">
+                          {isLibraryActive ? 'Aktif' : 'Pustaka'}
+                        </span>
+                      </div>
+                      <div>
+                        <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Pustaka Saya</h4>
+                        <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
+                          Akses PDF buku yang telah dibeli
+                        </p>
+                      </div>
+                    </Link>
+                  ) : null}
+
+                  {/* Akun Pelanggan */}
+                  {isAuthenticated ? (
+                    <Link
+                      to={ROUTES.ACCOUNT}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`nb-menu-tile ${isAccountActive ? 'nb-menu-tile--account-active' : 'nb-menu-tile--unlocked-account'}`}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <UserCheck size={18} strokeWidth={2.5} />
+                        <span className="nb-nav-badge-pill nb-nav-badge-pill--lavender">
+                          {isAccountActive ? 'Aktif' : 'Profil'}
+                        </span>
+                      </div>
+                      <div>
+                        <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Akun Pelanggan</h4>
+                        <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
+                          Profil, keamanan & data akun
+                        </p>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div
+                      className="nb-menu-tile nb-menu-tile--locked"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        navigate(`${ROUTES.LOGIN}?redirect=${encodeURIComponent(ROUTES.ACCOUNT)}`);
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          setMobileMenuOpen(false);
+                          navigate(`${ROUTES.LOGIN}?redirect=${encodeURIComponent(ROUTES.ACCOUNT)}`);
+                        }
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Lock size={18} strokeWidth={2.25} />
+                        <span className="nb-nav-badge-pill" style={{ backgroundColor: 'var(--nb-muted)' }}>
+                          Perlu Masuk
+                        </span>
+                      </div>
+                      <div>
+                        <h4 className="nb-h4" style={{ fontSize: '0.9375rem', color: 'var(--nb-disabled-text)' }}>
+                          Akun Pelanggan
+                        </h4>
+                        <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
+                          Masuk akun untuk membuka profil & riwayat
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Riwayat Pembelian */}
+                  {isAuthenticated ? (
+                    <Link
+                      to={ROUTES.ORDERS}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="nb-menu-tile"
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <ReceiptText size={18} strokeWidth={2.5} />
+                        <span className="nb-nav-badge-pill">Faktur</span>
+                      </div>
+                      <div>
+                        <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Riwayat Pesanan</h4>
+                        <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
+                          Status pembayaran & riwayat transaksi
+                        </p>
+                      </div>
+                    </Link>
+                  ) : null}
+
+                  {/* Download Apps Android */}
+                  <button
+                    type="button"
+                    onClick={handleOpenDownloadModal}
+                    className="nb-menu-tile"
+                    style={{ textAlign: 'left', background: 'var(--nb-white)' }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Smartphone size={18} strokeWidth={2.5} />
+                      <span className="nb-nav-badge-pill nb-nav-badge-pill--blue">Android</span>
+                    </div>
+                    <div>
+                      <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Download Apps</h4>
+                      <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
+                        Simulasi APK mobile ebook_store
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Alur Pembelian & Hak Akses */}
+                  <a
+                    href={`${ROUTES.HOME}#tentang-toko`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="nb-menu-tile"
+                    style={{ background: 'var(--nb-white)' }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Info size={18} strokeWidth={2.5} />
+                      <span className="nb-nav-badge-pill">Panduan</span>
+                    </div>
+                    <div>
+                      <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Alur & Hak Akses</h4>
+                      <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
+                        Mekanisme B2C dan lisensi PDF
+                      </p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Panel Footer */}
+            <div
+              style={{
+                padding: 'var(--nb-space-4) var(--nb-space-5)',
+                borderTop: 'var(--nb-border-thin)',
+                backgroundColor: 'var(--nb-paper)',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <span className="nb-mono" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
+                {APP_CONFIG.SYSTEM_NAME}
+              </span>
+
+              <Button
+                variant="secondary"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Selesai / Tutup
+              </Button>
             </div>
           </div>
         </div>

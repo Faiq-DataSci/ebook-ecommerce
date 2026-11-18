@@ -1,5 +1,3 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
@@ -75,7 +73,7 @@ export function Pagination({
           className="nb-pressable"
           style={{
             minHeight: '40px',
-            paddingInline: '12px',
+            paddingInline: '14px',
             backgroundColor:
               currentPage <= 1 ? 'var(--nb-muted)' : 'var(--nb-white)',
             color:
@@ -87,11 +85,10 @@ export function Pagination({
             fontWeight: 700,
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '4px',
+            justifyContent: 'center',
             cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
           }}
         >
-          <ChevronLeft size={16} strokeWidth={2.25} />
           Sebelumnya
         </button>
 
@@ -134,7 +131,7 @@ export function Pagination({
           className="nb-pressable"
           style={{
             minHeight: '40px',
-            paddingInline: '12px',
+            paddingInline: '14px',
             backgroundColor:
               currentPage >= totalPages ? 'var(--nb-muted)' : 'var(--nb-white)',
             color:
@@ -146,12 +143,11 @@ export function Pagination({
             fontWeight: 700,
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '4px',
+            justifyContent: 'center',
             cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
           }}
         >
           Berikutnya
-          <ChevronRight size={16} strokeWidth={2.25} />
         </button>
       </div>
     </nav>

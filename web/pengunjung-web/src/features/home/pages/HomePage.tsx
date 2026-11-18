@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import type { Book, Category } from '../../../types/book.types';
 import { bookService } from '../../../services/book.service';
 import { ROUTES } from '../../../constants/routes';
-import { PriceDisplay } from '../../../components/shared/PriceDisplay';
+import { BookCard } from '../../../components/shared/BookCard';
 import { EmptyState } from '../../../components/shared/EmptyState';
 import { Badge, SimulationBadge } from '../../../components/ui/Badge';
 import { Card } from '../../../components/ui/Card';
@@ -82,14 +82,17 @@ export function HomePage() {
   }
 
   return (
-    <div>
-      <HeroSection featuredPreviewBooks={featuredBooks} />
-      <CategorySection categories={categories} />
+    <div className="nb-homepage-root">
+      <HeroSection />
+
       <FeaturedBooks books={featuredBooks} />
 
+      <CategorySection categories={categories} />
+
+      {/* Seksi Katalog Baru */}
       <section
         className="nb-section"
-        style={{ backgroundColor: 'var(--nb-paper)' }}
+        style={{ backgroundColor: 'var(--nb-paper)', borderBottom: 'var(--nb-border-thick)' }}
       >
         <div className="nb-container">
           <div
@@ -99,130 +102,183 @@ export function HomePage() {
               alignItems: 'flex-end',
               justifyContent: 'space-between',
               gap: 'var(--nb-space-4)',
-              marginBottom: 'var(--nb-space-6)',
+              marginBottom: 'clamp(1.75rem, 3vw, 2.5rem)',
             }}
           >
             <div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' }}>
                 <SimulationBadge />
-                <Badge tone="blue">Konsep Presentasi Katalog</Badge>
+                <Badge tone="blue">Kurasi Terbaru</Badge>
               </div>
               <h2 className="nb-h1">Baru Ditambahkan ke Katalog</h2>
               <p className="nb-body" style={{ color: 'var(--nb-text-muted)' }}>
-                Seksi penemuan katalog tambahan. Aturan pengurutan dan sumber data
-                aktual ditentukan oleh implementasi backend.
+                Rilisan literatur terbaru yang baru dikurasi ke dalam katalog toko digital resmi.
               </p>
             </div>
+
+            <Link
+              to={ROUTES.CATALOG}
+              className="nb-pressable nb-section-header-btn"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '44px',
+                paddingInline: 'var(--nb-space-5)',
+                backgroundColor: 'var(--nb-white)',
+                border: 'var(--nb-border-thin)',
+                fontFamily: 'var(--nb-font-heading)',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                textDecoration: 'none',
+                color: 'var(--nb-black)',
+              }}
+            >
+              Jelajahi Semua Koleksi
+            </Link>
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: 'var(--nb-space-5)',
-            }}
-          >
+          <div className="nb-grid-cards nb-grid-cards-4">
             {latestBooks.map((book) => (
-              <Card key={book.id} tone="white" zone="B" padding="md">
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    height: '100%',
-                    gap: 'var(--nb-space-4)',
-                  }}
-                >
-                  <div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        gap: '8px',
-                        flexWrap: 'wrap',
-                        marginBottom: '10px',
-                      }}
-                    >
-                      <Badge tone="yellow">{book.categoryName}</Badge>
-                      <span className="nb-mono" style={{ fontSize: '0.75rem' }}>
-                        {book.coverCode}
-                      </span>
-                    </div>
-                    <h3 className="nb-h3" style={{ marginBottom: '6px' }}>
-                      {book.title}
-                    </h3>
-                    <p className="nb-body-sm" style={{ color: 'var(--nb-text-muted)' }}>
-                      Penulis: {book.author}
-                    </p>
-                  </div>
-
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: '8px',
-                      borderTop: 'var(--nb-border-thin)',
-                      paddingTop: 'var(--nb-space-3)',
-                    }}
-                  >
-                    <PriceDisplay amount={book.price} size="sm" />
-                    <Link
-                      to={ROUTES.BOOK_DETAIL(book.id)}
-                      className="nb-label"
-                      style={{ textDecoration: 'underline' }}
-                    >
-                      Buka Rincian
-                    </Link>
-                  </div>
-                </div>
-              </Card>
+              <BookCard key={book.id} book={book} />
             ))}
           </div>
         </div>
       </section>
 
+      {/* Seksi Panduan Alur Belanja & Hak Akses */}
       <section
         id="tentang-toko"
         className="nb-section"
-        style={{ backgroundColor: 'var(--nb-white)' }}
+        style={{
+          backgroundColor: 'var(--nb-white)',
+          borderBottom: 'var(--nb-border-thick)',
+        }}
       >
         <div className="nb-container">
           <Card tone="paper" zone="B" padding="lg">
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-                gap: 'var(--nb-space-6)',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: 'clamp(2rem, 4vw, 3.5rem)',
+                alignItems: 'start',
               }}
             >
               <div>
                 <SimulationBadge />
-                <h2 className="nb-h2" style={{ marginTop: '10px', marginBottom: '8px' }}>
-                  Alur Pembelian & Hak Akses E-Book
+                <h2 className="nb-h2" style={{ marginTop: '12px', marginBottom: '10px' }}>
+                  Alur Pembelian &amp; Hak Akses E-Book
                 </h2>
-                <p className="nb-body">
-                  Toko e-book ini menerapkan model bisnis toko tunggal resmi
-                  (Single-Store B2C). Setiap pembelian e-book tercatat sebagai
-                  pesanan individual yang jelas statusnya.
+                <p className="nb-body" style={{ color: 'var(--nb-text-muted)', lineHeight: 1.6 }}>
+                  Toko e-book ini menerapkan model bisnis toko tunggal resmi (Single-Store B2C).
+                  Setiap pembelian e-book dicatat sebagai pesanan individual dengan hak akses baca
+                  yang terjamin keasliannya.
                 </p>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <p className="nb-label">1. Telusuri & Pilih Buku Digital</p>
-                <p className="nb-body-sm">
-                  Pengunjung dapat menjelajahi katalog dan membaca deskripsi buku
-                  tanpa harus masuk sebagai admin.
-                </p>
-                <p className="nb-label">2. Buat Pesanan & Verifikasi Pembayaran</p>
-                <p className="nb-body-sm">
-                  Pesanan yang masih berstatus menunggu, gagal, atau kedaluwarsa
-                  tidak memberikan akses unduh maupun baca.
-                </p>
-                <p className="nb-label">3. Baca di Pustaka Saya</p>
-                <p className="nb-body-sm">
-                  Hak akses baca e-book hanya aktif setelah status pembayaran
-                  diverifikasi oleh sistem.
-                </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--nb-space-4)' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '12px',
+                    padding: '12px 16px',
+                    backgroundColor: 'var(--nb-white)',
+                    border: 'var(--nb-border-thin)',
+                  }}
+                >
+                  <span
+                    className="nb-mono"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '28px',
+                      height: '28px',
+                      backgroundColor: 'var(--nb-yellow)',
+                      border: '1px solid var(--nb-black)',
+                      fontWeight: 800,
+                      fontSize: '0.85rem',
+                      flexShrink: 0,
+                    }}
+                  >
+                    1
+                  </span>
+                  <div>
+                    <h3 className="nb-label" style={{ margin: '0 0 2px' }}>Telusuri &amp; Pilih Buku Digital</h3>
+                    <p className="nb-body-sm" style={{ margin: 0, color: 'var(--nb-text-muted)' }}>
+                      Pengunjung bebas menjelajahi katalog publik, mencari judul bahasan, dan meninjau informasi buku.
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '12px',
+                    padding: '12px 16px',
+                    backgroundColor: 'var(--nb-white)',
+                    border: 'var(--nb-border-thin)',
+                  }}
+                >
+                  <span
+                    className="nb-mono"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '28px',
+                      height: '28px',
+                      backgroundColor: 'var(--nb-blue)',
+                      border: '1px solid var(--nb-black)',
+                      fontWeight: 800,
+                      fontSize: '0.85rem',
+                      flexShrink: 0,
+                    }}
+                  >
+                    2
+                  </span>
+                  <div>
+                    <h3 className="nb-label" style={{ margin: '0 0 2px' }}>Pesan &amp; Verifikasi Pembayaran</h3>
+                    <p className="nb-body-sm" style={{ margin: 0, color: 'var(--nb-text-muted)' }}>
+                      Transaksi diverifikasi otomatis oleh sistem. Status pembayaran lunas mengaktifkan lisensi baca.
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '12px',
+                    padding: '12px 16px',
+                    backgroundColor: 'var(--nb-white)',
+                    border: 'var(--nb-border-thin)',
+                  }}
+                >
+                  <span
+                    className="nb-mono"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '28px',
+                      height: '28px',
+                      backgroundColor: 'var(--nb-green)',
+                      border: '1px solid var(--nb-black)',
+                      fontWeight: 800,
+                      fontSize: '0.85rem',
+                      flexShrink: 0,
+                    }}
+                  >
+                    3
+                  </span>
+                  <div>
+                    <h3 className="nb-label" style={{ margin: '0 0 2px' }}>Akses Seketika di Pustaka Saya</h3>
+                    <p className="nb-body-sm" style={{ margin: 0, color: 'var(--nb-text-muted)' }}>
+                      E-book yang telah lunas otomatis tersimpan di menu Pustaka akun dan siap dibaca kapan saja.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </Card>

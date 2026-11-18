@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Lock, ReceiptText, ShieldAlert, UserCheck } from 'lucide-react';
+import { motion, useReducedMotion, type Variants } from 'motion/react';
 import type { Order, PurchasedBookAccess } from '../../../types/order.types';
 import { ROUTES } from '../../../constants/routes';
 import { orderService } from '../../../services/order.service';
@@ -17,9 +18,45 @@ import { Modal } from '../../../components/ui/Modal';
 import { Spinner } from '../../../components/ui/Spinner';
 import { PurchasedBookCard } from '../components/PurchasedBookCard';
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+const riseVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: 'easeOut',
+    },
+  },
+};
+
+const cardItemVariants: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: 'easeOut',
+    },
+  },
+};
+
 export function LibraryPage() {
   const { customer } = useAuth();
   const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
 
   const [libraryItems, setLibraryItems] = useState<PurchasedBookAccess[]>([]);
   const [nonVerifiedOrders, setNonVerifiedOrders] = useState<Order[]>([]);
@@ -59,143 +96,156 @@ export function LibraryPage() {
   return (
     <div className="nb-section" style={{ backgroundColor: 'var(--nb-paper)' }}>
       <div className="nb-container">
-        <Card
-          tone="yellow"
-          zone="B"
-          padding="lg"
-          style={{ marginBottom: 'var(--nb-space-6)' }}
+        <motion.div
+          initial={reduceMotion ? false : 'hidden'}
+          animate="visible"
+          variants={riseVariants}
         >
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 'var(--nb-space-4)',
-            }}
+          <Card
+            tone="yellow"
+            zone="B"
+            padding="lg"
+            style={{ marginBottom: 'var(--nb-space-6)' }}
           >
-            <div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
-                <SimulationBadge />
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 'var(--nb-space-4)',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+                  <SimulationBadge />
+                </div>
+                <h1 className="nb-h1">
+                  Selamat Datang di Pustaka Digital Anda
+                </h1>
+                <p className="nb-body" style={{ marginTop: '4px' }}>
+                  Kelola dan baca koleksi e-book yang pembayarannya telah
+                  diverifikasi.
+                </p>
               </div>
-              <h1 className="nb-h1">
-                Selamat Datang di Pustaka Digital Anda
-              </h1>
-              <p className="nb-body" style={{ marginTop: '4px' }}>
-                Kelola dan baca koleksi e-book yang pembayarannya telah
-                diverifikasi.
-              </p>
-            </div>
 
-            {customer && (
-              <div
-                style={{
-                  backgroundColor: 'var(--nb-white)',
-                  border: 'var(--nb-border)',
-                  boxShadow: 'var(--nb-shadow-sm)',
-                  padding: 'var(--nb-space-4)',
-                  minWidth: '260px',
-                }}
-              >
+              {customer && (
                 <div
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    marginBottom: '6px',
+                    backgroundColor: 'var(--nb-white)',
+                    border: 'var(--nb-border)',
+                    boxShadow: 'var(--nb-shadow-sm)',
+                    padding: 'var(--nb-space-4)',
+                    minWidth: '260px',
                   }}
                 >
-                  <UserCheck size={18} strokeWidth={2.25} aria-hidden="true" />
-                  <span className="nb-label">Ringkasan Profil Pelanggan</span>
-                </div>
-                <p className="nb-body-sm" style={{ fontWeight: 700 }}>
-                  {customer.fullName}
-                </p>
-                <p className="nb-mono" style={{ fontSize: '0.8125rem' }}>
-                  {customer.email}
-                </p>
-                <div style={{ marginTop: '10px' }}>
-                  <Link
-                    to={ROUTES.ORDERS}
-                    className="nb-label"
+                  <div
                     style={{
-                      display: 'inline-flex',
+                      display: 'flex',
                       alignItems: 'center',
-                      gap: '6px',
-                      textDecoration: 'underline',
+                      gap: '8px',
+                      marginBottom: '6px',
                     }}
                   >
-                    <ReceiptText size={16} strokeWidth={2.25} aria-hidden="true" />
-                    <span>Buka Riwayat Pembelian</span>
-                  </Link>
+                    <UserCheck size={18} strokeWidth={2.25} aria-hidden="true" />
+                    <span className="nb-label">Ringkasan Profil Pelanggan</span>
+                  </div>
+                  <p className="nb-body-sm" style={{ fontWeight: 700 }}>
+                    {customer.fullName}
+                  </p>
+                  <p className="nb-mono" style={{ fontSize: '0.8125rem' }}>
+                    {customer.email}
+                  </p>
+                  <div style={{ marginTop: '10px' }}>
+                    <Link
+                      to={ROUTES.ORDERS}
+                      className="nb-label"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        textDecoration: 'underline',
+                      }}
+                    >
+                      <ReceiptText size={16} strokeWidth={2.25} aria-hidden="true" />
+                      <span>Buka Riwayat Pembelian</span>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={reduceMotion ? false : 'hidden'}
+          animate="visible"
+          variants={riseVariants}
+          transition={{ delay: 0.08 }}
+        >
+          <Card
+            tone="white"
+            zone="C"
+            padding="md"
+            style={{ marginBottom: 'var(--nb-space-6)' }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 'var(--nb-space-4)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', maxWidth: '720px' }}>
+                <ShieldAlert
+                  size={22}
+                  strokeWidth={2.25}
+                  aria-hidden="true"
+                  style={{ flexShrink: 0, marginTop: '2px' }}
+                />
+                <div>
+                  <h2 className="nb-h3">Aturan Kontrol Akses E-Book</h2>
+                  <p className="nb-body-sm">
+                    Akses baca e-book pada halaman ini hanya diberikan untuk
+                    pesanan yang pembayarannya telah terverifikasi (`Lunas`).
+                    Transaksi yang masih menunggu pembayaran (`Pending`), gagal
+                    (`Failed`), atau kedaluwarsa (`Expired`) tidak ditampilkan
+                    sebagai buku yang dapat diakses.
+                  </p>
                 </div>
               </div>
-            )}
-          </div>
-        </Card>
 
-        <Card
-          tone="white"
-          zone="C"
-          padding="md"
-          style={{ marginBottom: 'var(--nb-space-6)' }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 'var(--nb-space-4)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', maxWidth: '720px' }}>
-              <ShieldAlert
-                size={22}
-                strokeWidth={2.25}
-                aria-hidden="true"
-                style={{ flexShrink: 0, marginTop: '2px' }}
-              />
-              <div>
-                <h2 className="nb-h3">Aturan Kontrol Akses E-Book</h2>
-                <p className="nb-body-sm">
-                  Akses baca e-book pada halaman ini hanya diberikan untuk
-                  pesanan yang pembayarannya telah terverifikasi (`Lunas`).
-                  Transaksi yang masih menunggu pembayaran (`Pending`), gagal
-                  (`Failed`), atau kedaluwarsa (`Expired`) tidak ditampilkan
-                  sebagai buku yang dapat diakses.
-                </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                <Button
+                  variant={viewMode === 'normal' ? 'primary' : 'secondary'}
+                  onClick={() => setViewMode('normal')}
+                >
+                  Pustaka Terisi ({libraryItems.length})
+                </Button>
+                <Button
+                  variant={viewMode === 'empty' ? 'primary' : 'secondary'}
+                  onClick={() => setViewMode('empty')}
+                >
+                  Uji Pustaka Kosong
+                </Button>
+                <Button
+                  variant={viewMode === 'loading' ? 'primary' : 'secondary'}
+                  onClick={() => setViewMode('loading')}
+                >
+                  Uji Loading
+                </Button>
+                <Button
+                  variant={viewMode === 'error' ? 'destructive' : 'secondary'}
+                  onClick={() => setViewMode('error')}
+                >
+                  Uji Error
+                </Button>
               </div>
             </div>
-
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              <Button
-                variant={viewMode === 'normal' ? 'primary' : 'secondary'}
-                onClick={() => setViewMode('normal')}
-              >
-                Pustaka Terisi ({libraryItems.length})
-              </Button>
-              <Button
-                variant={viewMode === 'empty' ? 'primary' : 'secondary'}
-                onClick={() => setViewMode('empty')}
-              >
-                Uji Pustaka Kosong
-              </Button>
-              <Button
-                variant={viewMode === 'loading' ? 'primary' : 'secondary'}
-                onClick={() => setViewMode('loading')}
-              >
-                Uji Loading
-              </Button>
-              <Button
-                variant={viewMode === 'error' ? 'destructive' : 'secondary'}
-                onClick={() => setViewMode('error')}
-              >
-                Uji Error
-              </Button>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
         {viewMode === 'loading' && (
           <Spinner label="Memverifikasi hak akses pustaka digital pelanggan..." />
@@ -221,19 +271,29 @@ export function LibraryPage() {
                 onAction={() => navigate(ROUTES.CATALOG)}
               />
             ) : (
-              <div className="nb-grid-cards">
+              <motion.div
+                className="nb-grid-cards"
+                initial={reduceMotion ? false : 'hidden'}
+                animate="visible"
+                variants={containerVariants}
+              >
                 {displayedBooks.map((item) => (
-                  <PurchasedBookCard
-                    key={item.id}
-                    item={item}
-                    onOpenReader={setActiveReaderItem}
-                  />
+                  <motion.div key={item.id} variants={cardItemVariants}>
+                    <PurchasedBookCard
+                      item={item}
+                      onOpenReader={setActiveReaderItem}
+                    />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
 
             {nonVerifiedOrders.length > 0 && (
-              <section
+              <motion.section
+                initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+                whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
                 style={{
                   marginTop: 'var(--nb-space-12)',
                   paddingTop: 'var(--nb-space-8)',
@@ -330,7 +390,7 @@ export function LibraryPage() {
                     </Card>
                   ))}
                 </div>
-              </section>
+              </motion.section>
             )}
           </>
         )}

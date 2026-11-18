@@ -3,17 +3,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, ShoppingCart } from 'lucide-react';
 import type { Book } from '../../types/book.types';
 import { ROUTES } from '../../constants/routes';
-import { SimulationBadge } from '../ui/Badge';
+import { CategoryBadge, SimulationBadge } from '../ui/Badge';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { useAuth } from '../../features/auth/hooks/useAuth';
 
 interface BookCoverArtworkProps {
   title: string;
   author: string;
-  categoryName: string;
-  coverCode: string;
+  coverCode?: string;
   accent: Book['coverAccent'];
   size?: 'md' | 'lg';
+  categoryId?: string;
+  categoryName?: string;
 }
 
 const coverBgMap: Record<Book['coverAccent'], string> = {
@@ -27,8 +28,6 @@ const coverBgMap: Record<Book['coverAccent'], string> = {
 export function BookCoverArtwork({
   title,
   author,
-  categoryName,
-  coverCode,
   accent,
   size = 'md',
 }: BookCoverArtworkProps) {
@@ -68,20 +67,23 @@ export function BookCoverArtwork({
             padding: '1px 6px',
             fontSize: '0.6875rem',
             fontWeight: 700,
+            textTransform: 'uppercase',
           }}
         >
-          {coverCode}
+          FORMAT PDF
         </span>
         <span
-          className="nb-label"
+          className="nb-mono"
           style={{
             backgroundColor: 'var(--nb-paper)',
-            border: 'var(--nb-border-thin)',
+            border: '1px solid var(--nb-black)',
             padding: '1px 6px',
-            fontSize: '0.6875rem',
+            fontSize: '0.625rem',
+            fontWeight: 700,
+            textTransform: 'uppercase',
           }}
         >
-          {categoryName}
+          E-BOOK RESMI
         </span>
       </div>
 
@@ -213,6 +215,7 @@ export function BookCover({
       <BookCoverArtwork
         title={book.title}
         author={book.author}
+        categoryId={book.categoryId}
         categoryName={book.categoryName}
         coverCode={book.coverCode}
         accent={book.coverAccent}
@@ -268,9 +271,10 @@ function QualityScoreBreakdown({ book }: { book: Book }) {
     <div
       style={{
         marginBlock: '8px',
-        padding: '8px',
+        padding: '7px 9px',
         backgroundColor: '#f5f4ec',
-        border: '1px solid var(--nb-black)',
+        border: '2px solid var(--nb-black)',
+        boxShadow: '2px 2px 0 0 var(--nb-black)',
       }}
     >
       <div
@@ -385,7 +389,7 @@ export function BookCard({
   // List View Mode
   if (viewMode === 'list') {
     return (
-      <article className="nb-catalog-card-list">
+      <article className="nb-catalog-card-list ebook-card">
         {/* Cover Left */}
         <div className="nb-card-list-cover">
           <BookCover book={book} size="md" />
@@ -404,55 +408,11 @@ export function BookCard({
                 marginBottom: '8px',
               }}
             >
-              {book.badge1 && (
-                <span
-                  className="nb-mono"
-                  style={{
-                    padding: '2px 8px',
-                    backgroundColor: book.badge1.bg,
-                    color: book.badge1.color || 'var(--nb-black)',
-                    border: '2px solid var(--nb-black)',
-                    boxShadow: '2px 2px 0 0 var(--nb-black)',
-                    fontSize: '0.6875rem',
-                    fontWeight: 700,
-                  }}
-                >
-                  {book.badge1.text}
-                </span>
-              )}
-
-              {book.badge2 && (
-                <span
-                  className="nb-label"
-                  style={{
-                    padding: '2px 8px',
-                    backgroundColor: book.badge2.bg,
-                    color: book.badge2.color || 'var(--nb-black)',
-                    border: '2px solid var(--nb-black)',
-                    boxShadow: '2px 2px 0 0 var(--nb-black)',
-                    fontSize: '0.6875rem',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {book.badge2.text}
-                </span>
-              )}
-
-              <span
-                className="nb-mono"
-                style={{
-                  backgroundColor: 'rgba(116, 185, 255, 0.3)',
-                  border: '1px solid var(--nb-black)',
-                  padding: '2px 8px',
-                  fontSize: '0.6875rem',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  color: 'var(--nb-black)',
-                }}
-              >
-                {book.categoryName}
-              </span>
+              <CategoryBadge
+                categoryId={book.categoryId}
+                categoryName={book.categoryName}
+                size="sm"
+              />
 
               {book.rating && (
                 <div
@@ -659,62 +619,44 @@ export function BookCard({
 
   // Grid View Mode (Default - Matching Stitch Design 100%)
   return (
-    <article className="nb-catalog-card">
-      {/* 1. Top Badges Row */}
+    <article className="nb-catalog-card ebook-card">
+      {/* 1. Top Badges Row: Rating + Simulation */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-end',
           gap: '6px',
           marginBottom: '10px',
+          minHeight: '26px',
         }}
       >
-        <div>
-          {book.badge1 && (
-            <span
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          {book.rating && (
+            <div
               className="nb-mono"
               style={{
-                display: 'inline-block',
-                padding: '2px 8px',
-                backgroundColor: book.badge1.bg,
-                color: book.badge1.color || 'var(--nb-black)',
-                border: '2px solid var(--nb-black)',
-                boxShadow: '2px 2px 0 0 var(--nb-black)',
-                fontSize: '0.6875rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '2px',
+                fontSize: '0.75rem',
                 fontWeight: 700,
+                backgroundColor: 'var(--nb-white)',
+                border: '1px solid var(--nb-black)',
+                padding: '2px 6px',
+                color: 'var(--nb-black)',
               }}
             >
-              {book.badge1.text}
-            </span>
-          )}
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          {book.badge2 && (
-            <span
-              className="nb-label"
-              style={{
-                display: 'inline-block',
-                padding: '2px 8px',
-                backgroundColor: book.badge2.bg,
-                color: book.badge2.color || 'var(--nb-black)',
-                border: '2px solid var(--nb-black)',
-                boxShadow: '2px 2px 0 0 var(--nb-black)',
-                fontSize: '0.6875rem',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-              }}
-            >
-              {book.badge2.text}
-            </span>
+              <span style={{ color: 'var(--nb-orange)' }}>★</span>
+              <span>{book.rating.toFixed(2)}</span>
+            </div>
           )}
           {book.isSimulation && <SimulationBadge />}
         </div>
       </div>
 
       {/* 2. Cover Visual 2:3 */}
-      <div style={{ marginBottom: '10px' }}>
+      <div className="nb-card-cover-wrapper" style={{ marginBottom: '10px' }}>
         <Link
           to={ROUTES.BOOK_DETAIL(book.id)}
           tabIndex={-1}
@@ -726,51 +668,32 @@ export function BookCard({
 
       {/* 3. Meta & Judul */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* Category tag & Star Rating */}
+        {/* Category Chip Ramping & Proporsional di Atas Judul Buku */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginBottom: '4px',
+            gap: '6px',
+            marginBottom: '6px',
           }}
         >
+          <CategoryBadge
+            categoryId={book.categoryId}
+            categoryName={book.categoryName}
+            size="sm"
+          />
+
           <span
-            className="nb-label"
+            className="nb-mono"
             style={{
-              padding: '2px 8px',
-              backgroundColor: 'rgba(116, 185, 255, 0.3)',
-              border: '1px solid var(--nb-black)',
-              fontSize: '0.6875rem',
-              textTransform: 'uppercase',
+              fontSize: '0.625rem',
               fontWeight: 700,
-              color: 'var(--nb-black)',
+              color: 'var(--nb-text-muted)',
             }}
           >
-            {book.categoryName}
+            {book.publishedYear ? `EDISI ${book.publishedYear}` : 'DIGITAL'}
           </span>
-
-          {book.rating && (
-            <div
-              className="nb-mono"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '3px',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                color: 'var(--nb-black)',
-              }}
-            >
-              <span style={{ color: 'var(--nb-orange)', fontSize: '0.9rem' }}>★</span>
-              <span>{book.rating.toFixed(2)}</span>
-              {book.reviewCount && (
-                <span style={{ color: 'var(--nb-text-muted)', fontWeight: 400 }}>
-                  ({book.reviewCount})
-                </span>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Title */}
@@ -782,8 +705,8 @@ export function BookCard({
             fontWeight: 700,
             textTransform: 'uppercase',
             color: 'var(--nb-black)',
-            marginTop: '4px',
-            marginBottom: '2px',
+            marginTop: '2px',
+            marginBottom: '4px',
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
@@ -812,7 +735,7 @@ export function BookCard({
             textOverflow: 'ellipsis',
           }}
         >
-          {book.author}
+          Oleh {book.author}
         </p>
 
         {/* 4. Quality Score Breakdown Mini-Bar */}

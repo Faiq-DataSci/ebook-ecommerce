@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RotateCcw } from 'lucide-react';
+import { motion, useReducedMotion, type Variants } from 'motion/react';
 import type { Order } from '../../../types/order.types';
 import type { PaymentStatus } from '../../../types/payment.types';
 import { ROUTES } from '../../../constants/routes';
@@ -12,8 +13,21 @@ import { Card } from '../../../components/ui/Card';
 import { Spinner } from '../../../components/ui/Spinner';
 import { OrderTable } from '../components/OrderTable';
 
+const riseVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: 'easeOut',
+    },
+  },
+};
+
 export function PurchaseHistoryPage() {
   const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
   const [orders, setOrders] = useState<Order[]>([]);
   const [statusFilter, setStatusFilter] = useState<'all' | PaymentStatus>('all');
   const [viewState, setViewState] = useState<
@@ -56,146 +70,152 @@ export function PurchaseHistoryPage() {
   return (
     <div className="nb-section" style={{ backgroundColor: 'var(--nb-paper)' }}>
       <div className="nb-container">
-        <Card
-          tone="white"
-          zone="C"
-          padding="lg"
-          style={{ marginBottom: 'var(--nb-space-6)' }}
+        <motion.div
+          initial={reduceMotion ? false : 'hidden'}
+          animate="visible"
+          variants={riseVariants}
         >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 'var(--nb-space-4)',
-            }}
+          <Card
+            tone="white"
+            zone="C"
+            padding="lg"
+            style={{ marginBottom: 'var(--nb-space-6)' }}
           >
             <div
               style={{
                 display: 'flex',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '12px',
+                flexDirection: 'column',
+                gap: 'var(--nb-space-4)',
               }}
             >
-              <div>
-                <div style={{ marginBottom: '8px' }}>
-                  <SimulationBadge />
-                </div>
-                <h1 className="nb-h1">Riwayat Pembelian Pelanggan</h1>
-                <p className="nb-body" style={{ color: 'var(--nb-text-muted)' }}>
-                  Tinjau pesanan e-book Anda beserta empat contoh status
-                  pembayaran (`Lunas`, `Menunggu Pembayaran`, `Gagal`, dan
-                  `Kedaluwarsa`). Status menunggu pembayaran tidak pernah
-                  dianggap telah terverifikasi.
-                </p>
-              </div>
-
-              <Button
-                variant="secondary"
-                onClick={handleResetDemoOrders}
-                leftIcon={
-                  <RotateCcw size={16} strokeWidth={2.25} aria-hidden="true" />
-                }
+              <div
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '12px',
+                }}
               >
-                Kembalikan 4 Pesanan Contoh
-              </Button>
-            </div>
+                <div>
+                  <div style={{ marginBottom: '8px' }}>
+                    <SimulationBadge />
+                  </div>
+                  <h1 className="nb-h1">Riwayat Pembelian Pelanggan</h1>
+                  <p className="nb-body" style={{ color: 'var(--nb-text-muted)' }}>
+                    Tinjau pesanan e-book Anda beserta empat contoh status
+                    pembayaran (`Lunas`, `Menunggu Pembayaran`, `Gagal`, dan
+                    `Kedaluwarsa`). Status menunggu pembayaran tidak pernah
+                    dianggap telah terverifikasi.
+                  </p>
+                </div>
 
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 'var(--nb-space-3)',
-                borderTop: 'var(--nb-border-thin)',
-                paddingTop: 'var(--nb-space-4)',
-              }}
-            >
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 <Button
-                  variant={statusFilter === 'all' ? 'primary' : 'secondary'}
-                  onClick={() => {
-                    setStatusFilter('all');
-                    setViewState('ready');
-                  }}
+                  variant="secondary"
+                  onClick={handleResetDemoOrders}
+                  leftIcon={
+                    <RotateCcw size={16} strokeWidth={2.25} aria-hidden="true" />
+                  }
                 >
-                  Semua Status ({orders.length})
-                </Button>
-                <Button
-                  variant={statusFilter === 'paid' ? 'primary' : 'secondary'}
-                  onClick={() => {
-                    setStatusFilter('paid');
-                    setViewState('ready');
-                  }}
-                >
-                  Lunas / Paid
-                </Button>
-                <Button
-                  variant={statusFilter === 'pending' ? 'primary' : 'secondary'}
-                  onClick={() => {
-                    setStatusFilter('pending');
-                    setViewState('ready');
-                  }}
-                >
-                  Menunggu / Pending
-                </Button>
-                <Button
-                  variant={statusFilter === 'failed' ? 'primary' : 'secondary'}
-                  onClick={() => {
-                    setStatusFilter('failed');
-                    setViewState('ready');
-                  }}
-                >
-                  Gagal / Failed
-                </Button>
-                <Button
-                  variant={statusFilter === 'expired' ? 'primary' : 'secondary'}
-                  onClick={() => {
-                    setStatusFilter('expired');
-                    setViewState('ready');
-                  }}
-                >
-                  Kedaluwarsa / Expired
+                  Kembalikan 4 Pesanan Contoh
                 </Button>
               </div>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                <Button
-                  variant={viewState === 'empty' ? 'primary' : 'secondary'}
-                  onClick={() =>
-                    setViewState((prev) =>
-                      prev === 'empty' ? 'ready' : 'empty',
-                    )
-                  }
-                >
-                  Uji Riwayat Kosong
-                </Button>
-                <Button
-                  variant={viewState === 'loading' ? 'primary' : 'secondary'}
-                  onClick={() =>
-                    setViewState((prev) =>
-                      prev === 'loading' ? 'ready' : 'loading',
-                    )
-                  }
-                >
-                  Uji Loading
-                </Button>
-                <Button
-                  variant={viewState === 'error' ? 'destructive' : 'secondary'}
-                  onClick={() =>
-                    setViewState((prev) =>
-                      prev === 'error' ? 'ready' : 'error',
-                    )
-                  }
-                >
-                  Uji Error
-                </Button>
+              <div
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 'var(--nb-space-3)',
+                  borderTop: 'var(--nb-border-thin)',
+                  paddingTop: 'var(--nb-space-4)',
+                }}
+              >
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  <Button
+                    variant={statusFilter === 'all' ? 'primary' : 'secondary'}
+                    onClick={() => {
+                      setStatusFilter('all');
+                      setViewState('ready');
+                    }}
+                  >
+                    Semua Status ({orders.length})
+                  </Button>
+                  <Button
+                    variant={statusFilter === 'paid' ? 'primary' : 'secondary'}
+                    onClick={() => {
+                      setStatusFilter('paid');
+                      setViewState('ready');
+                    }}
+                  >
+                    Lunas / Paid
+                  </Button>
+                  <Button
+                    variant={statusFilter === 'pending' ? 'primary' : 'secondary'}
+                    onClick={() => {
+                      setStatusFilter('pending');
+                      setViewState('ready');
+                    }}
+                  >
+                    Menunggu / Pending
+                  </Button>
+                  <Button
+                    variant={statusFilter === 'failed' ? 'primary' : 'secondary'}
+                    onClick={() => {
+                      setStatusFilter('failed');
+                      setViewState('ready');
+                    }}
+                  >
+                    Gagal / Failed
+                  </Button>
+                  <Button
+                    variant={statusFilter === 'expired' ? 'primary' : 'secondary'}
+                    onClick={() => {
+                      setStatusFilter('expired');
+                      setViewState('ready');
+                    }}
+                  >
+                    Kedaluwarsa / Expired
+                  </Button>
+                </div>
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  <Button
+                    variant={viewState === 'empty' ? 'primary' : 'secondary'}
+                    onClick={() =>
+                      setViewState((prev) =>
+                        prev === 'empty' ? 'ready' : 'empty',
+                      )
+                    }
+                  >
+                    Uji Riwayat Kosong
+                  </Button>
+                  <Button
+                    variant={viewState === 'loading' ? 'primary' : 'secondary'}
+                    onClick={() =>
+                      setViewState((prev) =>
+                        prev === 'loading' ? 'ready' : 'loading',
+                      )
+                    }
+                  >
+                    Uji Loading
+                  </Button>
+                  <Button
+                    variant={viewState === 'error' ? 'destructive' : 'secondary'}
+                    onClick={() =>
+                      setViewState((prev) =>
+                        prev === 'error' ? 'ready' : 'error',
+                      )
+                    }
+                  >
+                    Uji Error
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
         {viewState === 'loading' && (
           <Spinner label="Memuat daftar riwayat pembelian pelanggan..." />
@@ -212,7 +232,11 @@ export function PurchaseHistoryPage() {
         )}
 
         {(viewState === 'ready' || viewState === 'empty') && (
-          <>
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+          >
             {filteredOrders.length === 0 ? (
               <EmptyState
                 title="Belum Ada Riwayat Pesanan pada Filter Ini"
@@ -223,7 +247,7 @@ export function PurchaseHistoryPage() {
             ) : (
               <OrderTable orders={filteredOrders} />
             )}
-          </>
+          </motion.div>
         )}
       </div>
     </div>

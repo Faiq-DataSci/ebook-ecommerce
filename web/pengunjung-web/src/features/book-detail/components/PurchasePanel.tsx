@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, BookOpen, ShieldCheck, ShoppingBag } from 'lucide-react';
+import { BookOpen, ShieldCheck, ShoppingBag } from 'lucide-react';
 import type { Book } from '../../../types/book.types';
 import { ROUTES } from '../../../constants/routes';
 import { PriceDisplay } from '../../../components/shared/PriceDisplay';
@@ -139,7 +139,6 @@ export function PurchasePanel({
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px',
             minHeight: '44px',
             paddingInline: 'var(--nb-space-4)',
             backgroundColor: 'var(--nb-white)',
@@ -147,7 +146,6 @@ export function PurchasePanel({
             fontWeight: 700,
           }}
         >
-          <ArrowLeft size={18} strokeWidth={2.25} aria-hidden="true" />
           <span>Kembali ke Katalog</span>
         </Link>
       </div>

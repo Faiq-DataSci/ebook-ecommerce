@@ -17,14 +17,18 @@
   --nb-border: 3px solid var(--nb-black);
   --nb-border-thick: 4px solid var(--nb-black);
 
-  --nb-shadow-sm: 3px 3px 0 0 var(--nb-black);
-  --nb-shadow: 5px 5px 0 0 var(--nb-black);
-  --nb-shadow-lg: 8px 8px 0 0 var(--nb-black);
-  --nb-shadow-xl: 12px 12px 0 0 var(--nb-black);
+  --nb-shadow-sm: 3px 3px 0 0 #000;
+  --nb-shadow: 5px 5px 0 0 #000;
+  --nb-shadow-lg: 8px 8px 0 0 #000;
+  --nb-shadow-xl: 12px 12px 0 0 #000;
 
+  --nb-radius-sm: 0px;
   --nb-radius: 0px;
+  --nb-radius-lg: 0px;
+  --nb-radius-xl: 0px;
+  --nb-radius-full: 9999px;
 
-  --nb-font-display: 'Syne', 'Space Grotesk', system-ui, sans-serif;
+  --nb-font-display: 'Syne', system-ui, sans-serif;
   --nb-font-heading: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   --nb-font-body: 'Inter', system-ui, -apple-system, sans-serif;
   --nb-font-mono: 'Space Mono', ui-monospace, monospace;
@@ -37,7 +41,7 @@
   --nb-space-6: 1.5rem;
   --nb-space-8: 2rem;
   --nb-space-12: 3rem;
-  --nb-space-16: 4rem;
+  --nb-space-16: 4.5rem;
 
   --nb-container-max: 1360px;
 }

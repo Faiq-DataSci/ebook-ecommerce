@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, ExternalLink } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import type { Order, OrderStatus } from '../../../types/order.types';
 import type {
   PaymentStatus,
@@ -178,7 +178,7 @@ export function TransactionSummary({
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '8px',
+                  justifyContent: 'center',
                   minHeight: '48px',
                   paddingInline: 'var(--nb-space-4)',
                   backgroundColor: 'var(--nb-white)',
@@ -186,7 +186,6 @@ export function TransactionSummary({
                   fontWeight: 700,
                 }}
               >
-                <ExternalLink size={18} strokeWidth={2.25} aria-hidden="true" />
                 <span>Halaman Produk E-Book</span>
               </Link>
             </div>

@@ -1,6 +1,6 @@
 import type { Book } from '../../../types/book.types';
 import { BookCoverArtwork } from '../../../components/shared/BookCard';
-import { Badge, SimulationBadge } from '../../../components/ui/Badge';
+import { CategoryBadge, SimulationBadge } from '../../../components/ui/Badge';
 import { Card } from '../../../components/ui/Card';
 
 interface BookInformationProps {
@@ -29,6 +29,7 @@ export function BookInformation({ book }: BookInformationProps) {
             <BookCoverArtwork
               title={book.title}
               author={book.author}
+              categoryId={book.categoryId}
               categoryName={book.categoryName}
               coverCode={book.coverCode}
               accent={book.coverAccent}
@@ -44,7 +45,11 @@ export function BookInformation({ book }: BookInformationProps) {
             }}
           >
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              <Badge tone="blue">{book.categoryName}</Badge>
+              <CategoryBadge
+                categoryId={book.categoryId}
+                categoryName={book.categoryName}
+                size="md"
+              />
               {book.isSimulation && <SimulationBadge />}
             </div>
 

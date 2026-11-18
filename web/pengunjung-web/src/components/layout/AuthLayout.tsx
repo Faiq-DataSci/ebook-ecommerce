@@ -1,5 +1,4 @@
 import { Link, Outlet } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 import { APP_CONFIG } from '../../constants/app.constants';
 import { ROUTES } from '../../constants/routes';
 import { SimulationBadge } from '../ui/Badge';
@@ -61,7 +60,7 @@ export function AuthLayout() {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '8px',
+              justifyContent: 'center',
               minHeight: '44px',
               paddingInline: '16px',
               backgroundColor: 'var(--nb-white)',
@@ -69,7 +68,6 @@ export function AuthLayout() {
               fontWeight: 700,
             }}
           >
-            <ArrowLeft size={18} strokeWidth={2.25} aria-hidden="true" />
             <span>Kembali ke Katalog</span>
           </Link>
         </div>

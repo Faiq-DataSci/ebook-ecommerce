@@ -1,190 +1,220 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  BookMarked,
+  CheckCircle2,
+  Compass,
+  FileText,
+  Lock,
+  LogIn,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react';
+import { motion, useReducedMotion, type Variants } from 'motion/react';
 import { ROUTES } from '../../../constants/routes';
-import { BookCoverArtwork } from '../../../components/shared/BookCard';
-import { PriceDisplay } from '../../../components/shared/PriceDisplay';
-import { SimulationBadge } from '../../../components/ui/Badge';
-import type { Book } from '../../../types/book.types';
+import { useAuth } from '../../auth/hooks/useAuth';
+import { Badge, SimulationBadge } from '../../../components/ui/Badge';
+import { Button } from '../../../components/ui/Button';
+import { AnimatedSpiralCanvas } from '../../../components/background/AnimatedSpiralCanvas';
 
-interface HeroSectionProps {
-  featuredPreviewBooks: Book[];
-}
+// Motion terorkestrasi hero zona A (design.md bagian 13: maks 500ms, presisi mekanis)
+const heroContainerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.04,
+    },
+  },
+};
 
-export function HeroSection({ featuredPreviewBooks }: HeroSectionProps) {
-  const primaryHeroBook = featuredPreviewBooks[0];
-  const secondaryHeroBook = featuredPreviewBooks[1];
+const badgeClusterVariants: Variants = {
+  hidden: { opacity: 0, y: -10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, ease: 'easeOut' },
+  },
+};
+
+const headlineContainerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const headlineLineVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: 'easeOut' },
+  },
+};
+
+const descriptionVariants: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, ease: 'easeOut' },
+  },
+};
+
+const actionsVariants: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, ease: 'easeOut' },
+  },
+};
+
+const trustBarVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: 'easeOut' },
+  },
+};
+
+export function HeroSection() {
+  const { customer, isAuthenticated, loginWithDemoAccount } = useAuth();
+  const [isDemoLoggingIn, setIsDemoLoggingIn] = useState(false);
+  const reduceMotion = useReducedMotion();
+
+  const handleDemoLogin = async () => {
+    setIsDemoLoggingIn(true);
+    try {
+      await loginWithDemoAccount();
+    } finally {
+      setIsDemoLoggingIn(false);
+    }
+  };
 
   return (
-    <section
-      className="nb-section nb-halftone-zone-a"
-      style={{
-        backgroundColor: 'var(--nb-paper)',
-        borderBottom: 'var(--nb-border-thick)',
-      }}
-    >
-      <div
-        className="nb-container"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: 'var(--nb-space-8)',
-          alignItems: 'center',
-        }}
+    <section className="nb-hero-editorial-section" aria-label="Hero Beranda E-Book Store">
+      {/* Pola Latar Geometris Neubrutalist Grid 32px (design.md bagian 4) */}
+      <div className="nb-hero-grid-pattern" aria-hidden="true" />
+
+      {/* Animated Spiral Canvas Background (Pola Spiral & Vortex Generatif Neubrutalist) */}
+      <AnimatedSpiralCanvas />
+
+      <motion.div
+        className="nb-hero-editorial-container"
+        initial={reduceMotion ? false : 'hidden'}
+        animate="visible"
+        variants={heroContainerVariants}
       >
-        <div
-          style={{
-            backgroundColor: 'var(--nb-white)',
-            border: 'var(--nb-border-thick)',
-            boxShadow: 'var(--nb-shadow-xl)',
-            padding: 'var(--nb-space-8)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 'var(--nb-space-5)',
-          }}
+        {/* 1. Header Badges: Status Platform & Autentikasi (design.md bagian 2.1 & 5.4) */}
+        <motion.div className="nb-hero-badge-cluster" variants={badgeClusterVariants}>
+          <SimulationBadge />
+          <Badge tone="yellow">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Sparkles size={14} strokeWidth={2.5} aria-hidden="true" />
+              Storefront E-Book Digital Resmi
+            </span>
+          </Badge>
+          {isAuthenticated ? (
+            <Badge tone="green">
+              <span>Sesi Aktif: {customer?.fullName ?? 'Pelanggan'}</span>
+            </Badge>
+          ) : (
+            <Badge tone="blue">
+              <span>Akses Katalog Publik Bebas</span>
+            </Badge>
+          )}
+        </motion.div>
+
+        {/* 2. Headline Display Neubrutalist (Syne 800, Blok Aksen Miring nb-yellow di Zona A) */}
+        <motion.h1
+          className="nb-hero-editorial-title"
+          variants={headlineContainerVariants}
         >
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            <SimulationBadge />
-          </div>
+          <motion.span className="nb-hero-title-line" variants={headlineLineVariants}>
+            Temukan Inspirasi,
+          </motion.span>
+          <motion.span className="nb-hero-title-line" variants={headlineLineVariants}>
+            Jelajahi Pengetahuan Tanpa Batas
+          </motion.span>
+        </motion.h1>
 
-          <h1 className="nb-display">
-            Temukan Bacaan Digital Berikutnya.
-          </h1>
+        {/* 3. Deskripsi Singkat: Max Width Terukur & Tipografi Inter Nyaman Dibaca */}
+        <motion.p className="nb-hero-editorial-description" variants={descriptionVariants}>
+          Koleksi literatur digital teknik komputasi, rekayasa perangkat lunak, dan arsitektur sistem
+          informasi resmi. Akses membaca berkas PDF instan di peramban web setelah verifikasi pembayaran
+          aman.
+        </motion.p>
 
-          <p className="nb-body-lg">
-            Telusuri buku elektronik pilihan yang memperluas wawasan teknis,
-            metodologi riset, dan perspektif baru langsung di layar Anda.
-          </p>
-
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 'var(--nb-space-4)',
-              paddingTop: 'var(--nb-space-2)',
-            }}
+        {/* 4. Aksi Utama Terpusat (CTA) Mengikuti Pola Tekan Neubrutalism */}
+        <motion.div className="nb-hero-editorial-actions" variants={actionsVariants}>
+          <Link
+            to={ROUTES.CATALOG}
+            className="nb-pressable nb-hero-btn-primary"
           >
+            <Compass size={18} strokeWidth={2.5} aria-hidden="true" />
+            <span>Jelajahi Katalog Lengkap</span>
+          </Link>
+
+          {isAuthenticated ? (
             <Link
-              to={ROUTES.CATALOG}
-              className="nb-pressable"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: '52px',
-                paddingInline: 'var(--nb-space-6)',
-                backgroundColor: 'var(--nb-yellow)',
-                fontFamily: 'var(--nb-font-heading)',
-                fontWeight: 700,
-                fontSize: '1rem',
-              }}
+              to={ROUTES.LIBRARY}
+              className="nb-pressable nb-hero-btn-secondary"
             >
-              Jelajahi Katalog E-Book
+              <BookMarked size={17} strokeWidth={2.5} aria-hidden="true" />
+              <span>Buka Pustaka Saya</span>
             </Link>
+          ) : (
+            <div className="nb-hero-guest-actions">
+              <Link
+                to={ROUTES.LOGIN}
+                className="nb-pressable nb-hero-btn-secondary"
+              >
+                <LogIn size={17} strokeWidth={2.5} aria-hidden="true" />
+                <span>Masuk Akun</span>
+              </Link>
+              <Button
+                type="button"
+                variant="blue"
+                isLoading={isDemoLoggingIn}
+                onClick={handleDemoLogin}
+                leftIcon={<Sparkles size={15} strokeWidth={2.5} />}
+              >
+                Demo 1-Klik
+              </Button>
+            </div>
+          )}
+        </motion.div>
 
-            <a
-              href="#kategori-buku"
-              className="nb-pressable"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: '52px',
-                paddingInline: 'var(--nb-space-6)',
-                backgroundColor: 'var(--nb-white)',
-                fontFamily: 'var(--nb-font-heading)',
-                fontWeight: 700,
-                fontSize: '1rem',
-              }}
-            >
-              Telusuri Kategori Buku
-            </a>
+        {/* 5. Bar Nilai & Jaminan Layanan (Space Mono, border-thin 2px) */}
+        <motion.div className="nb-hero-trust-bar" variants={trustBarVariants}>
+          <div className="nb-hero-trust-item">
+            <FileText size={15} strokeWidth={2.5} aria-hidden="true" />
+            <span>Format PDF Digital Lengkap</span>
           </div>
-        </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: 'var(--nb-space-5)',
-            alignItems: 'start',
-          }}
-        >
-          {primaryHeroBook && (
-            <div
-              style={{
-                backgroundColor: 'var(--nb-yellow)',
-                border: 'var(--nb-border-thick)',
-                boxShadow: 'var(--nb-shadow-lg)',
-                padding: 'var(--nb-space-4)',
-                transform: 'rotate(-1.2deg)',
-              }}
-            >
-              <BookCoverArtwork
-                title={primaryHeroBook.title}
-                author={primaryHeroBook.author}
-                categoryName={primaryHeroBook.categoryName}
-                coverCode={primaryHeroBook.coverCode}
-                accent={primaryHeroBook.coverAccent}
-              />
-              <div
-                style={{
-                  marginTop: 'var(--nb-space-3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '8px',
-                }}
-              >
-                <PriceDisplay amount={primaryHeroBook.price} size="sm" />
-                <Link
-                  to={ROUTES.BOOK_DETAIL(primaryHeroBook.id)}
-                  className="nb-label"
-                  style={{ textDecoration: 'underline' }}
-                >
-                  Detail Buku
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {secondaryHeroBook && (
-            <div
-              style={{
-                backgroundColor: 'var(--nb-blue)',
-                border: 'var(--nb-border-thick)',
-                boxShadow: 'var(--nb-shadow-lg)',
-                padding: 'var(--nb-space-4)',
-                transform: 'rotate(1.2deg)',
-              }}
-            >
-              <BookCoverArtwork
-                title={secondaryHeroBook.title}
-                author={secondaryHeroBook.author}
-                categoryName={secondaryHeroBook.categoryName}
-                coverCode={secondaryHeroBook.coverCode}
-                accent={secondaryHeroBook.coverAccent}
-              />
-              <div
-                style={{
-                  marginTop: 'var(--nb-space-3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '8px',
-                }}
-              >
-                <PriceDisplay amount={secondaryHeroBook.price} size="sm" />
-                <Link
-                  to={ROUTES.BOOK_DETAIL(secondaryHeroBook.id)}
-                  className="nb-label"
-                  style={{ textDecoration: 'underline' }}
-                >
-                  Detail Buku
-                </Link>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+          <span className="nb-hero-trust-divider" aria-hidden="true">•</span>
+          <div className="nb-hero-trust-item">
+            <Lock size={15} strokeWidth={2.5} aria-hidden="true" />
+            <span>Akses Pustaka Seumur Hidup</span>
+          </div>
+          <span className="nb-hero-trust-divider" aria-hidden="true">•</span>
+          <div className="nb-hero-trust-item">
+            <CheckCircle2 size={15} strokeWidth={2.5} aria-hidden="true" />
+            <span>Single-Store B2C Terpercaya</span>
+          </div>
+          <span className="nb-hero-trust-divider" aria-hidden="true">•</span>
+          <div className="nb-hero-trust-item">
+            <ShieldCheck size={15} strokeWidth={2.5} aria-hidden="true" />
+            <span>Bebas Biaya Langganan</span>
+          </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

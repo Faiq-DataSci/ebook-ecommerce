@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { motion, useReducedMotion } from 'motion/react';
 import { ROUTES } from '../../../constants/routes';
 import { useAuth } from '../../auth/hooks/useAuth';
 import type { Book } from '../../../types/book.types';
@@ -17,6 +18,7 @@ import { APP_CONFIG } from '../../../constants/app.constants';
 export function CatalogPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const reduceMotion = useReducedMotion();
 
   const {
     books,
@@ -34,7 +36,6 @@ export function CatalogPage() {
     setViewMode,
     updateFilter,
     setPricePreset,
-    toggleFormat,
     clearSearch,
     clearCategory,
     clearPrice,
@@ -123,7 +124,12 @@ export function CatalogPage() {
 
         {/* 4. Ready / Success State */}
         {viewState === 'ready' && (
-          <div className="nb-catalog-layout">
+          <motion.div
+            className="nb-catalog-layout"
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+          >
             {/* Left Column: Filter Sidebar */}
             <div className="nb-catalog-sidebar-col">
               <CatalogFilters
@@ -134,7 +140,6 @@ export function CatalogPage() {
                 filters={filters}
                 onChangeFilter={updateFilter}
                 onSetPricePreset={setPricePreset}
-                onToggleFormat={toggleFormat}
                 onReset={resetFilters}
                 onApplyFeedback={handleApplyFeedback}
               />
@@ -183,7 +188,7 @@ export function CatalogPage() {
               {/* Reassurance Banner */}
               <CatalogBottomBanner onOpenCalculator={handleExploreTopRecommendations} />
             </section>
-          </div>
+          </motion.div>
         )}
       </div>
 

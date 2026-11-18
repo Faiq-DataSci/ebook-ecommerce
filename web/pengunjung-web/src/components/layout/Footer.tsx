@@ -14,7 +14,8 @@ export function Footer() {
   return (
     <footer
       style={{
-        backgroundColor: 'var(--nb-white)',
+        backgroundColor: 'var(--nb-paper)',
+        color: 'var(--nb-black)',
         borderTop: 'var(--nb-border-thick)',
         marginTop: 'auto',
       }}
@@ -22,10 +23,10 @@ export function Footer() {
       <div
         className="nb-container"
         style={{
-          paddingBlock: 'var(--nb-space-12)',
+          paddingBlock: 'clamp(3rem, 5vw, 4.5rem)',
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: 'var(--nb-space-8)',
+          gap: 'clamp(2rem, 3.5vw, 3rem)',
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--nb-space-3)' }}>
@@ -33,8 +34,10 @@ export function Footer() {
             <span
               style={{
                 backgroundColor: 'var(--nb-yellow)',
+                color: 'var(--nb-black)',
                 border: 'var(--nb-border)',
                 boxShadow: 'var(--nb-shadow-sm)',
+                borderRadius: 'var(--nb-radius-sm)',
                 padding: '6px 14px',
                 fontFamily: 'var(--nb-font-display)',
                 fontWeight: 800,
@@ -45,7 +48,7 @@ export function Footer() {
             </span>
             <SimulationBadge />
           </div>
-          <p className="nb-body-sm">
+          <p className="nb-body-sm" style={{ color: 'var(--nb-text-muted)' }}>
             Etalase web pelanggan untuk {APP_CONFIG.SYSTEM_NAME}. Dirancang sebagai toko
             buku digital tunggal (Single-Store B2C) dengan akses baca bersyarat setelah
             verifikasi pembayaran.
@@ -53,7 +56,7 @@ export function Footer() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--nb-space-3)' }}>
-          <h2 className="nb-h3">Navigasi Pelanggan</h2>
+          <h2 className="nb-h3" style={{ color: 'var(--nb-black)' }}>Navigasi Pelanggan</h2>
           <ul
             style={{
               listStyle: 'none',
@@ -66,7 +69,7 @@ export function Footer() {
               <Link
                 to={ROUTES.HOME}
                 className="nb-body-sm"
-                style={{ textDecoration: 'underline', fontWeight: 600 }}
+                style={{ textDecoration: 'underline', fontWeight: 600, color: 'var(--nb-black)' }}
               >
                 Beranda Toko
               </Link>
@@ -75,7 +78,7 @@ export function Footer() {
               <Link
                 to={ROUTES.CATALOG}
                 className="nb-body-sm"
-                style={{ textDecoration: 'underline', fontWeight: 600 }}
+                style={{ textDecoration: 'underline', fontWeight: 600, color: 'var(--nb-black)' }}
               >
                 Katalog E-Book Digital
               </Link>
@@ -84,7 +87,7 @@ export function Footer() {
               <Link
                 to={`${ROUTES.HOME}#download-app`}
                 className="nb-body-sm"
-                style={{ textDecoration: 'underline', fontWeight: 600 }}
+                style={{ textDecoration: 'underline', fontWeight: 600, color: 'var(--nb-black)' }}
               >
                 Download Apps E-Book Store (Android)
               </Link>
@@ -93,7 +96,7 @@ export function Footer() {
               <Link
                 to={ROUTES.LIBRARY}
                 className="nb-body-sm"
-                style={{ textDecoration: 'underline', fontWeight: 600 }}
+                style={{ textDecoration: 'underline', fontWeight: 600, color: 'var(--nb-black)' }}
               >
                 Pustaka Saya (Akses Buku Terbeli)
               </Link>
@@ -102,7 +105,7 @@ export function Footer() {
               <Link
                 to={ROUTES.ACCOUNT}
                 className="nb-body-sm"
-                style={{ textDecoration: 'underline', fontWeight: 600 }}
+                style={{ textDecoration: 'underline', fontWeight: 600, color: 'var(--nb-black)' }}
               >
                 Akun Pelanggan & Ringkasan Profil
               </Link>
@@ -111,7 +114,7 @@ export function Footer() {
               <Link
                 to={ROUTES.ORDERS}
                 className="nb-body-sm"
-                style={{ textDecoration: 'underline', fontWeight: 600 }}
+                style={{ textDecoration: 'underline', fontWeight: 600, color: 'var(--nb-black)' }}
               >
                 Riwayat Pembelian & Status Transaksi
               </Link>
@@ -120,7 +123,7 @@ export function Footer() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--nb-space-3)' }}>
-          <h2 className="nb-h3">Informasi & Kebijakan</h2>
+          <h2 className="nb-h3" style={{ color: 'var(--nb-black)' }}>Informasi & Kebijakan</h2>
           <p className="nb-body-sm" style={{ color: 'var(--nb-text-muted)' }}>
             Rincian kontak resmi dan alamat perusahaan belum ditetapkan pada tahap ini
             (Placeholder Layanan Pelanggan).
@@ -150,9 +153,10 @@ export function Footer() {
 
       <div
         style={{
-          backgroundColor: 'var(--nb-paper)',
+          backgroundColor: 'var(--nb-muted)',
           borderTop: 'var(--nb-border-thin)',
           paddingBlock: 'var(--nb-space-4)',
+          color: 'var(--nb-black)',
         }}
       >
         <div
@@ -165,10 +169,10 @@ export function Footer() {
             gap: '8px',
           }}
         >
-          <p className="nb-body-sm">
+          <p className="nb-body-sm" style={{ color: 'var(--nb-black)' }}>
             Hak Cipta &copy; {new Date().getFullYear()} {APP_CONFIG.BRAND_NAME} ({APP_CONFIG.SYSTEM_NAME}).
           </p>
-          <p className="nb-mono" style={{ fontSize: '0.75rem' }}>
+          <p className="nb-mono" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
             Seluruh Katalog & Transaksi Contoh Berstatus {APP_CONFIG.SIMULATION_LABEL}
           </p>
         </div>

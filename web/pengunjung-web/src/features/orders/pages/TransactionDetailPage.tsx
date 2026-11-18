@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 import type { Order, OrderStatus } from '../../../types/order.types';
 import type { PaymentStatus as PaymentStatusType } from '../../../types/payment.types';
 import { ROUTES } from '../../../constants/routes';
@@ -232,7 +231,6 @@ export function TransactionDetailPage() {
                   fontWeight: 700,
                 }}
               >
-                <ArrowLeft size={18} strokeWidth={2.25} aria-hidden="true" />
                 <span>Kembali ke Riwayat Pembelian</span>
               </Link>
             </div>

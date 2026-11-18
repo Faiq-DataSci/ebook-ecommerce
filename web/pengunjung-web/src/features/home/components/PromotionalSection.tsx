@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Check, Download, Smartphone } from 'lucide-react';
+import { motion, useReducedMotion } from 'motion/react';
 import { APP_CONFIG } from '../../../constants/app.constants';
 import { ROUTES } from '../../../constants/routes';
 import { Badge, SimulationBadge } from '../../../components/ui/Badge';
@@ -8,6 +9,7 @@ import { Button } from '../../../components/ui/Button';
 
 export function PromotionalSection() {
   const [downloaded, setDownloaded] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   const handleSimulatedDownload = () => {
     const releaseManifest = [
@@ -50,12 +52,16 @@ export function PromotionalSection() {
           gap: 'var(--nb-space-6)',
         }}
       >
-        <div
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 22 }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
           style={{
             backgroundColor: 'var(--nb-white)',
             border: 'var(--nb-border-thick)',
             boxShadow: 'var(--nb-shadow-xl)',
-            padding: 'var(--nb-space-8)',
+            padding: 'clamp(1.75rem, 3.5vw, 2.75rem)',
             display: 'flex',
             flexWrap: 'wrap',
             alignItems: 'center',
@@ -83,7 +89,7 @@ export function PromotionalSection() {
             <h2 className="nb-h1" style={{ marginBottom: '10px' }}>
               Download Apps E-Book Store di Perangkat Android Anda.
             </h2>
-            <p className="nb-body-lg">
+            <p className="nb-body-lg" style={{ color: 'var(--nb-text-muted)' }}>
               Bawa pustaka digital Anda ke mana saja. Aplikasi mobile resmi{' '}
               <strong>E-Book Store (`ebook_store`)</strong> berbasis Flutter
               memungkinkan Anda menjelajahi katalog, memantau status pesanan,
@@ -138,13 +144,17 @@ export function PromotionalSection() {
                 fontFamily: 'var(--nb-font-heading)',
                 fontWeight: 700,
                 fontSize: '1rem',
+                textDecoration: 'none',
+                color: 'var(--nb-black)',
+                border: 'var(--nb-border)',
               }}
             >
               Telusuri Koleksi E-Book
             </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 }
+
