@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { AlertTriangle, Eye, EyeOff, KeyRound, LogIn } from 'lucide-react';
+import { motion, useReducedMotion, type Variants } from 'motion/react';
 import { ROUTES } from '../../../constants/routes';
 import { isValidEmail, validatePassword } from '../../../utils/validators';
 import { SimulationBadge } from '../../../components/ui/Badge';
@@ -10,11 +11,41 @@ import { Input } from '../../../components/ui/Input';
 import { Modal } from '../../../components/ui/Modal';
 import { useAuth } from '../hooks/useAuth';
 
+const authContainerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+const authBannerVariants: Variants = {
+  hidden: { opacity: 0, y: -14 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, ease: 'easeOut' },
+  },
+};
+
+const authCardVariants: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: 'easeOut' },
+  },
+};
+
 export function LoginForm() {
   const { login, loginWithDemoAccount } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTarget = searchParams.get('redirect') || ROUTES.LIBRARY;
+  const reduceMotion = useReducedMotion();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -96,8 +127,14 @@ export function LoginForm() {
   };
 
   return (
-    <div style={{ width: '100%', maxWidth: '520px' }}>
-      <div
+    <motion.div
+      style={{ width: '100%', maxWidth: '520px' }}
+      initial={reduceMotion ? false : 'hidden'}
+      animate="visible"
+      variants={authContainerVariants}
+    >
+      <motion.div
+        variants={authBannerVariants}
         style={{
           backgroundColor: 'var(--nb-yellow)',
           border: 'var(--nb-border-thick)',
@@ -115,9 +152,10 @@ export function LoginForm() {
           Akses koleksi e-book yang telah Anda beli dan pantau status verifikasi
           pesanan Anda. Layar ini khusus untuk pelanggan (bukan login admin).
         </p>
-      </div>
+      </motion.div>
 
-      <Card tone="white" zone="C" padding="lg">
+      <motion.div variants={authCardVariants}>
+        <Card tone="white" zone="C" padding="lg">
         <form
           noValidate
           onSubmit={handleSubmit}
@@ -284,6 +322,7 @@ export function LoginForm() {
           </p>
         </form>
       </Card>
+      </motion.div>
 
       <Modal
         isOpen={recoveryModalOpen}
@@ -307,6 +346,6 @@ export function LoginForm() {
           </p>
         </div>
       </Modal>
-    </div>
+    </motion.div>
   );
 }

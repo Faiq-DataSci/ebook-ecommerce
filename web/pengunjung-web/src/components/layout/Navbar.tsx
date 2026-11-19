@@ -35,6 +35,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [quickSearch, setQuickSearch] = useState('');
   const [downloadModalOpen, setDownloadModalOpen] = useState(false);
+  const [guideModalOpen, setGuideModalOpen] = useState(false);
   const [apkSimulated, setApkSimulated] = useState(false);
   const [isDemoLoggingIn, setIsDemoLoggingIn] = useState(false);
 
@@ -103,6 +104,25 @@ export function Navbar() {
     setMobileMenuOpen(false);
     setApkSimulated(false);
     setDownloadModalOpen(true);
+  };
+
+  const handleOpenGuideModal = () => {
+    setMobileMenuOpen(false);
+    setGuideModalOpen(true);
+  };
+
+  const handleJumpToGuideSection = () => {
+    setGuideModalOpen(false);
+    setMobileMenuOpen(false);
+    if (location.pathname !== ROUTES.HOME) {
+      navigate(`${ROUTES.HOME}#tentang-toko`);
+    }
+    window.setTimeout(() => {
+      const target = document.getElementById('tentang-toko');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 80);
   };
 
   const handleTriggerSimulatedApkDownload = () => {
@@ -290,9 +310,7 @@ export function Navbar() {
                   <UserCheck size={16} strokeWidth={2.25} aria-hidden="true" />
                   <span>Akun</span>
                 </NavLink>
-              </>
-            ) : (
-              <>
+
                 <button
                   type="button"
                   onClick={handleOpenDownloadModal}
@@ -301,15 +319,16 @@ export function Navbar() {
                   <Smartphone size={16} strokeWidth={2.25} aria-hidden="true" />
                   <span>Download Apps</span>
                 </button>
-
-                <Link
-                  to={`${ROUTES.HOME}#tentang-toko`}
-                  className="nb-nav-item"
-                >
-                  <Info size={16} strokeWidth={2.25} aria-hidden="true" />
-                  <span>Alur & Panduan</span>
-                </Link>
               </>
+            ) : (
+              <button
+                type="button"
+                onClick={handleOpenGuideModal}
+                className="nb-nav-item nb-nav-item--app"
+              >
+                <Info size={16} strokeWidth={2.25} aria-hidden="true" />
+                <span>Alur &amp; Panduan</span>
+              </button>
             )}
           </nav>
 
@@ -786,43 +805,45 @@ export function Navbar() {
                     </Link>
                   ) : null}
 
-                  {/* Download Apps Android */}
-                  <button
-                    type="button"
-                    onClick={handleOpenDownloadModal}
-                    className="nb-menu-tile"
-                    style={{ textAlign: 'left', background: 'var(--nb-white)' }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Smartphone size={18} strokeWidth={2.5} />
-                      <span className="nb-nav-badge-pill nb-nav-badge-pill--blue">Android</span>
-                    </div>
-                    <div>
-                      <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Download Apps</h4>
-                      <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
-                        Simulasi APK mobile ebook_store
-                      </p>
-                    </div>
-                  </button>
+                  {/* Download Apps Android (Hanya Tampil Jika Sudah Masuk Akun) */}
+                  {isAuthenticated ? (
+                    <button
+                      type="button"
+                      onClick={handleOpenDownloadModal}
+                      className="nb-menu-tile"
+                      style={{ textAlign: 'left', background: 'var(--nb-white)' }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Smartphone size={18} strokeWidth={2.5} />
+                        <span className="nb-nav-badge-pill nb-nav-badge-pill--blue">Android</span>
+                      </div>
+                      <div>
+                        <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Download Apps</h4>
+                        <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
+                          Simulasi APK mobile ebook_store
+                        </p>
+                      </div>
+                    </button>
+                  ) : null}
 
                   {/* Alur Pembelian & Hak Akses */}
-                  <a
-                    href={`${ROUTES.HOME}#tentang-toko`}
-                    onClick={() => setMobileMenuOpen(false)}
+                  <button
+                    type="button"
+                    onClick={handleOpenGuideModal}
                     className="nb-menu-tile"
-                    style={{ background: 'var(--nb-white)' }}
+                    style={{ textAlign: 'left', background: 'var(--nb-white)' }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Info size={18} strokeWidth={2.5} />
                       <span className="nb-nav-badge-pill">Panduan</span>
                     </div>
                     <div>
-                      <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Alur & Hak Akses</h4>
+                      <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Alur &amp; Panduan</h4>
                       <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
                         Mekanisme B2C dan lisensi PDF
                       </p>
                     </div>
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -964,6 +985,178 @@ export function Navbar() {
               </p>
             </div>
           )}
+        </div>
+      </Modal>
+
+      {/* Modal Alur & Panduan Pembelian E-Book Digital */}
+      <Modal
+        isOpen={guideModalOpen}
+        onClose={() => setGuideModalOpen(false)}
+        title="Alur & Panduan Pembelian E-Book Digital (B2C)"
+        footer={
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '10px',
+              width: '100%',
+            }}
+          >
+            <Button
+              variant="secondary"
+              onClick={handleJumpToGuideSection}
+            >
+              Lihat Seksi Panduan di Beranda
+            </Button>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              <Button
+                variant="blue"
+                onClick={() => {
+                  setGuideModalOpen(false);
+                  navigate(ROUTES.CATALOG);
+                }}
+              >
+                Buka Katalog E-Book
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => setGuideModalOpen(false)}
+              >
+                Mengerti / Tutup
+              </Button>
+            </div>
+          </div>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            <SimulationBadge />
+            <Badge tone="yellow">Model Bisnis: Single-Store B2C</Badge>
+            <Badge tone="lavender">SPK: Metode SAW (Backend)</Badge>
+          </div>
+
+          <p className="nb-body">
+            Panduan resmi alur penelusuran katalog, pemesanan e-book individual,
+            verifikasi pembayaran, hingga aktivasi hak baca berkas PDF di{' '}
+            <strong>Pustaka Saya</strong>.
+          </p>
+
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                gap: '12px',
+                padding: '12px 14px',
+                backgroundColor: 'var(--nb-paper)',
+                border: 'var(--nb-border-thin)',
+                boxShadow: 'var(--nb-shadow-sm)',
+              }}
+            >
+              <span
+                className="nb-mono"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '28px',
+                  height: '28px',
+                  backgroundColor: 'var(--nb-yellow)',
+                  border: '2px solid var(--nb-black)',
+                  fontWeight: 800,
+                  flexShrink: 0,
+                }}
+              >
+                1
+              </span>
+              <div>
+                <p className="nb-label">1. Telusuri Katalog &amp; Rekomendasi SAW</p>
+                <p className="nb-body-sm" style={{ color: 'var(--nb-text-muted)' }}>
+                  Pengunjung dapat menjelajahi seluruh koleksi e-book secara bebas,
+                  menyaring menurut kategori literatur, dan melihat peringkat rekomendasi
+                  Metode Simple Additive Weighting (SAW).
+                </p>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: '12px',
+                padding: '12px 14px',
+                backgroundColor: 'var(--nb-paper)',
+                border: 'var(--nb-border-thin)',
+                boxShadow: 'var(--nb-shadow-sm)',
+              }}
+            >
+              <span
+                className="nb-mono"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '28px',
+                  height: '28px',
+                  backgroundColor: 'var(--nb-blue)',
+                  border: '2px solid var(--nb-black)',
+                  fontWeight: 800,
+                  flexShrink: 0,
+                }}
+              >
+                2
+              </span>
+              <div>
+                <p className="nb-label">2. Masuk Akun &amp; Pesan E-Book Individual</p>
+                <p className="nb-body-sm" style={{ color: 'var(--nb-text-muted)' }}>
+                  Masuk atau daftar akun pelanggan untuk membuat pesanan. Setiap transaksi
+                  dicatat beserta status pembayaran (Menunggu Pembayaran, Diproses, atau Lunas).
+                </p>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: '12px',
+                padding: '12px 14px',
+                backgroundColor: 'var(--nb-paper)',
+                border: 'var(--nb-border-thin)',
+                boxShadow: 'var(--nb-shadow-sm)',
+              }}
+            >
+              <span
+                className="nb-mono"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '28px',
+                  height: '28px',
+                  backgroundColor: 'var(--nb-green)',
+                  border: '2px solid var(--nb-black)',
+                  fontWeight: 800,
+                  flexShrink: 0,
+                }}
+              >
+                3
+              </span>
+              <div>
+                <p className="nb-label">3. Akses Baca PDF Seumur Hidup di Pustaka Saya</p>
+                <p className="nb-body-sm" style={{ color: 'var(--nb-text-muted)' }}>
+                  Setelah pembayaran terverifikasi lunas (<code>PAID</code>), hak baca digital
+                  aktif permanen di menu <strong>Pustaka Saya</strong> menggunakan akses terproteksi
+                  (Signed URL dari bucket privat).
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </Modal>
     </header>

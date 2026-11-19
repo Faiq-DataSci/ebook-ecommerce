@@ -3,6 +3,16 @@ body {
   overflow-x: hidden;
   max-width: 100vw;
   -webkit-text-size-adjust: 100%;
+  /* Sembunyikan scrollbar bawaan browser (digantikan oleh Neubrutalist ScrollProgressRail) */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .nb-container {
@@ -2065,6 +2075,207 @@ body {
   }
 }
 
+/* ============================================================================
+   Lencana Persentase & Mistar Progres Baca (Pengganti Scrollbar Bawaan — Neubrutalism)
+   ============================================================================ */
+.nb-scroll-rail-wrapper {
+  position: fixed;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.nb-scroll-percent-badge {
+  pointer-events: auto;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  padding: 5px 8px;
+  background-color: var(--nb-yellow);
+  color: var(--nb-black);
+  border: 3px solid var(--nb-black);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 0 var(--nb-black);
+  font-family: var(--nb-font-mono);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    transform 120ms ease-out,
+    box-shadow 120ms ease-out,
+    background-color 120ms ease-out;
+}
+
+.nb-scroll-percent-badge[data-state='idle'] {
+  background-color: var(--nb-paper);
+}
+
+.nb-scroll-percent-badge[data-state='complete'] {
+  background-color: var(--nb-green);
+}
+
+.nb-scroll-percent-badge[data-state='dragging'] {
+  background-color: var(--nb-blue);
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 0 var(--nb-black);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nb-scroll-percent-badge:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 0 var(--nb-black);
+    background-color: var(--nb-blue);
+  }
+}
+
+.nb-scroll-percent-badge:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.nb-scroll-percent-badge:focus-visible {
+  outline: 3px solid var(--nb-focus);
+  outline-offset: 3px;
+}
+
+.nb-scroll-percent-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: var(--nb-black);
+  border-bottom: 2px solid var(--nb-black);
+  width: 100%;
+  text-align: center;
+  padding-bottom: 3px;
+  margin-bottom: 3px;
+}
+
+.nb-scroll-percent-value {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--nb-black);
+}
+
+.nb-scroll-ruler-track {
+  pointer-events: auto;
+  position: relative;
+  width: 18px;
+  height: 210px;
+  background-color: var(--nb-paper);
+  border: 3px solid var(--nb-black);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 0 var(--nb-black);
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition:
+    transform 120ms ease-out,
+    box-shadow 120ms ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nb-scroll-ruler-track:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 0 var(--nb-black);
+  }
+}
+
+.nb-scroll-ruler-track[data-dragging='true'] {
+  cursor: grabbing;
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 0 var(--nb-black);
+}
+
+.nb-scroll-ruler-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--nb-yellow);
+  transition: height 60ms linear, background-color 120ms ease-out;
+}
+
+.nb-scroll-ruler-fill[data-state='complete'] {
+  background-color: var(--nb-green);
+}
+
+.nb-scroll-ruler-fill[data-state='dragging'] {
+  background-color: var(--nb-blue);
+  transition: none;
+}
+
+.nb-scroll-ruler-tick {
+  position: absolute;
+  right: 0;
+  width: 6px;
+  height: 2px;
+  background-color: var(--nb-black);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.nb-scroll-ruler-tick-sm {
+  width: 4px;
+  opacity: 0.7;
+}
+
+.nb-scroll-ruler-tick-mid {
+  width: 10px;
+  height: 2.5px;
+}
+
+.nb-scroll-ruler-thumb {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 10px;
+  transform: translateY(-50%);
+  background-color: var(--nb-black);
+  border-top: 2px solid var(--nb-white);
+  border-bottom: 2px solid var(--nb-white);
+  pointer-events: none;
+  z-index: 2;
+}
+
+@media (max-width: 767px) {
+  .nb-scroll-rail-wrapper {
+    right: 8px;
+    top: auto;
+    bottom: 16px;
+    transform: none;
+    gap: 6px;
+  }
+
+  .nb-scroll-ruler-track {
+    height: 112px;
+    width: 14px;
+    border-width: 2px;
+    box-shadow: 3px 3px 0 0 var(--nb-black);
+  }
+
+  .nb-scroll-percent-badge {
+    min-width: 48px;
+    padding: 3px 6px;
+    border-width: 2px;
+    box-shadow: 3px 3px 0 0 var(--nb-black);
+  }
+
+  .nb-scroll-percent-value {
+    font-size: 0.6875rem;
+  }
+}
+
 /* Accessibility & Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .nb-marquee-track {
@@ -2077,7 +2288,9 @@ body {
   .nb-catalog-card,
   .nb-catalog-card-list,
   .nb-category-card,
-  .nb-category-icon-box {
+  .nb-category-icon-box,
+  .nb-scroll-percent-badge,
+  .nb-scroll-ruler-fill {
     transition: none !important;
   }
   .nb-pressable:hover,
@@ -2089,7 +2302,9 @@ body {
   .nb-catalog-card-list:hover,
   .nb-catalog-card-list:active,
   .nb-category-card:hover,
-  .nb-category-card:hover .nb-category-icon-box {
+  .nb-category-card:hover .nb-category-icon-box,
+  .nb-scroll-percent-badge:hover,
+  .nb-scroll-percent-badge:active {
     transform: none !important;
   }
 }

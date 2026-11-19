@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Check, Eye, EyeOff, UserPlus } from 'lucide-react';
+import { motion, useReducedMotion, type Variants } from 'motion/react';
 import { ROUTES } from '../../../constants/routes';
 import { isValidEmail, validatePassword } from '../../../utils/validators';
 import { SimulationBadge } from '../../../components/ui/Badge';
@@ -9,9 +10,39 @@ import { Card } from '../../../components/ui/Card';
 import { Input } from '../../../components/ui/Input';
 import { useAuth } from '../hooks/useAuth';
 
+const authContainerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+const authBannerVariants: Variants = {
+  hidden: { opacity: 0, y: -14 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, ease: 'easeOut' },
+  },
+};
+
+const authCardVariants: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: 'easeOut' },
+  },
+};
+
 export function RegisterForm() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -112,8 +143,14 @@ export function RegisterForm() {
   };
 
   return (
-    <div style={{ width: '100%', maxWidth: '560px' }}>
-      <div
+    <motion.div
+      style={{ width: '100%', maxWidth: '560px' }}
+      initial={reduceMotion ? false : 'hidden'}
+      animate="visible"
+      variants={authContainerVariants}
+    >
+      <motion.div
+        variants={authBannerVariants}
         style={{
           backgroundColor: 'var(--nb-blue)',
           border: 'var(--nb-border-thick)',
@@ -131,9 +168,10 @@ export function RegisterForm() {
           Buat akun pelanggan untuk memesan e-book digital dan menyimpan hak
           akses baca di Pustaka Saya. Hanya meminta data yang relevan.
         </p>
-      </div>
+      </motion.div>
 
-      <Card tone="white" zone="C" padding="lg">
+      <motion.div variants={authCardVariants}>
+        <Card tone="white" zone="C" padding="lg">
         <form
           noValidate
           onSubmit={handleSubmit}
@@ -407,6 +445,7 @@ export function RegisterForm() {
           </div>
         </form>
       </Card>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

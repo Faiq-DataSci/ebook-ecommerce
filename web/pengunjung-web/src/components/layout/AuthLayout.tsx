@@ -3,6 +3,7 @@ import { APP_CONFIG } from '../../constants/app.constants';
 import { ROUTES } from '../../constants/routes';
 import { SimulationBadge } from '../ui/Badge';
 import { Footer } from './Footer';
+import { ScrollProgressRail } from './ScrollProgressRail';
 
 export function AuthLayout() {
   return (
@@ -17,6 +18,8 @@ export function AuthLayout() {
       <a href="#auth-main-content" className="nb-skip-link">
         Lewati ke formulir autentikasi
       </a>
+
+      <ScrollProgressRail />
 
       <header
         style={{
@@ -75,16 +78,31 @@ export function AuthLayout() {
 
       <main
         id="auth-main-content"
-        className="nb-container"
         style={{
           flex: 1,
+          position: 'relative',
+          overflow: 'hidden',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           paddingBlock: 'var(--nb-space-12)',
         }}
       >
-        <Outlet />
+        {/* Pola Latar Geometris Neubrutalist Grid 32px (design.md bagian 4) */}
+        <div className="nb-hero-grid-pattern" aria-hidden="true" />
+
+        <div
+          className="nb-container"
+          style={{
+            position: 'relative',
+            zIndex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Outlet />
+        </div>
       </main>
 
       <Footer />
