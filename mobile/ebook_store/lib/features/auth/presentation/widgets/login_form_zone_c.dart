@@ -186,22 +186,22 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: AppColors.nbWhite,
         border: Border.all(color: AppColors.nbBlack, width: 3.0),
         boxShadow: const [
           BoxShadow(
             color: AppColors.nbBlack,
-            offset: Offset(6, 6),
-            blurRadius: 0,
+            offset: Offset(5.0, 5.0),
+            blurRadius: 0.0,
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Section Header from Stitch: AUTENTIKASI PENGGUNA (ZONA-C)
+          // Section Header matching Register styling:
           if (widget.isErrorState) ...[
             Padding(
               padding: const EdgeInsets.only(bottom: 12.0),
@@ -249,6 +249,39 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
               color: AppColors.nbBlack,
             ),
             const SizedBox(height: 14.0),
+          ] else ...[
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.lock_person_outlined,
+                    size: 20.0,
+                    color: AppColors.nbBlack,
+                  ),
+                  const SizedBox(width: 8.0),
+                  const Expanded(
+                    child: Text(
+                      'KREDENSIAL MASUK PENGGUNA',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: AppTheme.fontHeadline,
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.nbBlack,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(
+              height: 1.0,
+              thickness: 2.0,
+              color: AppColors.nbBlack,
+            ),
+            const SizedBox(height: 16.0),
           ],
 
           // ================= FIELD 1: ALAMAT EMAIL =================
@@ -660,7 +693,7 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Checkbox Ingat Saya
+              // Checkbox Ingat Saya (24x24px matching Register)
               Flexible(
                 child: InkWell(
                   onTap: () {
@@ -672,21 +705,21 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 20.0,
-                        height: 20.0,
+                        width: 24.0,
+                        height: 24.0,
                         decoration: BoxDecoration(
                           color: _rememberMe
                               ? AppColors.nbYellow
                               : AppColors.nbWhite,
                           border: Border.all(
                             color: AppColors.nbBlack,
-                            width: 2.0,
+                            width: 2.5,
                           ),
                           boxShadow: const [
                             BoxShadow(
                               color: AppColors.nbBlack,
-                              offset: Offset(2, 2),
-                              blurRadius: 0,
+                              offset: Offset(2.0, 2.0),
+                              blurRadius: 0.0,
                             ),
                           ],
                         ),
@@ -695,7 +728,7 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                             ? const Text(
                                 '✓',
                                 style: TextStyle(
-                                  fontSize: 13.0,
+                                  fontSize: 15.0,
                                   fontWeight: FontWeight.w900,
                                   color: AppColors.nbBlack,
                                   height: 1.0,
@@ -710,7 +743,7 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontFamily: AppTheme.fontHeadline,
-                            fontSize: 12.0,
+                            fontSize: 12.5,
                             fontWeight: FontWeight.w700,
                             color: AppColors.nbBlack,
                           ),
@@ -730,7 +763,7 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                   'Lupa Kata Sandi?',
                   style: TextStyle(
                     fontFamily: AppTheme.fontHeadline,
-                    fontSize: 12.0,
+                    fontSize: 12.5,
                     fontWeight: FontWeight.w700,
                     color: AppColors.nbBlack,
                     decoration: TextDecoration.underline,
@@ -741,7 +774,7 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
             ],
           ),
 
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 18.0),
 
           // ================= TOMBOL SUBMIT UTAMA: MASUK SEKARANG / COBA MASUK LAGI =================
           Material(
@@ -750,7 +783,7 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
               onTap: widget.isLoading ? null : _validateAndSubmit,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
-                height: 48.0,
+                height: 52.0,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: widget.isLoading
@@ -762,8 +795,8 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                       : const [
                           BoxShadow(
                             color: AppColors.nbBlack,
-                            offset: Offset(4, 4),
-                            blurRadius: 0,
+                            offset: Offset(4.0, 4.0),
+                            blurRadius: 0.0,
                           ),
                         ],
                 ),
@@ -773,11 +806,13 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
-                            width: 18.0,
-                            height: 18.0,
+                            width: 20.0,
+                            height: 20.0,
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
-                              color: AppColors.nbBlack,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColors.nbBlack,
+                              ),
                             ),
                           ),
                           SizedBox(width: 10.0),
@@ -786,7 +821,7 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                             style: TextStyle(
                               fontFamily: AppTheme.fontHeadline,
                               fontSize: 13.0,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w800,
                               color: AppColors.nbBlack,
                               letterSpacing: 0.5,
                             ),
@@ -801,18 +836,18 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                                 ? 'COBA MASUK LAGI'
                                 : 'MASUK SEKARANG',
                             style: const TextStyle(
-                              fontFamily: AppTheme.fontHeadline,
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.nbBlack,
-                              letterSpacing: 0.8,
+                                fontFamily: AppTheme.fontHeadline,
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.nbBlack,
+                                letterSpacing: 0.5,
                             ),
                           ),
                           const SizedBox(width: 8.0),
                           const Text(
                             '➔',
                             style: TextStyle(
-                              fontSize: 16.0,
+                              fontSize: 18.0,
                               fontWeight: FontWeight.w900,
                               color: AppColors.nbBlack,
                             ),

@@ -243,7 +243,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ] else
                         const LoginHeroZoneA(),
 
-                      const SizedBox(height: 10.0),
+                      const SizedBox(height: 8.0),
 
                       // 3. Zona C: Formulir Login Container (Supports Error State)
                       LoginFormZoneC(

@@ -15,16 +15,16 @@ class LoginRegisterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(top: 12.0),
-      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
+      margin: const EdgeInsets.only(top: 16.0),
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: AppColors.nbLavender,
         border: Border.all(color: AppColors.nbBlack, width: 3.0),
         boxShadow: const [
           BoxShadow(
             color: AppColors.nbBlack,
-            offset: Offset(3, 3),
-            blurRadius: 0,
+            offset: Offset(5.0, 5.0),
+            blurRadius: 0.0,
           ),
         ],
       ),
@@ -40,7 +40,7 @@ class LoginRegisterCard extends StatelessWidget {
                   'Belum memiliki akun?',
                   style: TextStyle(
                     fontFamily: AppTheme.fontBody,
-                    fontSize: 12.0,
+                    fontSize: 12.5,
                     fontWeight: FontWeight.w500,
                     color: AppColors.nbBlack,
                   ),
@@ -50,8 +50,8 @@ class LoginRegisterCard extends StatelessWidget {
                   'KOLEKSI BUKU MENANTI ANDA',
                   style: TextStyle(
                     fontFamily: AppTheme.fontHeadline,
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w800,
                     color: AppColors.nbBlack,
                     letterSpacing: -0.2,
                   ),
@@ -69,17 +69,17 @@ class LoginRegisterCard extends StatelessWidget {
               onTap: onRegister,
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12.0,
-                  vertical: 8.0,
+                  horizontal: 14.0,
+                  vertical: 10.0,
                 ),
                 decoration: BoxDecoration(
                   color: AppColors.nbWhite,
-                  border: Border.all(color: AppColors.nbBlack, width: 2.0),
+                  border: Border.all(color: AppColors.nbBlack, width: 2.5),
                   boxShadow: const [
                     BoxShadow(
                       color: AppColors.nbBlack,
-                      offset: Offset(3, 3),
-                      blurRadius: 0,
+                      offset: Offset(3.0, 3.0),
+                      blurRadius: 0.0,
                     ),
                   ],
                 ),
@@ -90,17 +90,17 @@ class LoginRegisterCard extends StatelessWidget {
                       'DAFTAR SEKARANG',
                       style: TextStyle(
                         fontFamily: AppTheme.fontHeadline,
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w800,
                         color: AppColors.nbBlack,
                         letterSpacing: 0.3,
                       ),
                     ),
-                    SizedBox(width: 4.0),
+                    SizedBox(width: 5.0),
                     Text(
                       '➔',
                       style: TextStyle(
-                        fontSize: 13.0,
+                        fontSize: 14.0,
                         fontWeight: FontWeight.w900,
                         color: AppColors.nbBlack,
                       ),
