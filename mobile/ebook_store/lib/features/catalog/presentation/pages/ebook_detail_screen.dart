@@ -4,6 +4,7 @@ import '../../../../core/constants/app_assets.dart';
 import '../../../../core/utils/rupiah_formatter.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_theme.dart';
+import '../../../cart/presentation/providers/cart_provider.dart';
 import '../../../home/presentation/providers/home_provider.dart';
 import '../../domain/entities/catalog_ebook.dart';
 import '../providers/catalog_provider.dart';
@@ -200,6 +201,7 @@ class EbookDetailScreen extends ConsumerWidget {
                   key: const Key('detail_add_to_cart_button'),
                   onTap: () {
                     ref.read(catalogProvider.notifier).addToCart(book);
+                    ref.read(cartProvider.notifier).addCatalogEbook(book);
                     ref.read(homeProvider.notifier).addToCart();
                     final messenger = ScaffoldMessenger.maybeOf(context);
                     if (messenger != null) {

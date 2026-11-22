@@ -14,15 +14,35 @@ class AppAssets {
       'assets/images/covers/algoritma_struktur_data.png';
   static const String coverPsikologiProdukDigital =
       'assets/images/covers/psikologi_produk_digital.png';
+  static const String coverArsitekturCloudDevops =
+      'assets/images/covers/arsitektur_cloud_devops.png';
 
-  static final Map<String, Uint8List> _embeddedCoverBytes = <String, Uint8List>{
-    coverDesainSistemModern: base64Decode(_cover1B64),
-    coverAlgoritmaStrukturData: base64Decode(_cover2B64),
-    coverPsikologiProdukDigital: base64Decode(_cover3B64),
-  };
+  static final Map<String, Uint8List> _decodedCache = <String, Uint8List>{};
 
   static Uint8List? getEmbeddedBytes(String assetPath) {
-    return _embeddedCoverBytes[assetPath];
+    if (assetPath.isEmpty) return null;
+    final cached = _decodedCache[assetPath];
+    if (cached != null) return cached;
+
+    String? b64;
+    if (assetPath == coverDesainSistemModern) {
+      b64 = _cover1B64;
+    } else if (assetPath == coverAlgoritmaStrukturData) {
+      b64 = _cover3B64.isNotEmpty ? _cover3B64 : _cover2B64;
+    } else if (assetPath == coverPsikologiProdukDigital) {
+      b64 = _cover3B64;
+    } else if (assetPath == coverArsitekturCloudDevops) {
+      b64 = _cover1B64;
+    }
+    if (b64 == null) return null;
+
+    try {
+      final bytes = base64Decode(b64);
+      _decodedCache[assetPath] = bytes;
+      return bytes;
+    } catch (_) {
+      return null;
+    }
   }
 
   // Genuine book cover assets extracted from Google Stitch screen
@@ -54,6 +74,9 @@ class StitchBookCover extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (assetPath.isEmpty) {
+      return _buildFallback();
+    }
     final bytes = AppAssets.getEmbeddedBytes(assetPath);
     if (bytes != null) {
       return Image.memory(
@@ -64,12 +87,7 @@ class StitchBookCover extends StatelessWidget {
         errorBuilder: (context, error, stackTrace) => _buildFallback(),
       );
     }
-    return Image.asset(
-      assetPath,
-      fit: BoxFit.cover,
-      semanticLabel: semanticLabel,
-      errorBuilder: (context, error, stackTrace) => _buildFallback(),
-    );
+    return _buildFallback();
   }
 
   Widget _buildFallback() {

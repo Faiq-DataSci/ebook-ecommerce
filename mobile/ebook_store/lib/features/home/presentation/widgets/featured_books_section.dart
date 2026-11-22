@@ -420,26 +420,23 @@ class FeaturedBooksSection extends StatelessWidget {
                       Semantics(
                         button: true,
                         label: 'Tambah ${book.title} ke keranjang',
-                        child: Tooltip(
-                          message: 'Tambah ke Keranjang',
-                          child: InkWell(
-                            key: const Key('featured_add_cart_button'),
-                            onTap: onAddToCartTap,
-                            child: Container(
-                              width: 40,
-                              height: 38,
-                              alignment: Alignment.center,
-                              decoration: AppTheme.brutalBox(
-                                color: AppColors.nbYellow,
-                                borderColor: AppColors.nbBlack,
-                                borderWidth: AppTheme.borderDefault,
-                                shadowOffset: 2,
-                              ),
-                              child: const Icon(
-                                Icons.add_shopping_cart,
-                                size: 18,
-                                color: AppColors.nbBlack,
-                              ),
+                        child: InkWell(
+                          key: const Key('featured_add_cart_button'),
+                          onTap: onAddToCartTap,
+                          child: Container(
+                            width: 40,
+                            height: 38,
+                            alignment: Alignment.center,
+                            decoration: AppTheme.brutalBox(
+                              color: AppColors.nbYellow,
+                              borderColor: AppColors.nbBlack,
+                              borderWidth: AppTheme.borderDefault,
+                              shadowOffset: 2,
+                            ),
+                            child: const Icon(
+                              Icons.add_shopping_cart,
+                              size: 18,
+                              color: AppColors.nbBlack,
                             ),
                           ),
                         ),

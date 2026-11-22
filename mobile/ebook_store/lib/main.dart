@@ -6,9 +6,24 @@ import 'app/app.dart';
 import 'theme/app_colors.dart';
 
 void main() {
+  // DevicePreview dinonaktifkan di perangkat mobile (Android & iOS baik fisik maupun emulator)
+  // agar aplikasi tampil penuh sesuai ukuran layar HP Anda.
+  // Hanya aktif jika dijalankan di Web/Desktop, atau dipaksa via --dart-define=ENABLE_DEVICE_PREVIEW=true
+  final isMobileDevice = !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
+
+  const forceEnablePreview = bool.fromEnvironment(
+    'ENABLE_DEVICE_PREVIEW',
+    defaultValue: false,
+  );
+
+  final enableDevicePreview =
+      forceEnablePreview || (!kReleaseMode && !isMobileDevice);
+
   runApp(
     DevicePreview(
-      enabled: !kReleaseMode,
+      enabled: enableDevicePreview,
       defaultDevice: Devices.ios.iPhone13,
       backgroundColor: AppColors.nbMuted,
       data: const DevicePreviewData(

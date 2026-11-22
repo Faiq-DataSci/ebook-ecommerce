@@ -139,6 +139,10 @@ class HomeNotifier extends StateNotifier<HomeState> {
     state = state.copyWith(cartCount: state.cartCount + 1);
   }
 
+  void setCartCount(int count) {
+    state = state.copyWith(cartCount: count.clamp(0, 999));
+  }
+
   void setLoadStatus(HomeLoadStatus status) {
     state = state.copyWith(
       status: status,
