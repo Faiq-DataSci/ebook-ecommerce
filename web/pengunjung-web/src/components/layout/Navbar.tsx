@@ -4,9 +4,7 @@ import {
   AlertTriangle,
   BookMarked,
   BookOpen,
-  Check,
   Compass,
-  Download,
   Home,
   Info,
   Lock,
@@ -15,7 +13,6 @@ import {
   Menu,
   ReceiptText,
   Search,
-  Smartphone,
   Sparkles,
   UserCheck,
   UserPlus,
@@ -34,9 +31,7 @@ export function Navbar() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [quickSearch, setQuickSearch] = useState('');
-  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
   const [guideModalOpen, setGuideModalOpen] = useState(false);
-  const [apkSimulated, setApkSimulated] = useState(false);
   const [isDemoLoggingIn, setIsDemoLoggingIn] = useState(false);
 
   const isHomeActive = location.pathname === ROUTES.HOME;
@@ -100,12 +95,6 @@ export function Navbar() {
     navigate(ROUTES.HOME);
   };
 
-  const handleOpenDownloadModal = () => {
-    setMobileMenuOpen(false);
-    setApkSimulated(false);
-    setDownloadModalOpen(true);
-  };
-
   const handleOpenGuideModal = () => {
     setMobileMenuOpen(false);
     setGuideModalOpen(true);
@@ -123,38 +112,6 @@ export function Navbar() {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }, 80);
-  };
-
-  const handleTriggerSimulatedApkDownload = () => {
-    const releaseManifest = [
-      '======================================================',
-      'E-BOOK STORE MOBILE APP (ANDROID) - DATA SIMULASI',
-      '======================================================',
-      `Sistem        : ${APP_CONFIG.SYSTEM_NAME}`,
-      'Nama Proyek   : ebook_store (Flutter + Dart + Riverpod + Dio)',
-      'Platform      : Android (APK Distribusi Internal)',
-      'Status Modul  : [RENCANA] / Paket Simulasi Antarmuka Web',
-      `Waktu Unduh   : ${new Date().toISOString()}`,
-      '',
-      'Catatan Arsitektur:',
-      '- Sinkronisasi akun pelanggan, katalog e-book, dan Pustaka Saya.',
-      '- Akses baca file PDF menggunakan Signed URL dari bucket privat.',
-      '- Berkas ini adalah manifes simulasi unduhan aplikasi dari etalase web.',
-    ].join('\n');
-
-    const blob = new Blob([releaseManifest], {
-      type: 'text/plain;charset=utf-8',
-    });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = 'ebook_store-android-info-simulasi.txt';
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
-    URL.revokeObjectURL(url);
-
-    setApkSimulated(true);
   };
 
   return (
@@ -310,15 +267,6 @@ export function Navbar() {
                   <UserCheck size={16} strokeWidth={2.25} aria-hidden="true" />
                   <span>Akun</span>
                 </NavLink>
-
-                <button
-                  type="button"
-                  onClick={handleOpenDownloadModal}
-                  className="nb-nav-item nb-nav-item--app"
-                >
-                  <Smartphone size={16} strokeWidth={2.25} aria-hidden="true" />
-                  <span>Download Apps</span>
-                </button>
               </>
             ) : (
               <button
@@ -805,27 +753,6 @@ export function Navbar() {
                     </Link>
                   ) : null}
 
-                  {/* Download Apps Android (Hanya Tampil Jika Sudah Masuk Akun) */}
-                  {isAuthenticated ? (
-                    <button
-                      type="button"
-                      onClick={handleOpenDownloadModal}
-                      className="nb-menu-tile"
-                      style={{ textAlign: 'left', background: 'var(--nb-white)' }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Smartphone size={18} strokeWidth={2.5} />
-                        <span className="nb-nav-badge-pill nb-nav-badge-pill--blue">Android</span>
-                      </div>
-                      <div>
-                        <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Download Apps</h4>
-                        <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
-                          Simulasi APK mobile ebook_store
-                        </p>
-                      </div>
-                    </button>
-                  ) : null}
-
                   {/* Alur Pembelian & Hak Akses */}
                   <button
                     type="button"
@@ -875,118 +802,6 @@ export function Navbar() {
           </div>
         </div>
       )}
-
-      {/* Modal Download Apps E-Book Store */}
-      <Modal
-        isOpen={downloadModalOpen}
-        onClose={() => setDownloadModalOpen(false)}
-        title="Download Apps E-Book Store (Android)"
-        footer={
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '10px',
-              width: '100%',
-            }}
-          >
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setDownloadModalOpen(false);
-                navigate(`${ROUTES.HOME}#download-app`);
-              }}
-            >
-              Lihat Seksi Aplikasi di Beranda
-            </Button>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              <Button
-                variant="blue"
-                leftIcon={
-                  apkSimulated ? (
-                    <Check size={18} strokeWidth={2.5} aria-hidden="true" />
-                  ) : (
-                    <Download size={18} strokeWidth={2.25} aria-hidden="true" />
-                  )
-                }
-                onClick={handleTriggerSimulatedApkDownload}
-              >
-                {apkSimulated
-                  ? 'Manifes APK Terunduh (Simulasi)'
-                  : 'Unduh Paket APK Android (Simulasi)'}
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => setDownloadModalOpen(false)}
-              >
-                Selesai
-              </Button>
-            </div>
-          </div>
-        }
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            <SimulationBadge />
-            <Badge tone="blue">Platform Android (Flutter)</Badge>
-            <Badge tone="yellow">Proyek: ebook_store [RENCANA]</Badge>
-          </div>
-
-          <p className="nb-body">
-            Nikmati pengalaman menjelajahi katalog, memesan buku digital, dan
-            membaca koleksi e-book Anda langsung melalui aplikasi mobile resmi{' '}
-            <strong>E-Book Store (`ebook_store`)</strong> untuk perangkat
-            Android.
-          </p>
-
-          <div
-            style={{
-              backgroundColor: 'var(--nb-paper)',
-              border: 'var(--nb-border-thin)',
-              padding: 'var(--nb-space-4)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-            }}
-          >
-            <p className="nb-label">Spesifikasi Aplikasi Mobile Pelanggan:</p>
-            <p className="nb-body-sm">
-              1. <strong>Sinkronisasi Akun & Pustaka:</strong> Satu akun
-              pelanggan terhubung dengan Pustaka Saya dan Riwayat Pembelian di
-              web maupun mobile.
-            </p>
-            <p className="nb-body-sm">
-              2. <strong>Pembaca PDF Terproteksi:</strong> Membuka e-book yang
-              telah lunas (`paid`) melalui tautan sementara (*Signed URL*) dari
-              penyimpanan privat.
-            </p>
-            <p className="nb-body-sm">
-              3. <strong>Stack Teknologi Terkunci:</strong> Dibangun menggunakan
-              Flutter, Dart, Riverpod, dan Dio untuk perangkat Android.
-            </p>
-          </div>
-
-          {apkSimulated && (
-            <div
-              role="status"
-              style={{
-                backgroundColor: 'var(--nb-green)',
-                border: 'var(--nb-border-thin)',
-                boxShadow: 'var(--nb-shadow-sm)',
-                padding: '12px',
-              }}
-            >
-              <p className="nb-label">
-                Simulasi Unduhan Berhasil: Berkas informasi rilis{' '}
-                <code>ebook_store-android-info-simulasi.txt</code> telah diunduh
-                ke perangkat Anda.
-              </p>
-            </div>
-          )}
-        </div>
-      </Modal>
 
       {/* Modal Alur & Panduan Pembelian E-Book Digital */}
       <Modal

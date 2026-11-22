@@ -8,6 +8,21 @@ export interface Category {
   isSimulation: boolean;
 }
 
+export interface BookReview {
+  id: string;
+  bookId: string;
+  reviewerName: string;
+  reviewerRole: string;
+  rating: number;
+  title: string;
+  comment: string;
+  createdAt: string;
+  isVerifiedPurchase: boolean;
+  helpfulCount: number;
+  accentColor: 'yellow' | 'blue' | 'green' | 'lavender' | 'orange';
+  isSimulation: boolean;
+}
+
 export interface Book {
   id: string;
   title: string;
@@ -19,6 +34,7 @@ export interface Book {
   originalPrice?: number;
   rating?: number;
   reviewCount?: number;
+  reviews?: BookReview[];
   badge1?: { text: string; bg: string; color?: string };
   badge2?: { text: string; bg: string; color?: string };
   formats?: string[];

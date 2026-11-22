@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { APP_CONFIG } from '../../constants/app.constants';
 import { ROUTES } from '../../constants/routes';
-import { useAuth } from '../../features/auth/hooks/useAuth';
 import { SimulationBadge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
@@ -11,7 +10,6 @@ type PolicyModalType = 'privacy' | 'terms' | 'support' | null;
 
 export function Footer() {
   const [activeModal, setActiveModal] = useState<PolicyModalType>(null);
-  const { isAuthenticated } = useAuth();
 
   return (
     <footer
@@ -85,17 +83,6 @@ export function Footer() {
                 Katalog E-Book Digital
               </Link>
             </li>
-            {isAuthenticated ? (
-              <li>
-                <Link
-                  to={`${ROUTES.HOME}#download-app`}
-                  className="nb-body-sm"
-                  style={{ textDecoration: 'underline', fontWeight: 600, color: 'var(--nb-black)' }}
-                >
-                  Download Apps E-Book Store (Android)
-                </Link>
-              </li>
-            ) : null}
             <li>
               <Link
                 to={ROUTES.LIBRARY}

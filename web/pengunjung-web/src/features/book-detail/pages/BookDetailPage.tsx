@@ -12,6 +12,7 @@ import { EmptyState } from '../../../components/shared/EmptyState';
 import { SimulationBadge } from '../../../components/ui/Badge';
 import { Spinner } from '../../../components/ui/Spinner';
 import { BookInformation } from '../components/BookInformation';
+import { BookReviewsSection } from '../components/BookReviewsSection';
 import { PurchasePanel } from '../components/PurchasePanel';
 
 export function BookDetailPage() {
@@ -174,6 +175,12 @@ export function BookDetailPage() {
             />
           </div>
         </div>
+
+        {/* Seksi Ulasan Produk & Penilaian Pembaca (design.md bagian 5.9 & 8.5) */}
+        <BookReviewsSection
+          book={book}
+          isVerifiedOwner={Boolean(paidOrder)}
+        />
 
         {relatedBooks.length > 0 && (
           <section

@@ -1,5 +1,6 @@
 import type { Book } from '../../../types/book.types';
 import { BookCoverArtwork } from '../../../components/shared/BookCard';
+import { RatingStars } from '../../../components/shared/RatingStars';
 import { CategoryBadge, SimulationBadge } from '../../../components/ui/Badge';
 import { Card } from '../../../components/ui/Card';
 
@@ -58,6 +59,34 @@ export function BookInformation({ book }: BookInformationProps) {
             <p className="nb-body-lg" style={{ fontWeight: 600 }}>
               Penulis: {book.author}
             </p>
+
+            {/* RatingStars Persegi (design.md bagian 5.9 & 8.5) */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '12px',
+              }}
+            >
+              <RatingStars
+                rating={book.rating}
+                reviewCount={book.reviewCount}
+                size="md"
+              />
+              <a
+                href="#ulasan-produk"
+                className="nb-mono"
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '3px',
+                }}
+              >
+                Lihat Ulasan Pembaca
+              </a>
+            </div>
 
             <div
               style={{
