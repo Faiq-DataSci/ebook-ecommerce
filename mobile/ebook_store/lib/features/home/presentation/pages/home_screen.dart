@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../auth/presentation/pages/login_screen.dart';
+import '../../../cart/presentation/pages/cart_screen.dart';
 import '../../../catalog/presentation/pages/catalog_screen.dart';
 import '../../../catalog/presentation/pages/ebook_detail_screen.dart';
 import '../../data/mock/home_mock_data.dart';
@@ -467,10 +468,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   'Tema dikunci pada mode Terang Neubrutalism sesuai referensi Google Stitch.',
                 );
               },
-              onCartTap: () => _showNeubrutalistSnackBar(
-                palette,
-                'Keranjang Belanja: ${state.cartCount} item (${HomeMockData.simulationLabel}).',
-              ),
+              onCartTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const CartScreen()),
+                );
+              },
               onProfileTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const LoginScreen()),

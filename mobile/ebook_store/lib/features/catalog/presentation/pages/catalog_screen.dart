@@ -4,6 +4,8 @@ import '../../../../core/utils/rupiah_formatter.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../auth/presentation/pages/login_screen.dart';
+import '../../../cart/presentation/pages/cart_screen.dart';
+import '../../../cart/presentation/providers/cart_provider.dart';
 import '../../../home/presentation/pages/home_screen.dart';
 import '../../../home/presentation/widgets/home_bottom_navigation.dart';
 import '../../../home/presentation/widgets/home_header.dart';
@@ -78,6 +80,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
 
   void _handleAddToCart(CatalogEbook book) {
     ref.read(catalogProvider.notifier).addToCart(book);
+    ref.read(cartProvider.notifier).addCatalogEbook(book);
     final messenger = ScaffoldMessenger.maybeOf(context);
     if (messenger == null) return;
     messenger.hideCurrentSnackBar();
@@ -235,7 +238,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
               // Daftar Item Keranjang
               if (state.cartItems.isEmpty)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
                   child: Column(
                     children: <Widget>[
                       const Icon(
@@ -253,6 +256,52 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                         'Pilih e-book menarik dari katalog dan klik "+ Keranjang" untuk mulai berbelanja.',
                         textAlign: TextAlign.center,
                         style: AppTheme.bodySm(AppColors.nbTextMuted),
+                      ),
+                      const SizedBox(height: 16),
+                      Semantics(
+                        button: true,
+                        label: 'Buka halaman keranjang belanja lengkap',
+                        child: InkWell(
+                          key: const Key('open_full_cart_screen_button'),
+                          onTap: () {
+                            Navigator.of(ctx).pop();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const CartScreen(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            height: 44,
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                            alignment: Alignment.center,
+                            decoration: AppTheme.brutalBox(
+                              color: AppColors.nbYellow,
+                              borderColor: AppColors.nbBlack,
+                              borderWidth: AppTheme.borderDefault,
+                              shadowOffset: 2,
+                            ),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  const Icon(
+                                    Icons.shopping_cart_outlined,
+                                    size: 16,
+                                    color: AppColors.nbBlack,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'BUKA HALAMAN KERANJANG',
+                                    style: AppTheme.labelSm(AppColors.nbBlack),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -375,8 +424,10 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                           key: const Key('checkout_cart_button'),
                           onTap: () {
                             Navigator.of(ctx).pop();
-                            _showNeubrutalistSnackBar(
-                              'Fitur pembayaran pesanan sedang dalam proses pengembangan.',
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const CartScreen(),
+                              ),
                             );
                           },
                           child: Container(

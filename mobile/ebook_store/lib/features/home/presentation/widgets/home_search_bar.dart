@@ -85,26 +85,23 @@ class HomeSearchBar extends StatelessWidget {
         Semantics(
           button: true,
           label: 'Filter dan simulasi state katalog',
-          child: Tooltip(
-            message: 'Filter & State Katalog',
-            child: InkWell(
-              key: const Key('filter_button'),
-              onTap: onFilterTap,
-              child: Container(
-                width: 44,
-                height: 44,
-                alignment: Alignment.center,
-                decoration: AppTheme.brutalBox(
-                  color: palette.surface,
-                  borderColor: palette.ink,
-                  borderWidth: AppTheme.borderDefault,
-                  shadowOffset: 2,
-                ),
-                child: Icon(
-                  Icons.tune,
-                  size: 22,
-                  color: palette.textPrimary,
-                ),
+          child: InkWell(
+            key: const Key('filter_button'),
+            onTap: onFilterTap,
+            child: Container(
+              width: 44,
+              height: 44,
+              alignment: Alignment.center,
+              decoration: AppTheme.brutalBox(
+                color: palette.surface,
+                borderColor: palette.ink,
+                borderWidth: AppTheme.borderDefault,
+                shadowOffset: 2,
+              ),
+              child: Icon(
+                Icons.tune,
+                size: 22,
+                color: palette.textPrimary,
               ),
             ),
           ),

@@ -49,26 +49,23 @@ class HomeHeader extends StatelessWidget {
               Semantics(
                 button: true,
                 label: 'Tema Terang Neubrutalism',
-                child: Tooltip(
-                  message: 'Tema Terang (Stitch Neubrutalism)',
-                  child: InkWell(
-                    key: const Key('theme_toggle_button'),
-                    onTap: onToggleTheme,
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      alignment: Alignment.center,
-                      decoration: AppTheme.brutalBox(
-                        color: AppColors.nbWhite,
-                        borderColor: AppColors.nbBlack,
-                        borderWidth: AppTheme.borderDefault,
-                        shadowOffset: 2,
-                      ),
-                      child: const Icon(
-                        Icons.wb_sunny_outlined,
-                        size: 20,
-                        color: AppColors.nbBlack,
-                      ),
+                child: InkWell(
+                  key: const Key('theme_toggle_button'),
+                  onTap: onToggleTheme,
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    alignment: Alignment.center,
+                    decoration: AppTheme.brutalBox(
+                      color: AppColors.nbWhite,
+                      borderColor: AppColors.nbBlack,
+                      borderWidth: AppTheme.borderDefault,
+                      shadowOffset: 2,
+                    ),
+                    child: const Icon(
+                      Icons.wb_sunny_outlined,
+                      size: 20,
+                      color: AppColors.nbBlack,
                     ),
                   ),
                 ),
@@ -78,58 +75,55 @@ class HomeHeader extends StatelessWidget {
               Semantics(
                 button: true,
                 label: 'Keranjang belanja ($cartCount item)',
-                child: Tooltip(
-                  message: 'Keranjang Belanja',
-                  child: InkWell(
-                    key: const Key('cart_button'),
-                    onTap: onCartTap,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: <Widget>[
-                        Container(
-                          width: 44,
-                          height: 44,
+                child: InkWell(
+                  key: const Key('cart_button'),
+                  onTap: onCartTap,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: <Widget>[
+                      Container(
+                        width: 44,
+                        height: 44,
+                        alignment: Alignment.center,
+                        decoration: AppTheme.brutalBox(
+                          color: AppColors.nbWhite,
+                          borderColor: AppColors.nbBlack,
+                          borderWidth: AppTheme.borderDefault,
+                          shadowOffset: 2,
+                        ),
+                        child: const Icon(
+                          Icons.shopping_cart_outlined,
+                          size: 20,
+                          color: AppColors.nbBlack,
+                        ),
+                      ),
+                      Positioned(
+                        top: -6,
+                        right: -6,
+                        child: Container(
+                          constraints: const BoxConstraints(
+                            minWidth: 18,
+                            minHeight: 18,
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
                           alignment: Alignment.center,
                           decoration: AppTheme.brutalBox(
-                            color: AppColors.nbWhite,
+                            color: AppColors.nbYellow,
                             borderColor: AppColors.nbBlack,
-                            borderWidth: AppTheme.borderDefault,
-                            shadowOffset: 2,
+                            borderWidth: AppTheme.borderThin,
+                            shadowOffset: 1,
                           ),
-                          child: const Icon(
-                            Icons.shopping_cart_outlined,
-                            size: 20,
-                            color: AppColors.nbBlack,
-                          ),
-                        ),
-                        Positioned(
-                          top: -6,
-                          right: -6,
-                          child: Container(
-                            constraints: const BoxConstraints(
-                              minWidth: 18,
-                              minHeight: 18,
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            alignment: Alignment.center,
-                            decoration: AppTheme.brutalBox(
-                              color: AppColors.nbYellow,
-                              borderColor: AppColors.nbBlack,
-                              borderWidth: AppTheme.borderThin,
-                              shadowOffset: 1,
-                            ),
-                            child: Text(
-                              '$cartCount',
-                              key: const Key('cart_badge_text'),
-                              style: AppTheme.dataMono(
-                                AppColors.nbBlack,
-                                fontSize: 10,
-                              ),
+                          child: Text(
+                            '$cartCount',
+                            key: const Key('cart_badge_text'),
+                            style: AppTheme.dataMono(
+                              AppColors.nbBlack,
+                              fontSize: 10,
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -138,24 +132,21 @@ class HomeHeader extends StatelessWidget {
               Semantics(
                 button: true,
                 label: 'Profil pengguna Raditya',
-                child: Tooltip(
-                  message: 'Profil Pengguna',
-                  child: InkWell(
-                    key: const Key('profile_avatar_button'),
-                    onTap: onProfileTap,
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.person_outline,
-                        size: 18,
-                        color: AppColors.onPrimary,
-                      ),
+                child: InkWell(
+                  key: const Key('profile_avatar_button'),
+                  onTap: onProfileTap,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.person_outline,
+                      size: 18,
+                      color: AppColors.onPrimary,
                     ),
                   ),
                 ),
