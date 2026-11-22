@@ -49,8 +49,9 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Registrasi Mobile (Zona A/C) - Google Stitch Neubrutalism Tests', () {
-    testWidgets('Renders all Stitch visual elements accurately at 390x884',
-        (WidgetTester tester) async {
+    testWidgets('Renders all Stitch visual elements accurately at 390x884', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableRegisterScreen());
       await tester.pumpAndSettle();
@@ -83,15 +84,19 @@ void main() {
       // Password strength meter
       expect(find.text('TINGKAT KEKUATAN:'), findsOneWidget);
       expect(find.text('KOSONG'), findsOneWidget);
-      expect(find.text('Minimal 8 karakter, kombinasi huruf & angka'),
-          findsOneWidget);
+      expect(
+        find.text('Minimal 8 karakter, kombinasi huruf & angka'),
+        findsOneWidget,
+      );
 
       // Neubrutalist Agreement Checkbox
       expect(
-          find.text(
-              'Saya menyetujui Syarat Lisensi E-Book & Kebijakan Privasi',
-              findRichText: true),
-          findsOneWidget);
+        find.text(
+          'Saya menyetujui Syarat Lisensi E-Book & Kebijakan Privasi',
+          findRichText: true,
+        ),
+        findsOneWidget,
+      );
 
       // Primary Button
       expect(find.text('BUAT AKUN SEKARANG'), findsOneWidget);
@@ -101,15 +106,14 @@ void main() {
       expect(find.text('Masuk di sini'), findsOneWidget);
     });
 
-    testWidgets('Header back button triggers onBack callback',
-        (WidgetTester tester) async {
+    testWidgets('Header back button triggers onBack callback', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       bool backTapped = false;
 
       await tester.pumpWidget(
-        _buildTestableRegisterScreen(
-          onBack: () => backTapped = true,
-        ),
+        _buildTestableRegisterScreen(onBack: () => backTapped = true),
       );
       await tester.pumpAndSettle();
 
@@ -117,8 +121,9 @@ void main() {
       expect(backTapped, isTrue);
     });
 
-    testWidgets('Toggles password & confirm password visibility',
-        (WidgetTester tester) async {
+    testWidgets('Toggles password & confirm password visibility', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableRegisterScreen());
       await tester.pumpAndSettle();
@@ -140,8 +145,9 @@ void main() {
       expect(find.byIcon(Icons.visibility_off), findsNWidgets(2));
     });
 
-    testWidgets('Dynamically updates password strength meter',
-        (WidgetTester tester) async {
+    testWidgets('Dynamically updates password strength meter', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableRegisterScreen());
       await tester.pumpAndSettle();
@@ -174,8 +180,9 @@ void main() {
       expect(find.text('SANGAT KUAT'), findsOneWidget);
     });
 
-    testWidgets('Displays mismatch warning when confirm password differs',
-        (WidgetTester tester) async {
+    testWidgets('Displays mismatch warning when confirm password differs', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableRegisterScreen());
       await tester.pumpAndSettle();
@@ -200,8 +207,9 @@ void main() {
       expect(find.byIcon(Icons.check), findsOneWidget);
     });
 
-    testWidgets('Shows error banner when submitting with empty fields',
-        (WidgetTester tester) async {
+    testWidgets('Shows error banner when submitting with empty fields', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableRegisterScreen());
       await tester.pumpAndSettle();
@@ -215,8 +223,9 @@ void main() {
       expect(find.text('Nama lengkap wajib diisi.'), findsOneWidget);
     });
 
-    testWidgets('Shows error banner when submitting with invalid email',
-        (WidgetTester tester) async {
+    testWidgets('Shows error banner when submitting with invalid email', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableRegisterScreen());
       await tester.pumpAndSettle();
@@ -236,8 +245,9 @@ void main() {
       expect(find.text('Format alamat email tidak valid.'), findsOneWidget);
     });
 
-    testWidgets('Shows error banner when agreement checkbox is not checked',
-        (WidgetTester tester) async {
+    testWidgets('Shows error banner when agreement checkbox is not checked', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableRegisterScreen());
       await tester.pumpAndSettle();
@@ -256,13 +266,16 @@ void main() {
 
       expect(find.byType(LoginErrorBanner), findsOneWidget);
       expect(
-          find.text(
-              'Harap setujui Syarat Lisensi E-Book & Kebijakan Privasi untuk melanjutkan.'),
-          findsOneWidget);
+        find.text(
+          'Harap setujui Syarat Lisensi E-Book & Kebijakan Privasi untuk melanjutkan.',
+        ),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('Shows error banner when email is already registered',
-        (WidgetTester tester) async {
+    testWidgets('Shows error banner when email is already registered', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableRegisterScreen());
       await tester.pumpAndSettle();
@@ -276,8 +289,9 @@ void main() {
 
       // Check agreement
       final agreeText = find.text(
-          'Saya menyetujui Syarat Lisensi E-Book & Kebijakan Privasi',
-          findRichText: true);
+        'Saya menyetujui Syarat Lisensi E-Book & Kebijakan Privasi',
+        findRichText: true,
+      );
       await tester.ensureVisible(agreeText);
       await tester.tap(agreeText);
       await tester.pump();
@@ -293,48 +307,50 @@ void main() {
     });
 
     testWidgets(
-        'Successful registration shows Success Dialog and navigates to HomeScreen',
-        (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(const Size(390, 884));
-      await tester.pumpWidget(_buildTestableRegisterScreen());
-      await tester.pumpAndSettle();
+      'Successful registration shows Success Dialog and navigates to HomeScreen',
+      (WidgetTester tester) async {
+        await tester.binding.setSurfaceSize(const Size(390, 884));
+        await tester.pumpWidget(_buildTestableRegisterScreen());
+        await tester.pumpAndSettle();
 
-      final textFields = find.byType(TextField);
-      await tester.enterText(textFields.at(0), 'Dewi Sartika');
-      await tester.enterText(textFields.at(1), 'dewi.sartika@example.com');
-      await tester.enterText(textFields.at(2), 'password123');
-      await tester.enterText(textFields.at(3), 'password123');
+        final textFields = find.byType(TextField);
+        await tester.enterText(textFields.at(0), 'Dewi Sartika');
+        await tester.enterText(textFields.at(1), 'dewi.sartika@example.com');
+        await tester.enterText(textFields.at(2), 'password123');
+        await tester.enterText(textFields.at(3), 'password123');
 
-      // Check agreement
-      final agreeText = find.text(
+        // Check agreement
+        final agreeText = find.text(
           'Saya menyetujui Syarat Lisensi E-Book & Kebijakan Privasi',
-          findRichText: true);
-      await tester.ensureVisible(agreeText);
-      await tester.tap(agreeText);
-      await tester.pump();
+          findRichText: true,
+        );
+        await tester.ensureVisible(agreeText);
+        await tester.tap(agreeText);
+        await tester.pump();
 
-      // Submit
-      final submitBtn = find.text('BUAT AKUN SEKARANG');
-      await tester.ensureVisible(submitBtn);
-      await tester.tap(submitBtn);
-      await tester.pump(const Duration(milliseconds: 50));
-      await tester.pump(const Duration(milliseconds: 400));
-      await tester.pumpAndSettle();
+        // Submit
+        final submitBtn = find.text('BUAT AKUN SEKARANG');
+        await tester.ensureVisible(submitBtn);
+        await tester.tap(submitBtn);
+        await tester.pump(const Duration(milliseconds: 50));
+        await tester.pump(const Duration(milliseconds: 400));
+        await tester.pumpAndSettle();
 
-      // Success Dialog appears
-      expect(find.byType(RegisterSuccessDialog), findsOneWidget);
-      expect(find.text('REGISTRASI BERHASIL'), findsOneWidget);
-      expect(find.text('LISENSI AKTIF!'), findsOneWidget);
-      expect(find.text('LANJUTKAN KE KATALOG'), findsOneWidget);
+        // Success Dialog appears
+        expect(find.byType(RegisterSuccessDialog), findsOneWidget);
+        expect(find.text('REGISTRASI BERHASIL'), findsOneWidget);
+        expect(find.text('LISENSI AKTIF!'), findsOneWidget);
+        expect(find.text('LANJUTKAN KE KATALOG'), findsOneWidget);
 
-      // Tap LANJUTKAN KE KATALOG
-      await tester.tap(find.text('LANJUTKAN KE KATALOG'));
-      await tester.pump(const Duration(milliseconds: 400));
-      await tester.pumpAndSettle();
+        // Tap LANJUTKAN KE KATALOG
+        await tester.tap(find.text('LANJUTKAN KE KATALOG'));
+        await tester.pump(const Duration(milliseconds: 400));
+        await tester.pumpAndSettle();
 
-      // Navigated to HomeScreen
-      expect(find.byType(HomeScreen), findsOneWidget);
-    });
+        // Navigated to HomeScreen
+        expect(find.byType(HomeScreen), findsOneWidget);
+      },
+    );
   });
 
   group('Registrasi Mobile - Responsive Viewport Tests (Zero Overflows)', () {
@@ -345,8 +361,9 @@ void main() {
     ];
 
     for (final size in viewports) {
-      testWidgets('Renders without overflow on ${size.width}x${size.height}',
-          (WidgetTester tester) async {
+      testWidgets('Renders without overflow on ${size.width}x${size.height}', (
+        WidgetTester tester,
+      ) async {
         await tester.binding.setSurfaceSize(size);
         await tester.pumpWidget(_buildTestableRegisterScreen(screenSize: size));
         await tester.pumpAndSettle();

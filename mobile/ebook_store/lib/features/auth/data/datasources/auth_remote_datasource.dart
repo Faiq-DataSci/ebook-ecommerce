@@ -4,10 +4,7 @@ import '../../domain/entities/user_entity.dart';
 import '../models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<UserModel> login({
-    required String email,
-    required String password,
-  });
+  Future<UserModel> login({required String email, required String password});
 
   Future<UserModel> register({
     required String fullName,
@@ -42,10 +39,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     },
   };
 
-  AuthRemoteDataSourceImpl({
-    required this.dio,
-    this.enableLiveApi = true,
-  });
+  AuthRemoteDataSourceImpl({required this.dio, this.enableLiveApi = true});
 
   @override
   Future<UserModel> login({
@@ -59,10 +53,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       try {
         final response = await dio.post(
           '/auth/login',
-          data: {
-            'email': cleanEmail,
-            'password': password,
-          },
+          data: {'email': cleanEmail, 'password': password},
         );
 
         if (response.statusCode == 200 && response.data != null) {
@@ -73,11 +64,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         // If server responds with 400/401/403 business rejection, report real error
         if (e.response != null && e.response?.statusCode == 401) {
           throw AuthFailure.invalidCredentials(
-            message: e.response?.data?['message']?.toString() ??
+            message:
+                e.response?.data?['message']?.toString() ??
                 'Email atau kata sandi tidak cocok. Silakan periksa kembali informasi login Anda.',
           );
-        } else if (e.response != null &&
-            (e.response?.statusCode ?? 0) >= 500) {
+        } else if (e.response != null && (e.response?.statusCode ?? 0) >= 500) {
           throw AuthFailure.serverError(
             message:
                 'Layanan sedang mengalami gangguan. Silakan coba kembali beberapa saat lagi.',
@@ -164,11 +155,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         }
       } on DioException catch (e) {
         if (e.response != null &&
-            (e.response?.statusCode == 400 ||
-                e.response?.statusCode == 409)) {
+            (e.response?.statusCode == 400 || e.response?.statusCode == 409)) {
           throw AuthFailure.invalidInput(
             title: 'Registrasi Gagal',
-            message: e.response?.data?['message']?.toString() ??
+            message:
+                e.response?.data?['message']?.toString() ??
                 'Email sudah terdaftar atau format data tidak valid.',
           );
         }
@@ -195,7 +186,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       fullName: '$cleanFullName (DATA SIMULASI)',
       role: UserRole.customer,
       isActive: true,
-      token: 'simulated_jwt_token_customer_${DateTime.now().millisecondsSinceEpoch}',
+      token:
+          'simulated_jwt_token_customer_${DateTime.now().millisecondsSinceEpoch}',
     );
   }
 }

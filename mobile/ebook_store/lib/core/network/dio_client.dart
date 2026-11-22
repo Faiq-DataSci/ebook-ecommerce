@@ -1,9 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../config/api_config.dart';
 
 /// Centralized Dio HTTP client provider required by `mobile/AGENTS.md`.
 final dioClientProvider = Provider<Dio>((ref) {
+  final authLocalDataSource = ref.watch(authLocalDataSourceProvider);
+
   final dio = Dio(
     BaseOptions(
       baseUrl: ApiConfig.baseUrl,
@@ -15,5 +18,24 @@ final dioClientProvider = Provider<Dio>((ref) {
       },
     ),
   );
+
+  dio.interceptors.add(
+    InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        try {
+          final token = await authLocalDataSource.getToken();
+          if (token != null &&
+              token.isNotEmpty &&
+              !options.headers.containsKey('Authorization')) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+        } catch (_) {
+          // Fallback if local storage unavailable in tests
+        }
+        return handler.next(options);
+      },
+    ),
+  );
+
   return dio;
 });

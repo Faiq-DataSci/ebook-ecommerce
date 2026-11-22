@@ -99,7 +99,11 @@ class DiagonalStripesPainter extends CustomPainter {
     final totalLength = size.width + size.height + totalStep * 2;
     final shift = (animationOffset * totalStep) % totalStep;
 
-    for (double i = -size.height - totalStep + shift; i < totalLength; i += totalStep) {
+    for (
+      double i = -size.height - totalStep + shift;
+      i < totalLength;
+      i += totalStep
+    ) {
       canvas.drawLine(
         Offset(i, 0),
         Offset(i + size.height, size.height),
@@ -250,9 +254,7 @@ class StitchEbookIcon extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: const CustomPaint(
-        painter: StitchEbookIconPainter(),
-      ),
+      child: const CustomPaint(painter: StitchEbookIconPainter()),
     );
   }
 }

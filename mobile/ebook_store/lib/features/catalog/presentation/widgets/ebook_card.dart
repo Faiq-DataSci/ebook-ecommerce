@@ -52,7 +52,8 @@ class EbookCard extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: 'E-book: ${book.title}, penulis ${book.author}, harga ${book.formattedPrice}',
+      label:
+          'E-book: ${book.title}, penulis ${book.author}, harga ${book.formattedPrice}',
       child: InkWell(
         key: Key('ebook_card_${book.id}'),
         onTap: onTap,
@@ -130,9 +131,9 @@ class EbookCard extends StatelessWidget {
                       book.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTheme.labelMd(AppColors.nbBlack).copyWith(
-                        height: 1.25,
-                      ),
+                      style: AppTheme.labelMd(
+                        AppColors.nbBlack,
+                      ).copyWith(height: 1.25),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -258,8 +259,10 @@ class EbookCard extends StatelessWidget {
                                   const SizedBox(width: 4),
                                   Text(
                                     '+ Keranjang',
-                                    style: AppTheme.labelSm(AppColors.nbBlack,
-                                        fontSize: 11),
+                                    style: AppTheme.labelSm(
+                                      AppColors.nbBlack,
+                                      fontSize: 11,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -283,7 +286,8 @@ class EbookCard extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: 'E-book: ${book.title}, penulis ${book.author}, harga ${book.formattedPrice}',
+      label:
+          'E-book: ${book.title}, penulis ${book.author}, harga ${book.formattedPrice}',
       child: InkWell(
         key: Key('ebook_card_list_${book.id}'),
         onTap: onTap,
@@ -353,7 +357,10 @@ class EbookCard extends StatelessWidget {
                       book.author,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTheme.bodySm(AppColors.nbTextMuted, fontSize: 12),
+                      style: AppTheme.bodySm(
+                        AppColors.nbTextMuted,
+                        fontSize: 12,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     if (book.hasRating)
@@ -429,8 +436,9 @@ class EbookCard extends StatelessWidget {
                               key: Key('ebook_card_list_add_${book.id}'),
                               onTap: onAddToCartTap,
                               child: Container(
-                                constraints:
-                                    const BoxConstraints(minHeight: 34),
+                                constraints: const BoxConstraints(
+                                  minHeight: 34,
+                                ),
                                 alignment: Alignment.center,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 6,
@@ -456,8 +464,9 @@ class EbookCard extends StatelessWidget {
                                       Text(
                                         '+ Keranjang',
                                         style: AppTheme.labelSm(
-                                            AppColors.nbBlack,
-                                            fontSize: 11),
+                                          AppColors.nbBlack,
+                                          fontSize: 11,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -498,7 +507,9 @@ class EbookCard extends StatelessWidget {
   }
 
   Widget _buildFallback(String title) {
-    final initial = title.trim().isNotEmpty ? title.trim()[0].toUpperCase() : 'B';
+    final initial = title.trim().isNotEmpty
+        ? title.trim()[0].toUpperCase()
+        : 'B';
     return Container(
       color: AppColors.nbMuted,
       padding: const EdgeInsets.all(6),
@@ -506,10 +517,7 @@ class EbookCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text(
-            initial,
-            style: AppTheme.headlineMdMobile(AppColors.nbBlack),
-          ),
+          Text(initial, style: AppTheme.headlineMdMobile(AppColors.nbBlack)),
           const SizedBox(height: 2),
           Text(
             'Cover belum diunggah',

@@ -126,10 +126,7 @@ class LoginNavBar extends StatelessWidget {
                   height: 36.0,
                   decoration: BoxDecoration(
                     color: AppColors.nbWhite,
-                    border: Border.all(
-                      color: AppColors.nbBlack,
-                      width: 2.0,
-                    ),
+                    border: Border.all(color: AppColors.nbBlack, width: 2.0),
                     boxShadow: const [
                       BoxShadow(
                         color: AppColors.nbBlack,
@@ -162,84 +159,84 @@ class LoginNavBar extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Badge "BACA BUKU"
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
-                decoration: BoxDecoration(
-                  color: AppColors.nbYellow,
-                  border: Border.all(
-                    color: AppColors.nbBlack,
-                    width: 2.0,
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: AppColors.nbBlack,
-                      offset: Offset(2, 2),
-                      blurRadius: 0,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 3.0,
                     ),
-                  ],
-                ),
-                child: const Text(
-                  'BACA BUKU',
-                  style: TextStyle(
-                    fontFamily: AppTheme.fontMono,
-                    fontSize: 11.0,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.nbBlack,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 8.0),
-
-              // Badge "SECURE LOGIN" with green indicator dot
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
-                decoration: BoxDecoration(
-                  color: AppColors.nbGreen,
-                  border: Border.all(
-                    color: AppColors.nbBlack,
-                    width: 2.0,
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: AppColors.nbBlack,
-                      offset: Offset(2, 2),
-                      blurRadius: 0,
+                    decoration: BoxDecoration(
+                      color: AppColors.nbYellow,
+                      border: Border.all(color: AppColors.nbBlack, width: 2.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: AppColors.nbBlack,
+                          offset: Offset(2, 2),
+                          blurRadius: 0,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 7.0,
-                      height: 7.0,
-                      decoration: const BoxDecoration(
-                        color: AppColors.nbBlack,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 5.0),
-                    const Text(
-                      'SECURE LOGIN',
+                    child: const Text(
+                      'BACA BUKU',
                       style: TextStyle(
                         fontFamily: AppTheme.fontMono,
-                        fontSize: 10.0,
+                        fontSize: 11.0,
                         fontWeight: FontWeight.w700,
                         color: AppColors.nbBlack,
                         letterSpacing: 0.8,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+
+                  const SizedBox(width: 8.0),
+
+                  // Badge "SECURE LOGIN" with green indicator dot
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 3.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.nbGreen,
+                      border: Border.all(color: AppColors.nbBlack, width: 2.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: AppColors.nbBlack,
+                          offset: Offset(2, 2),
+                          blurRadius: 0,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 7.0,
+                          height: 7.0,
+                          decoration: const BoxDecoration(
+                            color: AppColors.nbBlack,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 5.0),
+                        const Text(
+                          'SECURE LOGIN',
+                          style: TextStyle(
+                            fontFamily: AppTheme.fontMono,
+                            fontSize: 10.0,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.nbBlack,
+                            letterSpacing: 0.8,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
-    ],
-  ),
-);
+    );
   }
 }

@@ -4,6 +4,7 @@ import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../catalog/presentation/pages/catalog_screen.dart';
 import '../../../catalog/presentation/pages/ebook_detail_screen.dart';
+import '../../../checkout/presentation/pages/checkout_screen.dart';
 import '../../../home/presentation/providers/home_provider.dart';
 import '../../data/datasources/cart_mock_datasource.dart';
 import '../../domain/entities/cart_item.dart';
@@ -71,11 +72,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           ),
           child: Row(
             children: <Widget>[
-              Icon(
-                icon,
-                size: 18,
-                color: AppColors.nbBlack,
-              ),
+              Icon(icon, size: 18, color: AppColors.nbBlack),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -92,9 +89,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
   void _openBookDetail(String ebookId) {
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => EbookDetailScreen(ebookId: ebookId),
-      ),
+      MaterialPageRoute(builder: (_) => EbookDetailScreen(ebookId: ebookId)),
     );
   }
 
@@ -113,8 +108,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       builder: (dialogContext) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 24,
+          ),
           child: Container(
             key: const Key('cart_clear_confirm_dialog'),
             padding: const EdgeInsets.all(16),
@@ -129,8 +126,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: AppTheme.brutalBox(
                     color: AppColors.nbPink,
                     borderColor: AppColors.nbBlack,
@@ -229,8 +228,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       builder: (dialogContext) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 24,
+          ),
           child: Container(
             key: const Key('cart_cloud_fee_dialog'),
             padding: const EdgeInsets.all(16),
@@ -245,8 +246,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: AppTheme.brutalBox(
                     color: AppColors.nbBlue,
                     borderColor: AppColors.nbBlack,
@@ -315,8 +318,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       builder: (dialogContext) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 24,
+          ),
           child: Container(
             key: const Key('cart_checkout_modal'),
             padding: const EdgeInsets.all(16),
@@ -472,8 +477,55 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                       ),
                     ),
                     child: Text(
-                      '${CartMockDataSourceImpl.simulationBadge}: Endpoint /api/v1/orders dan payment gateway backend belum terhubung.',
+                      '${CartMockDataSourceImpl.simulationBadge}: Endpoint /api/v1/orders dan payment gateway backend siap diuji melalui Checkout Stepper.',
                       style: AppTheme.dataMono(AppColors.nbBlack, fontSize: 10),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Semantics(
+                    button: true,
+                    label: 'Lanjutkan ke Halaman Checkout & Pembayaran',
+                    child: InkWell(
+                      key: const Key('cart_proceed_to_checkout_stepper_button'),
+                      onTap: () {
+                        Navigator.of(dialogContext).pop();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => CheckoutScreen(
+                              checkoutItems: state.selectedItems,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        height: 48,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: AppTheme.brutalBox(
+                          color: AppColors.nbYellow,
+                          borderColor: AppColors.nbBlack,
+                          borderWidth: AppTheme.borderDefault,
+                          shadowOffset: 3,
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              const Icon(
+                                Icons.payment,
+                                size: 18,
+                                color: AppColors.nbBlack,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'LANJUT KE CHECKOUT',
+                                style: AppTheme.labelMd(AppColors.nbBlack),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -678,7 +730,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
     if (state.status == CartStatus.error) {
       return CartStateViews.buildErrorState(
-        message: state.errorMessage ??
+        message:
+            state.errorMessage ??
             'Gagal memuat keranjang belanja dari server. Periksa koneksi internet dan coba lagi.',
         onRetry: () async {
           await notifier.retryLoad();
@@ -691,9 +744,9 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       return CartStateViews.buildEmptyState(
         recommendedItems: state.recommendedItems,
         onExploreCatalogTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const CatalogScreen()),
-          );
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const CatalogScreen()));
         },
         onViewSawRecommendationsTap: () async {
           await notifier.retryLoad();

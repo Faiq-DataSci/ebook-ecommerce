@@ -39,11 +39,7 @@ class HomeSearchBar extends StatelessWidget {
             ),
             child: Row(
               children: <Widget>[
-                Icon(
-                  Icons.search,
-                  size: 20,
-                  color: palette.textPrimary,
-                ),
+                Icon(Icons.search, size: 20, color: palette.textPrimary),
                 const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
@@ -98,11 +94,7 @@ class HomeSearchBar extends StatelessWidget {
                 borderWidth: AppTheme.borderDefault,
                 shadowOffset: 2,
               ),
-              child: Icon(
-                Icons.tune,
-                size: 22,
-                color: palette.textPrimary,
-              ),
+              child: Icon(Icons.tune, size: 22, color: palette.textPrimary),
             ),
           ),
         ),

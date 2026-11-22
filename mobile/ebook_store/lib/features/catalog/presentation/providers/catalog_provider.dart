@@ -13,13 +13,7 @@ import '../../domain/repositories/catalog_repository.dart';
 
 enum CatalogViewMode { grid, list }
 
-enum CatalogStatus {
-  initial,
-  loading,
-  loaded,
-  empty,
-  error,
-}
+enum CatalogStatus { initial, loading, loaded, empty, error }
 
 class CatalogState {
   final CatalogStatus status;
@@ -90,8 +84,9 @@ class CatalogState {
       loadMoreError: clearLoadMoreError
           ? null
           : (loadMoreError ?? this.loadMoreError),
-      errorMessage:
-          clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
+      errorMessage: clearErrorMessage
+          ? null
+          : (errorMessage ?? this.errorMessage),
       viewMode: viewMode ?? this.viewMode,
       cartCount: cartCount ?? this.cartCount,
       cartItems: cartItems ?? this.cartItems,
@@ -104,8 +99,9 @@ class CatalogState {
 // Dependecy Injection Providers
 // ---------------------------------------------------------------------------
 
-final catalogRemoteDataSourceProvider =
-    Provider<CatalogRemoteDataSource>((ref) {
+final catalogRemoteDataSourceProvider = Provider<CatalogRemoteDataSource>((
+  ref,
+) {
   final dio = ref.watch(dioClientProvider);
   return CatalogRemoteDataSourceImpl(dio: dio);
 });
@@ -131,11 +127,9 @@ final catalogRepositoryProvider = Provider<CatalogRepository>((ref) {
 class CatalogNotifier extends StateNotifier<CatalogState> {
   final CatalogRepository _repository;
 
-  CatalogNotifier({
-    required CatalogRepository repository,
-    bool isMock = true,
-  })  : _repository = repository,
-        super(CatalogState(isMock: isMock)) {
+  CatalogNotifier({required CatalogRepository repository, bool isMock = true})
+    : _repository = repository,
+      super(CatalogState(isMock: isMock)) {
     loadInitial();
   }
 
@@ -159,9 +153,11 @@ class CatalogNotifier extends StateNotifier<CatalogState> {
       );
 
       final nextStatus =
-          catalogPage.total == 0 && !state.filter.hasActiveFilters && !state.filter.hasSearchQuery
-              ? CatalogStatus.empty
-              : CatalogStatus.loaded;
+          catalogPage.total == 0 &&
+              !state.filter.hasActiveFilters &&
+              !state.filter.hasSearchQuery
+          ? CatalogStatus.empty
+          : CatalogStatus.loaded;
 
       state = state.copyWith(
         status: nextStatus,
@@ -193,8 +189,13 @@ class CatalogNotifier extends StateNotifier<CatalogState> {
   }
 
   /// Memilih kategori lewat pill horizontal atau modal
-  Future<void> selectCategory(String? categoryId, [String? categoryName]) async {
-    final cleanId = (categoryId == null || categoryId == 'semua') ? null : categoryId;
+  Future<void> selectCategory(
+    String? categoryId, [
+    String? categoryName,
+  ]) async {
+    final cleanId = (categoryId == null || categoryId == 'semua')
+        ? null
+        : categoryId;
     final newFilter = state.filter.copyWith(
       categoryId: cleanId,
       clearCategoryId: cleanId == null,
@@ -246,28 +247,19 @@ class CatalogNotifier extends StateNotifier<CatalogState> {
   /// Menambahkan e-book ke keranjang belanja
   void addToCart(CatalogEbook ebook) {
     final updated = List<CatalogEbook>.from(state.cartItems)..add(ebook);
-    state = state.copyWith(
-      cartCount: state.cartCount + 1,
-      cartItems: updated,
-    );
+    state = state.copyWith(cartCount: state.cartCount + 1, cartItems: updated);
   }
 
   /// Menghapus e-book dari keranjang berdasarkan ID
   void removeFromCart(String ebookId) {
     final updated = List<CatalogEbook>.from(state.cartItems)
       ..removeWhere((item) => item.id == ebookId);
-    state = state.copyWith(
-      cartCount: updated.length,
-      cartItems: updated,
-    );
+    state = state.copyWith(cartCount: updated.length, cartItems: updated);
   }
 
   /// Mengosongkan keranjang belanja
   void clearCart() {
-    state = state.copyWith(
-      cartCount: 0,
-      cartItems: const [],
-    );
+    state = state.copyWith(cartCount: 0, cartItems: const []);
   }
 
   /// Mengganti tampilan Grid vs List (design.md §6)
@@ -297,14 +289,13 @@ class CatalogNotifier extends StateNotifier<CatalogState> {
 
   /// Infinite scroll: memuat halaman berikutnya (design.md §8.4)
   Future<void> loadMore() async {
-    if (state.isLoadingMore || !state.hasMore || state.status != CatalogStatus.loaded) {
+    if (state.isLoadingMore ||
+        !state.hasMore ||
+        state.status != CatalogStatus.loaded) {
       return;
     }
 
-    state = state.copyWith(
-      isLoadingMore: true,
-      clearLoadMoreError: true,
-    );
+    state = state.copyWith(isLoadingMore: true, clearLoadMoreError: true);
 
     try {
       final nextPage = state.page + 1;
@@ -370,17 +361,17 @@ class CatalogNotifier extends StateNotifier<CatalogState> {
   }
 }
 
-final catalogProvider =
-    StateNotifierProvider<CatalogNotifier, CatalogState>((ref) {
+final catalogProvider = StateNotifierProvider<CatalogNotifier, CatalogState>((
+  ref,
+) {
   final repo = ref.watch(catalogRepositoryProvider);
-  return CatalogNotifier(
-    repository: repo,
-    isMock: !ApiConfig.useRemoteCatalog,
-  );
+  return CatalogNotifier(repository: repo, isMock: !ApiConfig.useRemoteCatalog);
 });
 
-final ebookDetailProvider =
-    FutureProvider.family<CatalogEbook, String>((ref, ebookId) async {
+final ebookDetailProvider = FutureProvider.family<CatalogEbook, String>((
+  ref,
+  ebookId,
+) async {
   final repo = ref.watch(catalogRepositoryProvider);
   return await repo.getEbookById(ebookId);
 });

@@ -37,8 +37,9 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
   @override
   Future<List<CartItem>> getRecommendedSawItems() async {
     try {
-      final response =
-          await dio.get<Map<String, dynamic>>('/recommendations/saw');
+      final response = await dio.get<Map<String, dynamic>>(
+        '/recommendations/saw',
+      );
       final data = response.data?['data'];
       if (data is List) {
         return data

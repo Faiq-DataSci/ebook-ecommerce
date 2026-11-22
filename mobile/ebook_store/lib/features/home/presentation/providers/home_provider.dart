@@ -4,12 +4,7 @@ import '../../domain/models/category.dart';
 import '../../domain/models/ebook.dart';
 
 /// UI loading/data states required by `mobile/AGENTS.md` and `antislop` R-27.
-enum HomeLoadStatus {
-  loaded,
-  loading,
-  empty,
-  error,
-}
+enum HomeLoadStatus { loaded, loading, empty, error }
 
 /// Immutable state for `Beranda Mobile (Neubrutalism)`.
 class HomeState {
@@ -42,9 +37,11 @@ class HomeState {
   List<Ebook> get filteredLatestReleases {
     final query = searchQuery.trim().toLowerCase();
     return latestReleases.where((book) {
-      final matchesCategory = selectedCategoryId == 'semua' ||
+      final matchesCategory =
+          selectedCategoryId == 'semua' ||
           _matchesCategory(book.category, selectedCategoryId);
-      final matchesQuery = query.isEmpty ||
+      final matchesQuery =
+          query.isEmpty ||
           book.title.toLowerCase().contains(query) ||
           book.author.toLowerCase().contains(query) ||
           book.isbn.toLowerCase().contains(query) ||
@@ -55,9 +52,11 @@ class HomeState {
 
   bool get isFeaturedVisible {
     final query = searchQuery.trim().toLowerCase();
-    final matchesCategory = selectedCategoryId == 'semua' ||
+    final matchesCategory =
+        selectedCategoryId == 'semua' ||
         _matchesCategory(featuredSawBook.category, selectedCategoryId);
-    final matchesQuery = query.isEmpty ||
+    final matchesQuery =
+        query.isEmpty ||
         featuredSawBook.title.toLowerCase().contains(query) ||
         featuredSawBook.author.toLowerCase().contains(query) ||
         featuredSawBook.isbn.toLowerCase().contains(query) ||
@@ -110,10 +109,7 @@ class HomeNotifier extends StateNotifier<HomeState> {
   }
 
   void updateSearchQuery(String query) {
-    state = state.copyWith(
-      searchQuery: query,
-      status: HomeLoadStatus.loaded,
-    );
+    state = state.copyWith(searchQuery: query, status: HomeLoadStatus.loaded);
   }
 
   void selectCategory(String categoryId) {

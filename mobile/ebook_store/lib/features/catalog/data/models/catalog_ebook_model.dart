@@ -85,18 +85,18 @@ class CatalogEbookModel extends CatalogEbook {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'author': author,
-        'price': price,
-        'categoryId': categoryId,
-        'categoryName': categoryName,
-        'coverUrl': coverUrl,
-        'description': description,
-        'ratingAvg': ratingAvg,
-        'salesCount': salesCount,
-        'pageCount': pageCount,
-        'publishedYear': publishedYear,
-        'createdAt': createdAt?.toIso8601String(),
-      };
+    'id': id,
+    'title': title,
+    'author': author,
+    'price': price,
+    'categoryId': categoryId,
+    'categoryName': categoryName,
+    'coverUrl': coverUrl,
+    'description': description,
+    'ratingAvg': ratingAvg,
+    'salesCount': salesCount,
+    'pageCount': pageCount,
+    'publishedYear': publishedYear,
+    'createdAt': createdAt?.toIso8601String(),
+  };
 }

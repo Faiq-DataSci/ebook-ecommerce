@@ -1,13 +1,7 @@
 import '../../domain/entities/auth_failure.dart';
 import '../../domain/entities/user_entity.dart';
 
-enum AuthStatus {
-  initial,
-  loading,
-  authenticated,
-  unauthenticated,
-  error,
-}
+enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 
 /// State representation for authentication workflows.
 class AuthState {
@@ -24,31 +18,32 @@ class AuthState {
   });
 
   const AuthState.initial({this.failedAttempts = 0})
-      : status = AuthStatus.initial,
-        user = null,
-        failure = null;
+    : status = AuthStatus.initial,
+      user = null,
+      failure = null;
 
   const AuthState.loading({this.failedAttempts = 0})
-      : status = AuthStatus.loading,
-        user = null,
-        failure = null;
+    : status = AuthStatus.loading,
+      user = null,
+      failure = null;
 
   const AuthState.authenticated(this.user)
-      : status = AuthStatus.authenticated,
-        failure = null,
-        failedAttempts = 0;
+    : status = AuthStatus.authenticated,
+      failure = null,
+      failedAttempts = 0;
 
   const AuthState.unauthenticated({this.failedAttempts = 0})
-      : status = AuthStatus.unauthenticated,
-        user = null,
-        failure = null;
+    : status = AuthStatus.unauthenticated,
+      user = null,
+      failure = null;
 
   const AuthState.error(this.failure, {this.failedAttempts = 1})
-      : status = AuthStatus.error,
-        user = null;
+    : status = AuthStatus.error,
+      user = null;
 
   bool get isLoading => status == AuthStatus.loading;
-  bool get isAuthenticated => status == AuthStatus.authenticated && user != null;
+  bool get isAuthenticated =>
+      status == AuthStatus.authenticated && user != null;
   bool get hasError => status == AuthStatus.error && failure != null;
 
   AuthState copyWith({

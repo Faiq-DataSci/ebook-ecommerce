@@ -118,11 +118,7 @@ class LoginErrorHeroZoneA extends StatelessWidget {
             ),
           ),
 
-          const Divider(
-            height: 1.0,
-            thickness: 2.0,
-            color: AppColors.nbBlack,
-          ),
+          const Divider(height: 1.0, thickness: 2.0, color: AppColors.nbBlack),
 
           const SizedBox(height: 8.0),
 
@@ -192,16 +188,16 @@ class LoginErrorHeroZoneA extends StatelessWidget {
                       final isFilled = index < clampedAttempts;
                       return Expanded(
                         child: Container(
-                          margin: EdgeInsets.only(
-                            right: index < 4 ? 2.0 : 0.0,
-                          ),
+                          margin: EdgeInsets.only(right: index < 4 ? 2.0 : 0.0),
                           decoration: BoxDecoration(
                             color: isFilled
                                 ? AppColors.nbPink
                                 : AppColors.surfaceContainer,
                             border: isFilled
                                 ? Border.all(
-                                    color: AppColors.nbBlack, width: 1.0)
+                                    color: AppColors.nbBlack,
+                                    width: 1.0,
+                                  )
                                 : null,
                           ),
                         ),

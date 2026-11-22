@@ -19,11 +19,7 @@ class LoginCompliancePanel extends StatelessWidget {
       child: const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.verified_user,
-            size: 16.0,
-            color: AppColors.nbBlack,
-          ),
+          Icon(Icons.verified_user, size: 16.0, color: AppColors.nbBlack),
           SizedBox(width: 8.0),
           Expanded(
             child: Text(
@@ -47,10 +43,7 @@ class LoginCompliancePanel extends StatelessWidget {
 class LoginAuditFooter extends StatelessWidget {
   final String traceId;
 
-  const LoginAuditFooter({
-    super.key,
-    this.traceId = '#401-AUTH-09941',
-  });
+  const LoginAuditFooter({super.key, this.traceId = '#401-AUTH-09941'});
 
   @override
   Widget build(BuildContext context) {

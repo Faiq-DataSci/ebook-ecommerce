@@ -53,10 +53,14 @@ class _SplashFooterState extends State<SplashFooter>
 
     // Auto-progress evenly dividing totalDuration into 20 steps
     const totalSteps = 20;
-    final stepInterval = (widget.totalDuration.inMilliseconds / totalSteps).round().clamp(10, 100);
+    final stepInterval = (widget.totalDuration.inMilliseconds / totalSteps)
+        .round()
+        .clamp(10, 100);
     const stepAmount = (100 / totalSteps);
 
-    _progressTimer = Timer.periodic(Duration(milliseconds: stepInterval), (timer) {
+    _progressTimer = Timer.periodic(Duration(milliseconds: stepInterval), (
+      timer,
+    ) {
       if (!mounted) {
         timer.cancel();
         return;
@@ -174,13 +178,14 @@ class _SplashFooterState extends State<SplashFooter>
                         _getStatusText(),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTheme.labelSm(
-                          AppColors.nbBlack,
-                          fontSize: 12.0,
-                        ).copyWith(
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.2,
-                        ),
+                        style:
+                            AppTheme.labelSm(
+                              AppColors.nbBlack,
+                              fontSize: 12.0,
+                            ).copyWith(
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.2,
+                            ),
                       ),
                     ),
                   ],

@@ -44,11 +44,7 @@ class CategoryCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 if (isSelected) ...<Widget>[
-                  Icon(
-                    Icons.check,
-                    size: 16,
-                    color: textColor,
-                  ),
+                  Icon(Icons.check, size: 16, color: textColor),
                   const SizedBox(width: 6),
                 ],
                 Text(

@@ -28,8 +28,10 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
         final dynamic rawData = response.data['data'];
         if (rawData is List) {
           return rawData
-              .map((item) =>
-                  CatalogCategoryModel.fromJson(item as Map<String, dynamic>))
+              .map(
+                (item) =>
+                    CatalogCategoryModel.fromJson(item as Map<String, dynamic>),
+              )
               .toList();
         }
       }
@@ -48,10 +50,7 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
     int limit = 20,
   }) async {
     try {
-      final queryParams = <String, dynamic>{
-        'page': page,
-        'limit': limit,
-      };
+      final queryParams = <String, dynamic>{'page': page, 'limit': limit};
 
       if (filter.searchQuery.trim().isNotEmpty) {
         queryParams['search'] = filter.searchQuery.trim();
@@ -75,10 +74,7 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
       }
       queryParams['sort'] = filter.sort.apiValue;
 
-      final response = await dio.get(
-        '/ebooks',
-        queryParameters: queryParams,
-      );
+      final response = await dio.get('/ebooks', queryParameters: queryParams);
 
       if (response.statusCode == 200 && response.data != null) {
         final dynamic rawList = response.data['data'];
@@ -104,7 +100,7 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
             : items.length;
         final metaTotalPages = (rawMeta is Map<String, dynamic>)
             ? (rawMeta['totalPages'] as num?)?.toInt() ??
-                (metaTotal / metaLimit).ceil().clamp(1, 9999)
+                  (metaTotal / metaLimit).ceil().clamp(1, 9999)
             : 1;
 
         return CatalogPage(

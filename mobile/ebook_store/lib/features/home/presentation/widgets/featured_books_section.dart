@@ -472,10 +472,7 @@ class FeaturedBooksSection extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       '#${saw?.rank ?? 1} PILIHAN TERBAIK',
-                      style: AppTheme.dataMono(
-                        AppColors.nbBlack,
-                        fontSize: 12,
-                      ),
+                      style: AppTheme.dataMono(AppColors.nbBlack, fontSize: 12),
                     ),
                   ],
                 ),

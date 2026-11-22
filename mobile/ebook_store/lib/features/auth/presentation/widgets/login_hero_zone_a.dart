@@ -16,10 +16,7 @@ class LoginHeroZoneA extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
       decoration: BoxDecoration(
         color: AppColors.nbYellow,
-        border: Border.all(
-          color: AppColors.nbBlack,
-          width: 3.0,
-        ),
+        border: Border.all(color: AppColors.nbBlack, width: 3.0),
         boxShadow: const [
           BoxShadow(
             color: AppColors.nbBlack,

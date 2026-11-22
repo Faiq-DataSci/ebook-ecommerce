@@ -1,9 +1,4 @@
-enum CartFailureType {
-  network,
-  invalidPromo,
-  emptySelection,
-  server,
-}
+enum CartFailureType { network, invalidPromo, emptySelection, server }
 
 class CartFailure implements Exception {
   final CartFailureType type;

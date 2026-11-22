@@ -18,7 +18,8 @@ class CategoryPillsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAllSelected = selectedCategoryId == null ||
+    final isAllSelected =
+        selectedCategoryId == null ||
         selectedCategoryId!.isEmpty ||
         selectedCategoryId == 'semua';
 
@@ -76,11 +77,7 @@ class CategoryPillsBar extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               if (isSelected) ...<Widget>[
-                const Icon(
-                  Icons.check,
-                  size: 16,
-                  color: AppColors.nbBlack,
-                ),
+                const Icon(Icons.check, size: 16, color: AppColors.nbBlack),
                 const SizedBox(width: 6),
               ],
               Text(

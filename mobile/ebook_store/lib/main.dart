@@ -9,7 +9,8 @@ void main() {
   // DevicePreview dinonaktifkan di perangkat mobile (Android & iOS baik fisik maupun emulator)
   // agar aplikasi tampil penuh sesuai ukuran layar HP Anda.
   // Hanya aktif jika dijalankan di Web/Desktop, atau dipaksa via --dart-define=ENABLE_DEVICE_PREVIEW=true
-  final isMobileDevice = !kIsWeb &&
+  final isMobileDevice =
+      !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS);
 
@@ -26,13 +27,9 @@ void main() {
       enabled: enableDevicePreview,
       defaultDevice: Devices.ios.iPhone13,
       backgroundColor: AppColors.nbMuted,
-      data: const DevicePreviewData(
-        isDarkMode: false,
-      ),
+      data: const DevicePreviewData(isDarkMode: false),
       storage: DevicePreviewStorage.none(),
-      builder: (context) => const ProviderScope(
-        child: EbookStoreApp(),
-      ),
+      builder: (context) => const ProviderScope(child: EbookStoreApp()),
     ),
   );
 }
@@ -54,13 +51,10 @@ class MyApp extends StatelessWidget {
       enabled: enableDevicePreview,
       defaultDevice: Devices.ios.iPhone13,
       backgroundColor: AppColors.nbMuted,
-      data: const DevicePreviewData(
-        isDarkMode: false,
-      ),
+      data: const DevicePreviewData(isDarkMode: false),
       storage: DevicePreviewStorage.none(),
-      builder: (context) => ProviderScope(
-        child: EbookStoreApp(home: initialScreen),
-      ),
+      builder: (context) =>
+          ProviderScope(child: EbookStoreApp(home: initialScreen)),
     );
   }
 }

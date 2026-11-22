@@ -112,9 +112,9 @@ class BookCard extends StatelessWidget {
                     book.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTheme.labelMd(AppColors.nbBlack).copyWith(
-                      height: 1.2,
-                    ),
+                    style: AppTheme.labelMd(
+                      AppColors.nbBlack,
+                    ).copyWith(height: 1.2),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -187,10 +187,7 @@ class BookCard extends StatelessWidget {
                   ),
                   child: Text(
                     book.formattedPrice,
-                    style: AppTheme.dataMono(
-                      AppColors.nbBlack,
-                      fontSize: 12,
-                    ),
+                    style: AppTheme.dataMono(AppColors.nbBlack, fontSize: 12),
                   ),
                 ),
                 const SizedBox(height: 8),

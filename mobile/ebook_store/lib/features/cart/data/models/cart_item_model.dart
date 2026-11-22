@@ -25,7 +25,8 @@ class CartItemModel extends CartItem {
       author: (json['author'] ?? '').toString(),
       pageCount: (json['pageCount'] as num?)?.toInt() ?? 300,
       category: (json['category'] ?? 'Teknologi').toString(),
-      sawRankLabel: (json['sawRankLabel'] ?? 'Rank #1 SAW (V: 0.942)').toString(),
+      sawRankLabel: (json['sawRankLabel'] ?? 'Rank #1 SAW (V: 0.942)')
+          .toString(),
       isTopSawRank: json['isTopSawRank'] == true,
       formatLabel: (json['formatLabel'] ?? 'PDF').toString(),
       licenseLabel: (json['licenseLabel'] ?? '1 Lisensi Digital').toString(),

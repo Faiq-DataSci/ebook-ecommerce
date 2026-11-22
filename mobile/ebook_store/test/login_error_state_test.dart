@@ -48,8 +48,9 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Login Mobile Error State (Zona A/C) - Google Stitch Neubrutalism Tests', () {
-    testWidgets('Renders all Stitch Error State visual elements at 390x884',
-        (WidgetTester tester) async {
+    testWidgets('Renders all Stitch Error State visual elements at 390x884', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableLoginScreen());
       await tester.pumpAndSettle();
@@ -79,7 +80,8 @@ void main() {
         find.descendant(
           of: find.byType(LoginErrorHeroZoneA),
           matching: find.text(
-              'Email atau kata sandi tidak cocok. Silakan periksa kembali kredensial Anda atau gunakan opsi pemulihan kata sandi.'),
+            'Email atau kata sandi tidak cocok. Silakan periksa kembali kredensial Anda atau gunakan opsi pemulihan kata sandi.',
+          ),
         ),
         findsOneWidget,
       );
@@ -89,7 +91,8 @@ void main() {
       expect(find.text('1 / 5 GAGAL'), findsOneWidget);
       expect(
         find.text(
-            'Akun akan diamankan otomatis selama 15 menit jika mencapai 5 kali kegagalan berturut-turut.'),
+          'Akun akan diamankan otomatis selama 15 menit jika mencapai 5 kali kegagalan berturut-turut.',
+        ),
         findsOneWidget,
       );
 
@@ -106,8 +109,10 @@ void main() {
       expect(find.text('LUPA KATA SANDI?'), findsOneWidget);
 
       // Direct Field-Level Error Alert
-      expect(find.text('Kombinasi kata sandi tidak cocok untuk akun ini.'),
-          findsOneWidget);
+      expect(
+        find.text('Kombinasi kata sandi tidak cocok untuk akun ini.'),
+        findsOneWidget,
+      );
 
       // Dynamic Action Button: COBA MASUK LAGI
       expect(find.text('COBA MASUK LAGI'), findsOneWidget);
@@ -119,7 +124,8 @@ void main() {
       expect(find.byType(LoginCompliancePanel), findsOneWidget);
       expect(
         find.text(
-            'Demi melindungi integritas data akun dan keamanan sistem, kami membatasi percobaan masuk yang tidak sah.'),
+          'Demi melindungi integritas data akun dan keamanan sistem, kami membatasi percobaan masuk yang tidak sah.',
+        ),
         findsOneWidget,
       );
 
@@ -127,13 +133,15 @@ void main() {
       expect(find.byType(LoginAuditFooter), findsOneWidget);
       expect(
         find.text(
-            'AUTH ENGINE V2.4 // STATUS: FAILED_ATTEMPT_LOGGED\nTRACE_ID: #ERR-401-AUTH-09941 // IP: 182.1.24.90'),
+          'AUTH ENGINE V2.4 // STATUS: FAILED_ATTEMPT_LOGGED\nTRACE_ID: #ERR-401-AUTH-09941 // IP: 182.1.24.90',
+        ),
         findsOneWidget,
       );
     });
 
-    testWidgets('Increments failed attempts counter on consecutive failures',
-        (WidgetTester tester) async {
+    testWidgets('Increments failed attempts counter on consecutive failures', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableLoginScreen());
       await tester.pumpAndSettle();
@@ -161,8 +169,9 @@ void main() {
       expect(find.text('2 / 5 GAGAL'), findsOneWidget);
     });
 
-    testWidgets('Local Validation: Empty email does not send network request',
-        (WidgetTester tester) async {
+    testWidgets('Local Validation: Empty email does not send network request', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableLoginScreen());
       await tester.pumpAndSettle();
@@ -176,30 +185,33 @@ void main() {
       expect(find.text('Kata sandi tidak boleh kosong.'), findsOneWidget);
     });
 
-    testWidgets('Local Validation: Invalid email format preserved and highlighted',
-        (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(const Size(390, 884));
-      await tester.pumpWidget(_buildTestableLoginScreen());
-      await tester.pumpAndSettle();
+    testWidgets(
+      'Local Validation: Invalid email format preserved and highlighted',
+      (WidgetTester tester) async {
+        await tester.binding.setSurfaceSize(const Size(390, 884));
+        await tester.pumpWidget(_buildTestableLoginScreen());
+        await tester.pumpAndSettle();
 
-      final emailInput = find.widgetWithText(TextField, 'nama@email.com');
-      await tester.enterText(emailInput, 'budi-bukan-email');
+        final emailInput = find.widgetWithText(TextField, 'nama@email.com');
+        await tester.enterText(emailInput, 'budi-bukan-email');
 
-      final submitBtn = find.text('MASUK SEKARANG');
-      await tester.ensureVisible(submitBtn);
-      await tester.tap(submitBtn);
-      await tester.pump();
+        final submitBtn = find.text('MASUK SEKARANG');
+        await tester.ensureVisible(submitBtn);
+        await tester.tap(submitBtn);
+        await tester.pump();
 
-      expect(
-        find.text('Format surel tidak valid (misal: nama@email.com).'),
-        findsOneWidget,
-      );
-      // Preserved input
-      expect(find.text('budi-bukan-email'), findsOneWidget);
-    });
+        expect(
+          find.text('Format surel tidak valid (misal: nama@email.com).'),
+          findsOneWidget,
+        );
+        // Preserved input
+        expect(find.text('budi-bukan-email'), findsOneWidget);
+      },
+    );
 
-    testWidgets('Handles Network Error state (ERR-NET)',
-        (WidgetTester tester) async {
+    testWidgets('Handles Network Error state (ERR-NET)', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableLoginScreen());
       await tester.pumpAndSettle();
@@ -219,13 +231,15 @@ void main() {
       expect(find.text('GANGGUAN JARINGAN'), findsOneWidget);
       expect(
         find.text(
-            'Koneksi bermasalah. Periksa jaringan internet Anda dan coba kembali.'),
+          'Koneksi bermasalah. Periksa jaringan internet Anda dan coba kembali.',
+        ),
         findsWidgets,
       );
     });
 
-    testWidgets('Handles Server Error state (ERR-500)',
-        (WidgetTester tester) async {
+    testWidgets('Handles Server Error state (ERR-500)', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableLoginScreen());
       await tester.pumpAndSettle();
@@ -245,13 +259,15 @@ void main() {
       expect(find.text('KESALAHAN SERVER'), findsWidgets);
       expect(
         find.text(
-            'Layanan sedang mengalami gangguan. Silakan coba kembali beberapa saat lagi.'),
+          'Layanan sedang mengalami gangguan. Silakan coba kembali beberapa saat lagi.',
+        ),
         findsWidgets,
       );
     });
 
-    testWidgets('User editing input clears field errors',
-        (WidgetTester tester) async {
+    testWidgets('User editing input clears field errors', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableLoginScreen());
       await tester.pumpAndSettle();
@@ -270,8 +286,9 @@ void main() {
       expect(find.text('Alamat email wajib diisi.'), findsNothing);
     });
 
-    testWidgets('Successful login after error state navigates to HomeScreen',
-        (WidgetTester tester) async {
+    testWidgets('Successful login after error state navigates to HomeScreen', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 884));
       await tester.pumpWidget(_buildTestableLoginScreen());
       await tester.pumpAndSettle();
@@ -307,35 +324,42 @@ void main() {
     });
   });
 
-  group('Login Mobile Error State - Responsive Viewport Tests (Zero Overflows)', () {
-    const viewports = [
-      Size(360, 800), // Android compact
-      Size(390, 884), // Stitch reference
-      Size(412, 915), // Android large
-    ];
+  group(
+    'Login Mobile Error State - Responsive Viewport Tests (Zero Overflows)',
+    () {
+      const viewports = [
+        Size(360, 800), // Android compact
+        Size(390, 884), // Stitch reference
+        Size(412, 915), // Android large
+      ];
 
-    for (final size in viewports) {
-      testWidgets('Renders error state without overflow on ${size.width}x${size.height}',
+      for (final size in viewports) {
+        testWidgets(
+          'Renders error state without overflow on ${size.width}x${size.height}',
           (WidgetTester tester) async {
-        await tester.binding.setSurfaceSize(size);
-        await tester.pumpWidget(_buildTestableLoginScreen(screenSize: size));
-        await tester.pumpAndSettle();
+            await tester.binding.setSurfaceSize(size);
+            await tester.pumpWidget(
+              _buildTestableLoginScreen(screenSize: size),
+            );
+            await tester.pumpAndSettle();
 
-        // Trigger error
-        final emailInput = find.widgetWithText(TextField, 'nama@email.com');
-        final passwordInput = find.widgetWithText(TextField, '••••••••');
-        await tester.enterText(emailInput, 'budi.santoso@email.com');
-        await tester.enterText(passwordInput, 'SalahSandi123');
+            // Trigger error
+            final emailInput = find.widgetWithText(TextField, 'nama@email.com');
+            final passwordInput = find.widgetWithText(TextField, '••••••••');
+            await tester.enterText(emailInput, 'budi.santoso@email.com');
+            await tester.enterText(passwordInput, 'SalahSandi123');
 
-        final submitBtn = find.text('MASUK SEKARANG');
-        await tester.ensureVisible(submitBtn);
-        await tester.tap(submitBtn);
-        await tester.pump(const Duration(milliseconds: 400));
-        await tester.pumpAndSettle();
+            final submitBtn = find.text('MASUK SEKARANG');
+            await tester.ensureVisible(submitBtn);
+            await tester.tap(submitBtn);
+            await tester.pump(const Duration(milliseconds: 400));
+            await tester.pumpAndSettle();
 
-        expect(find.byType(LoginScreen), findsOneWidget);
-        expect(tester.takeException(), isNull);
-      });
-    }
-  });
+            expect(find.byType(LoginScreen), findsOneWidget);
+            expect(tester.takeException(), isNull);
+          },
+        );
+      }
+    },
+  );
 }

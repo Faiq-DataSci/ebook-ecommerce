@@ -24,17 +24,14 @@ class CartMockDataSourceImpl implements CartMockDataSource {
 
   static const List<CartPromo> _availablePromos = <CartPromo>[
     defaultPromo,
-    CartPromo(
-      code: 'SAWHEMAT',
-      badgeLabel: 'HEMAT 15K',
-      discountAmount: 15000,
-    ),
+    CartPromo(code: 'SAWHEMAT', badgeLabel: 'HEMAT 15K', discountAmount: 15000),
   ];
 
   static const List<CartItemModel> initialCartItems = <CartItemModel>[
     CartItemModel(
       id: 'eb-001',
-      title: 'Arsitektur Cloud & DevOps: Prinsip & Praktik Sistem Terdistribusi',
+      title:
+          'Arsitektur Cloud & DevOps: Prinsip & Praktik Sistem Terdistribusi',
       author: 'Hendra Wijaya',
       pageCount: 450,
       category: 'Teknologi',
@@ -68,37 +65,37 @@ class CartMockDataSourceImpl implements CartMockDataSource {
 
   static const List<CartItemModel> emptyStateSawRecommendations =
       <CartItemModel>[
-    CartItemModel(
-      id: 'eb-001',
-      title: 'Arsitektur Cloud Modern',
-      author: 'Dian Pratama',
-      pageCount: 320,
-      category: 'TECH',
-      sawRankLabel: 'V_i: 0.942',
-      isTopSawRank: true,
-      formatLabel: 'EPUB/PDF',
-      licenseLabel: '1 Lisensi Digital',
-      coverUrl: AppAssets.coverArsitekturCloudDevops,
-      price: 45000,
-      ratingAvg: 4.8,
-      isSelected: true,
-    ),
-    CartItemModel(
-      id: 'eb-002',
-      title: 'Sistem Keputusan SAW',
-      author: 'Budi Raharjo',
-      pageCount: 280,
-      category: 'DATA',
-      sawRankLabel: 'V_i: 0.915',
-      isTopSawRank: false,
-      formatLabel: 'SAW CORE',
-      licenseLabel: '1 Lisensi Digital',
-      coverUrl: AppAssets.coverAlgoritmaStrukturData,
-      price: 38000,
-      ratingAvg: 4.9,
-      isSelected: true,
-    ),
-  ];
+        CartItemModel(
+          id: 'eb-001',
+          title: 'Arsitektur Cloud Modern',
+          author: 'Dian Pratama',
+          pageCount: 320,
+          category: 'TECH',
+          sawRankLabel: 'V_i: 0.942',
+          isTopSawRank: true,
+          formatLabel: 'EPUB/PDF',
+          licenseLabel: '1 Lisensi Digital',
+          coverUrl: AppAssets.coverArsitekturCloudDevops,
+          price: 45000,
+          ratingAvg: 4.8,
+          isSelected: true,
+        ),
+        CartItemModel(
+          id: 'eb-002',
+          title: 'Sistem Keputusan SAW',
+          author: 'Budi Raharjo',
+          pageCount: 280,
+          category: 'DATA',
+          sawRankLabel: 'V_i: 0.915',
+          isTopSawRank: false,
+          formatLabel: 'SAW CORE',
+          licenseLabel: '1 Lisensi Digital',
+          coverUrl: AppAssets.coverAlgoritmaStrukturData,
+          price: 38000,
+          ratingAvg: 4.9,
+          isSelected: true,
+        ),
+      ];
 
   @override
   Future<List<CartItem>> getCartItems() async {

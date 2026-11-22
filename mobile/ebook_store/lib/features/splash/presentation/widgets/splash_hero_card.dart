@@ -14,7 +14,10 @@ class SplashHeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Transform.rotate(
-      angle: -0.75 * math.pi / 180, // Signature -0.75 deg rotation from Stitch spec
+      angle:
+          -0.75 *
+          math.pi /
+          180, // Signature -0.75 deg rotation from Stitch spec
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -66,7 +69,10 @@ class SplashHeroCard extends StatelessWidget {
             top: -14.0,
             left: -14.0,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.5),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10.0,
+                vertical: 2.5,
+              ),
               decoration: BoxDecoration(
                 color: AppColors.nbPink,
                 border: Border.all(
@@ -86,10 +92,7 @@ class SplashHeroCard extends StatelessWidget {
                 style: AppTheme.dataMono(
                   AppColors.nbBlack,
                   fontSize: 12.0,
-                ).copyWith(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
-                ),
+                ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2),
               ),
             ),
           ),
@@ -222,10 +225,9 @@ class SplashHeroCard extends StatelessWidget {
             left: 16.0,
             child: Text(
               '✦',
-              style: AppTheme.headlineSmMobile(AppColors.nbBlack).copyWith(
-                fontSize: 20.0,
-                fontWeight: FontWeight.w700,
-              ),
+              style: AppTheme.headlineSmMobile(
+                AppColors.nbBlack,
+              ).copyWith(fontSize: 20.0, fontWeight: FontWeight.w700),
             ),
           ),
 
@@ -234,10 +236,9 @@ class SplashHeroCard extends StatelessWidget {
             right: 16.0,
             child: Text(
               '✱',
-              style: AppTheme.headlineSmMobile(AppColors.nbPink).copyWith(
-                fontSize: 20.0,
-                fontWeight: FontWeight.w700,
-              ),
+              style: AppTheme.headlineSmMobile(
+                AppColors.nbPink,
+              ).copyWith(fontSize: 20.0, fontWeight: FontWeight.w700),
             ),
           ),
 
@@ -313,9 +314,7 @@ class SplashHeroCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const Center(
-                    child: StitchEbookIcon(size: 84.0),
-                  ),
+                  child: const Center(child: StitchEbookIcon(size: 84.0)),
                 ),
               ],
             ),
@@ -343,10 +342,7 @@ class SplashHeroCard extends StatelessWidget {
             style: AppTheme.dataMono(
               AppColors.nbBlack,
               fontSize: 11.0,
-            ).copyWith(
-              letterSpacing: 1.5,
-              fontWeight: FontWeight.w700,
-            ),
+            ).copyWith(letterSpacing: 1.5, fontWeight: FontWeight.w700),
           ),
         ),
 
@@ -390,10 +386,7 @@ class SplashHeroCard extends StatelessWidget {
             style: AppTheme.dataMono(
               AppColors.nbBlack,
               fontSize: 11.5,
-            ).copyWith(
-              letterSpacing: -0.2,
-              fontWeight: FontWeight.w700,
-            ),
+            ).copyWith(letterSpacing: -0.2, fontWeight: FontWeight.w700),
           ),
         ),
       ),
@@ -449,9 +442,7 @@ class SplashHeroCard extends StatelessWidget {
                     style: AppTheme.dataMono(
                       AppColors.nbBlack,
                       fontSize: 12.0,
-                    ).copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                    ).copyWith(fontWeight: FontWeight.w700),
                   ),
                 ),
               ],
@@ -464,19 +455,14 @@ class SplashHeroCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
             decoration: BoxDecoration(
               color: AppColors.nbGreen,
-              border: Border.all(
-                color: AppColors.nbBlack,
-                width: 1.5,
-              ),
+              border: Border.all(color: AppColors.nbBlack, width: 1.5),
             ),
             child: Text(
               'KATALOG READY',
               style: AppTheme.dataMono(
                 AppColors.nbBlack,
                 fontSize: 11.0,
-              ).copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              ).copyWith(fontWeight: FontWeight.w700),
             ),
           ),
         ],

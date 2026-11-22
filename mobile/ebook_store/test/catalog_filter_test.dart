@@ -75,49 +75,52 @@ void main() {
     });
   });
 
-  group('CatalogFilter - Filter Kategori & Harga & Rating (FR-C03, design.md §8.4)', () {
-    test('Filter berdasarkan categoryId', () {
-      const filter = CatalogFilter(categoryId: 'cat-bis');
-      final result = filter.apply(sampleBooks);
-      expect(result.length, 1);
-      expect(result.first.id, '3');
-    });
+  group(
+    'CatalogFilter - Filter Kategori & Harga & Rating (FR-C03, design.md §8.4)',
+    () {
+      test('Filter berdasarkan categoryId', () {
+        const filter = CatalogFilter(categoryId: 'cat-bis');
+        final result = filter.apply(sampleBooks);
+        expect(result.length, 1);
+        expect(result.first.id, '3');
+      });
 
-    test('Filter rentang harga min-max', () {
-      const filter = CatalogFilter(minPrice: 50000, maxPrice: 70000);
-      final result = filter.apply(sampleBooks);
-      expect(result.length, 1);
-      expect(result.first.id, '1');
-      expect(result.first.price, 65000);
-    });
+      test('Filter rentang harga min-max', () {
+        const filter = CatalogFilter(minPrice: 50000, maxPrice: 70000);
+        final result = filter.apply(sampleBooks);
+        expect(result.length, 1);
+        expect(result.first.id, '1');
+        expect(result.first.price, 65000);
+      });
 
-    test('Validasi rentang harga min <= max', () {
-      const validFilter = CatalogFilter(minPrice: 40000, maxPrice: 80000);
-      expect(validFilter.isValidPriceRange, isTrue);
+      test('Validasi rentang harga min <= max', () {
+        const validFilter = CatalogFilter(minPrice: 40000, maxPrice: 80000);
+        expect(validFilter.isValidPriceRange, isTrue);
 
-      const invalidFilter = CatalogFilter(minPrice: 80000, maxPrice: 40000);
-      expect(invalidFilter.isValidPriceRange, isFalse);
-    });
+        const invalidFilter = CatalogFilter(minPrice: 80000, maxPrice: 40000);
+        expect(invalidFilter.isValidPriceRange, isFalse);
+      });
 
-    test('Filter rating minimum', () {
-      const filter = CatalogFilter(minRating: 4.8);
-      final result = filter.apply(sampleBooks);
-      expect(result.length, 2);
-      expect(result.every((b) => b.ratingAvg >= 4.8), isTrue);
-    });
+      test('Filter rating minimum', () {
+        const filter = CatalogFilter(minRating: 4.8);
+        final result = filter.apply(sampleBooks);
+        expect(result.length, 2);
+        expect(result.every((b) => b.ratingAvg >= 4.8), isTrue);
+      });
 
-    test('Kombinasi pencarian, kategori, dan rentang harga sekaligus', () {
-      const filter = CatalogFilter(
-        searchQuery: 'DevOps',
-        categoryId: 'cat-tek',
-        minPrice: 60000,
-        maxPrice: 70000,
-      );
-      final result = filter.apply(sampleBooks);
-      expect(result.length, 1);
-      expect(result.first.id, '1');
-    });
-  });
+      test('Kombinasi pencarian, kategori, dan rentang harga sekaligus', () {
+        const filter = CatalogFilter(
+          searchQuery: 'DevOps',
+          categoryId: 'cat-tek',
+          minPrice: 60000,
+          maxPrice: 70000,
+        );
+        final result = filter.apply(sampleBooks);
+        expect(result.length, 1);
+        expect(result.first.id, '1');
+      });
+    },
+  );
 
   group('CatalogFilter - Reset & Pengurutan', () {
     test('resetFiltersOnly mempertahankan searchQuery (ketentuan §7D)', () {

@@ -27,10 +27,7 @@ void main() {
         'ratingAvg': '4.80',
         'salesCount': 150,
         'coverUrl': 'https://example.com/cover.png',
-        'category': {
-          'id': 'cat-1',
-          'name': 'Teknologi',
-        },
+        'category': {'id': 'cat-1', 'name': 'Teknologi'},
       };
 
       final model = CatalogEbookModel.fromJson(json);

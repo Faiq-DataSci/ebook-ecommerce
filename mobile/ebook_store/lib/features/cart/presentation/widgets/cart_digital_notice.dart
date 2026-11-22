@@ -6,10 +6,7 @@ import '../../data/datasources/cart_mock_datasource.dart';
 class CartDigitalNotice extends StatelessWidget {
   final bool isMock;
 
-  const CartDigitalNotice({
-    super.key,
-    this.isMock = true,
-  });
+  const CartDigitalNotice({super.key, this.isMock = true});
 
   @override
   Widget build(BuildContext context) {

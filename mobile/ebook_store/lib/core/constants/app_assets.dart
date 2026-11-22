@@ -69,8 +69,8 @@ class StitchBookCover extends StatelessWidget {
     String? assetKey,
     String? semanticLabel,
     String? title,
-  })  : assetPath = assetPath ?? assetKey ?? '',
-        semanticLabel = semanticLabel ?? title ?? 'Sampul E-Book';
+  }) : assetPath = assetPath ?? assetKey ?? '',
+       semanticLabel = semanticLabel ?? title ?? 'Sampul E-Book';
 
   @override
   Widget build(BuildContext context) {

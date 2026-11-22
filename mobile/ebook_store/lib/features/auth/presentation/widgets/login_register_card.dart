@@ -9,10 +9,7 @@ import '../../../../theme/app_theme.dart';
 class LoginRegisterCard extends StatelessWidget {
   final VoidCallback onRegister;
 
-  const LoginRegisterCard({
-    super.key,
-    required this.onRegister,
-  });
+  const LoginRegisterCard({super.key, required this.onRegister});
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +19,7 @@ class LoginRegisterCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
       decoration: BoxDecoration(
         color: AppColors.nbLavender,
-        border: Border.all(
-          color: AppColors.nbBlack,
-          width: 3.0,
-        ),
+        border: Border.all(color: AppColors.nbBlack, width: 3.0),
         boxShadow: const [
           BoxShadow(
             color: AppColors.nbBlack,
@@ -74,13 +68,13 @@ class LoginRegisterCard extends StatelessWidget {
             child: InkWell(
               onTap: onRegister,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12.0,
+                  vertical: 8.0,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.nbWhite,
-                  border: Border.all(
-                    color: AppColors.nbBlack,
-                    width: 2.0,
-                  ),
+                  border: Border.all(color: AppColors.nbBlack, width: 2.0),
                   boxShadow: const [
                     BoxShadow(
                       color: AppColors.nbBlack,

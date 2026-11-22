@@ -51,10 +51,7 @@ class HomeBanner extends StatelessWidget {
                   ),
                   child: Text(
                     'ASISTEN BACAAN',
-                    style: AppTheme.labelSm(
-                      AppColors.nbBlack,
-                      fontSize: 12,
-                    ),
+                    style: AppTheme.labelSm(AppColors.nbBlack, fontSize: 12),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -93,20 +90,16 @@ class HomeBanner extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    const Icon(
-                      Icons.bolt,
-                      size: 18,
-                      color: AppColors.nbBlack,
-                    ),
+                    const Icon(Icons.bolt, size: 18, color: AppColors.nbBlack),
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(
                         'CARI REKOMENDASI BUKU',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTheme.labelMd(AppColors.nbBlack).copyWith(
-                          letterSpacing: 0.4,
-                        ),
+                        style: AppTheme.labelMd(
+                          AppColors.nbBlack,
+                        ).copyWith(letterSpacing: 0.4),
                       ),
                     ),
                   ],

@@ -32,7 +32,8 @@ class ActiveFilterChips extends StatelessWidget {
     }
 
     final categoryLabel = filter.categoryName ?? filter.categoryId;
-    final hasCategory = categoryLabel != null &&
+    final hasCategory =
+        categoryLabel != null &&
         categoryLabel.isNotEmpty &&
         categoryLabel != 'semua';
     final hasAuthor = (filter.author ?? '').trim().isNotEmpty;
@@ -105,8 +106,10 @@ class ActiveFilterChips extends StatelessWidget {
               ),
               child: Text(
                 'RESET FILTER',
-                style: AppTheme.labelSm(AppColors.nbBlack, fontSize: 11)
-                    .copyWith(decoration: TextDecoration.underline),
+                style: AppTheme.labelSm(
+                  AppColors.nbBlack,
+                  fontSize: 11,
+                ).copyWith(decoration: TextDecoration.underline),
               ),
             ),
           ),
@@ -148,10 +151,7 @@ class ActiveFilterChips extends StatelessWidget {
             child: InkWell(
               onTap: onDelete,
               child: Container(
-                constraints: const BoxConstraints(
-                  minWidth: 32,
-                  minHeight: 32,
-                ),
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(horizontal: 6),
                 child: const Icon(

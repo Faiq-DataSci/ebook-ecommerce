@@ -57,7 +57,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           title: Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6.0,
+                  vertical: 2.0,
+                ),
                 color: AppColors.nbBlack,
                 child: const Text(
                   'ROLE: ADMIN',
@@ -120,7 +123,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           shape: Border.all(color: AppColors.nbBlack, width: 2.0),
           content: Row(
             children: [
-              const Icon(Icons.check_circle, color: AppColors.nbBlack, size: 20.0),
+              const Icon(
+                Icons.check_circle,
+                color: AppColors.nbBlack,
+                size: 20.0,
+              ),
               const SizedBox(width: 8.0),
               Expanded(
                 child: Text(
@@ -157,9 +164,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RegisterScreen()),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const RegisterScreen()));
   }
 
   @override
@@ -212,11 +219,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         LoginErrorHeroZoneA(
                           title: 'GAGAL MASUK',
                           message: authState.failure!.message,
-                          ribbon: authState.failure!.ribbon ??
+                          ribbon:
+                              authState.failure!.ribbon ??
                               'PERINGATAN KEAMANAN',
                           failedAttempts: authState.failedAttempts,
                           onDismiss: () {
-                            ref.read(authNotifierProvider.notifier).clearError();
+                            ref
+                                .read(authNotifierProvider.notifier)
+                                .clearError();
                           },
                         ),
                         const SizedBox(height: 8.0),
@@ -225,7 +235,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           title: authState.failure!.title,
                           message: authState.failure!.message,
                           onDismiss: () {
-                            ref.read(authNotifierProvider.notifier).clearError();
+                            ref
+                                .read(authNotifierProvider.notifier)
+                                .clearError();
                           },
                         ),
                       ] else
@@ -243,26 +255,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         onClearError: () {
                           ref.read(authNotifierProvider.notifier).clearError();
                         },
-                        onSubmit: ({
-                          required String email,
-                          required String password,
-                          required bool rememberMe,
-                        }) {
-                          ref.read(authNotifierProvider.notifier).login(
-                                email: email,
-                                password: password,
-                                rememberMe: rememberMe,
-                              );
-                        },
+                        onSubmit:
+                            ({
+                              required String email,
+                              required String password,
+                              required bool rememberMe,
+                            }) {
+                              ref
+                                  .read(authNotifierProvider.notifier)
+                                  .login(
+                                    email: email,
+                                    password: password,
+                                    rememberMe: rememberMe,
+                                  );
+                            },
                       ),
 
                       // DRM & Security Compliance Note in Error State
                       if (authState.hasError) const LoginCompliancePanel(),
 
                       // 4. Kartu Ajakan Daftar Akun Baru
-                      LoginRegisterCard(
-                        onRegister: _showRegisterDialog,
-                      ),
+                      LoginRegisterCard(onRegister: _showRegisterDialog),
 
                       // 5. Footer: Audit Diagnostics in Error State / Security Note in Normal State
                       if (authState.hasError)

@@ -192,10 +192,7 @@ class CartItemCard extends StatelessWidget {
                 // Author • Page Count
                 Text(
                   item.authorAndPagesLabel,
-                  style: AppTheme.bodySm(
-                    AppColors.nbTextMuted,
-                    fontSize: 13,
-                  ),
+                  style: AppTheme.bodySm(AppColors.nbTextMuted, fontSize: 13),
                 ),
                 const SizedBox(height: 8),
 
@@ -229,12 +226,13 @@ class CartItemCard extends StatelessWidget {
                               if (item.hasDiscount)
                                 Text(
                                   item.formattedOriginalPrice!,
-                                  style: AppTheme.dataMono(
-                                    AppColors.nbDisabledText,
-                                    fontSize: 12,
-                                  ).copyWith(
-                                    decoration: TextDecoration.lineThrough,
-                                  ),
+                                  style:
+                                      AppTheme.dataMono(
+                                        AppColors.nbDisabledText,
+                                        fontSize: 12,
+                                      ).copyWith(
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
                                 ),
                             ],
                           ),

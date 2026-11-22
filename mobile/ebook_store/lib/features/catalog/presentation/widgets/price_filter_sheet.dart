@@ -43,18 +43,19 @@ class _PriceFilterSheetState extends State<PriceFilterSheet> {
     super.initState();
     _selectedCategoryId = widget.initialFilter.categoryId;
     _selectedCategoryName = widget.initialFilter.categoryName;
-    _authorController =
-        TextEditingController(text: widget.initialFilter.author ?? '');
+    _authorController = TextEditingController(
+      text: widget.initialFilter.author ?? '',
+    );
 
     final minLimit = widget.minAvailablePrice.toDouble();
     final maxLimit = widget.maxAvailablePrice > widget.minAvailablePrice
         ? widget.maxAvailablePrice.toDouble()
         : minLimit + 100000;
 
-    _currentMinPrice =
-        (widget.initialFilter.minPrice?.toDouble() ?? minLimit).clamp(minLimit, maxLimit);
-    _currentMaxPrice =
-        (widget.initialFilter.maxPrice?.toDouble() ?? maxLimit).clamp(minLimit, maxLimit);
+    _currentMinPrice = (widget.initialFilter.minPrice?.toDouble() ?? minLimit)
+        .clamp(minLimit, maxLimit);
+    _currentMaxPrice = (widget.initialFilter.maxPrice?.toDouble() ?? maxLimit)
+        .clamp(minLimit, maxLimit);
 
     if (_currentMinPrice > _currentMaxPrice) {
       _currentMinPrice = minLimit;
@@ -196,8 +197,10 @@ class _PriceFilterSheetState extends State<PriceFilterSheet> {
               // 1. Kategori
               Text(
                 'KATEGORI E-BOOK',
-                style: AppTheme.labelSm(AppColors.nbBlack, fontSize: 12)
-                    .copyWith(letterSpacing: 0.5),
+                style: AppTheme.labelSm(
+                  AppColors.nbBlack,
+                  fontSize: 12,
+                ).copyWith(letterSpacing: 0.5),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -222,8 +225,10 @@ class _PriceFilterSheetState extends State<PriceFilterSheet> {
               // 2. Filter Penulis (design.md §8.4)
               Text(
                 'PENULIS E-BOOK',
-                style: AppTheme.labelSm(AppColors.nbBlack, fontSize: 12)
-                    .copyWith(letterSpacing: 0.5),
+                style: AppTheme.labelSm(
+                  AppColors.nbBlack,
+                  fontSize: 12,
+                ).copyWith(letterSpacing: 0.5),
               ),
               const SizedBox(height: 8),
               Container(
@@ -258,12 +263,16 @@ class _PriceFilterSheetState extends State<PriceFilterSheet> {
                 children: <Widget>[
                   Text(
                     'RENTANG HARGA',
-                    style: AppTheme.labelSm(AppColors.nbBlack, fontSize: 12)
-                        .copyWith(letterSpacing: 0.5),
+                    style: AppTheme.labelSm(
+                      AppColors.nbBlack,
+                      fontSize: 12,
+                    ).copyWith(letterSpacing: 0.5),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: AppTheme.brutalBox(
                       color: AppColors.nbYellow,
                       borderColor: AppColors.nbBlack,
@@ -297,8 +306,10 @@ class _PriceFilterSheetState extends State<PriceFilterSheet> {
               // 4. Rating Minimum (design.md §8.4)
               Text(
                 'RATING MINIMUM',
-                style: AppTheme.labelSm(AppColors.nbBlack, fontSize: 12)
-                    .copyWith(letterSpacing: 0.5),
+                style: AppTheme.labelSm(
+                  AppColors.nbBlack,
+                  fontSize: 12,
+                ).copyWith(letterSpacing: 0.5),
               ),
               const SizedBox(height: 8),
               Row(
@@ -337,7 +348,10 @@ class _PriceFilterSheetState extends State<PriceFilterSheet> {
                         ),
                         child: Text(
                           'RESET',
-                          style: AppTheme.labelSm(AppColors.nbBlack, fontSize: 13),
+                          style: AppTheme.labelSm(
+                            AppColors.nbBlack,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ),
@@ -359,7 +373,10 @@ class _PriceFilterSheetState extends State<PriceFilterSheet> {
                         ),
                         child: Text(
                           'TERAPKAN FILTER',
-                          style: AppTheme.labelSm(AppColors.nbBlack, fontSize: 13),
+                          style: AppTheme.labelSm(
+                            AppColors.nbBlack,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ),
@@ -402,10 +419,7 @@ class _PriceFilterSheetState extends State<PriceFilterSheet> {
     );
   }
 
-  Widget _buildRatingButton({
-    required String label,
-    required double? value,
-  }) {
+  Widget _buildRatingButton({required String label, required double? value}) {
     final isSelected = _selectedRating == value;
     return Expanded(
       child: InkWell(

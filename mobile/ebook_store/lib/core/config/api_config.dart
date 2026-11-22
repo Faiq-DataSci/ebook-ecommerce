@@ -29,7 +29,8 @@ class ApiConfig {
     if (kIsWeb) {
       return 'http://localhost:$defaultPort/api/v1';
     }
-    if (defaultTargetPlatform == TargetPlatform.android && !_usePhysicalDevice) {
+    if (defaultTargetPlatform == TargetPlatform.android &&
+        !_usePhysicalDevice) {
       return 'http://10.0.2.2:$defaultPort/api/v1';
     }
     return 'http://$_physicalDeviceHost:$defaultPort/api/v1';

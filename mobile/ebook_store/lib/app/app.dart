@@ -9,10 +9,7 @@ import '../theme/app_theme.dart';
 class EbookStoreApp extends ConsumerWidget {
   final Widget? home;
 
-  const EbookStoreApp({
-    super.key,
-    this.home,
-  });
+  const EbookStoreApp({super.key, this.home});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,4 +27,3 @@ class EbookStoreApp extends ConsumerWidget {
     );
   }
 }
-

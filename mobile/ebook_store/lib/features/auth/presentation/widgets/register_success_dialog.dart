@@ -9,10 +9,7 @@ import '../../../../theme/app_theme.dart';
 class RegisterSuccessDialog extends StatelessWidget {
   final VoidCallback onContinue;
 
-  const RegisterSuccessDialog({
-    super.key,
-    required this.onContinue,
-  });
+  const RegisterSuccessDialog({super.key, required this.onContinue});
 
   @override
   Widget build(BuildContext context) {

@@ -19,10 +19,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     bool rememberMe = false,
   }) async {
-    final user = await remoteDataSource.login(
-      email: email,
-      password: password,
-    );
+    final user = await remoteDataSource.login(email: email, password: password);
 
     if (rememberMe && user.token != null) {
       await localDataSource.saveToken(user.token!);

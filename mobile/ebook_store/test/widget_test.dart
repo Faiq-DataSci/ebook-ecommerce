@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> _pumpAtViewport(
-  WidgetTester tester,
-  Size size,
-) async {
+Future<void> _pumpAtViewport(WidgetTester tester, Size size) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
   addTearDown(() {
@@ -106,44 +103,42 @@ void main() {
       },
     );
 
-    testWidgets(
-      'Renders without overflow on compact 360x800 viewport',
-      (WidgetTester tester) async {
-        await _pumpAtViewport(tester, const Size(360, 800));
-        expect(find.text('BUKUKITA'), findsOneWidget);
-        expect(find.text('Bingung Pilih Buku?'), findsOneWidget);
+    testWidgets('Renders without overflow on compact 360x800 viewport', (
+      WidgetTester tester,
+    ) async {
+      await _pumpAtViewport(tester, const Size(360, 800));
+      expect(find.text('BUKUKITA'), findsOneWidget);
+      expect(find.text('Bingung Pilih Buku?'), findsOneWidget);
 
-        await tester.drag(
-          find.byKey(const Key('home_scroll_view')),
-          const Offset(0, -700),
-        );
-        await tester.pumpAndSettle();
-        expect(find.text('Rilisan Terbaru'), findsOneWidget);
+      await tester.drag(
+        find.byKey(const Key('home_scroll_view')),
+        const Offset(0, -700),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Rilisan Terbaru'), findsOneWidget);
 
-        await tester.drag(
-          find.byKey(const Key('home_scroll_view')),
-          const Offset(0, -700),
-        );
-        await tester.pumpAndSettle();
-        expect(find.text('FLASH SALE & BUNDEL HEMAT'), findsOneWidget);
-      },
-    );
+      await tester.drag(
+        find.byKey(const Key('home_scroll_view')),
+        const Offset(0, -700),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('FLASH SALE & BUNDEL HEMAT'), findsOneWidget);
+    });
 
-    testWidgets(
-      'Renders without overflow on large 412x915 viewport',
-      (WidgetTester tester) async {
-        await _pumpAtViewport(tester, const Size(412, 915));
-        expect(find.text('BUKUKITA'), findsOneWidget);
-        expect(find.text('Rekomendasi Terbaik Untukmu'), findsOneWidget);
+    testWidgets('Renders without overflow on large 412x915 viewport', (
+      WidgetTester tester,
+    ) async {
+      await _pumpAtViewport(tester, const Size(412, 915));
+      expect(find.text('BUKUKITA'), findsOneWidget);
+      expect(find.text('Rekomendasi Terbaik Untukmu'), findsOneWidget);
 
-        await tester.drag(
-          find.byKey(const Key('home_scroll_view')),
-          const Offset(0, -700),
-        );
-        await tester.pumpAndSettle();
-        expect(find.text('FLASH SALE & BUNDEL HEMAT'), findsOneWidget);
-      },
-    );
+      await tester.drag(
+        find.byKey(const Key('home_scroll_view')),
+        const Offset(0, -700),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('FLASH SALE & BUNDEL HEMAT'), findsOneWidget);
+    });
 
     testWidgets(
       'Interactive controls: theme toggle, cart increment, search, recommendation modal, and loading/empty/error states',
@@ -177,10 +172,7 @@ void main() {
         final searchInput = find.byKey(const Key('home_search_input'));
         await tester.ensureVisible(searchInput);
         await tester.pumpAndSettle();
-        await tester.enterText(
-          searchInput,
-          'JudulTidakAda999',
-        );
+        await tester.enterText(searchInput, 'JudulTidakAda999');
         await tester.pumpAndSettle();
         expect(find.byKey(const Key('home_empty_state')), findsOneWidget);
 
@@ -220,10 +212,9 @@ void main() {
           tester.view.resetDevicePixelRatio();
         });
 
-        await tester.pumpWidget(const MyApp(
-          enableDevicePreview: true,
-          initialScreen: HomeScreen(),
-        ));
+        await tester.pumpWidget(
+          const MyApp(enableDevicePreview: true, initialScreen: HomeScreen()),
+        );
         await tester.pumpAndSettle();
 
         expect(find.byType(DevicePreview), findsOneWidget);

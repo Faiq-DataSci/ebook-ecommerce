@@ -26,10 +26,7 @@ class LoginErrorBanner extends StatelessWidget {
       padding: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
         color: AppColors.nbPink,
-        border: Border.all(
-          color: AppColors.nbBlack,
-          width: 2.0,
-        ),
+        border: Border.all(color: AppColors.nbBlack, width: 2.0),
         boxShadow: const [
           BoxShadow(
             color: AppColors.nbBlack,
@@ -41,11 +38,7 @@ class LoginErrorBanner extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.error,
-            color: AppColors.nbBlack,
-            size: 18.0,
-          ),
+          const Icon(Icons.error, color: AppColors.nbBlack, size: 18.0),
           const SizedBox(width: 8.0),
           Expanded(
             child: Column(
@@ -81,12 +74,12 @@ class LoginErrorBanner extends StatelessWidget {
             child: InkWell(
               onTap: onDismiss,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 1.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 5.0,
+                  vertical: 1.0,
+                ),
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: AppColors.nbBlack,
-                    width: 1.0,
-                  ),
+                  border: Border.all(color: AppColors.nbBlack, width: 1.0),
                 ),
                 child: const Text(
                   '✕',

@@ -320,9 +320,7 @@ class CartStateViews {
                     width: AppTheme.borderDefault,
                   ),
                 ),
-                child: CustomPaint(
-                  painter: _EmptyCartIllustrationPainter(),
-                ),
+                child: CustomPaint(painter: _EmptyCartIllustrationPainter()),
               ),
               const SizedBox(height: 14),
 
@@ -924,7 +922,12 @@ class _EmptyCartIllustrationPainter extends CustomPainter {
     canvas.drawRect(topStamp, borderPaint);
 
     // Bottom-right stamp
-    final bottomStamp = Rect.fromLTWH(size.width - 34, size.height - 28, 18, 18);
+    final bottomStamp = Rect.fromLTWH(
+      size.width - 34,
+      size.height - 28,
+      18,
+      18,
+    );
     canvas.drawRect(bottomStamp, lavenderFill);
     canvas.drawRect(bottomStamp, borderPaint);
 

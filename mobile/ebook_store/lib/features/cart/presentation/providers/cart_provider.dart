@@ -11,12 +11,7 @@ import '../../domain/entities/cart_item.dart';
 import '../../domain/entities/cart_promo.dart';
 import '../../domain/repositories/cart_repository.dart';
 
-enum CartStatus {
-  loading,
-  loaded,
-  empty,
-  error,
-}
+enum CartStatus { loading, loaded, empty, error }
 
 class CartState {
   final CartStatus status;
@@ -32,8 +27,7 @@ class CartState {
   const CartState({
     this.status = CartStatus.loaded,
     this.items = CartMockDataSourceImpl.initialCartItems,
-    this.recommendedItems =
-        CartMockDataSourceImpl.emptyStateSawRecommendations,
+    this.recommendedItems = CartMockDataSourceImpl.emptyStateSawRecommendations,
     this.promoInput = 'BUKUBARU',
     this.activePromo = CartMockDataSourceImpl.defaultPromo,
     this.promoError,
@@ -94,12 +88,12 @@ class CartState {
       items: items ?? this.items,
       recommendedItems: recommendedItems ?? this.recommendedItems,
       promoInput: promoInput ?? this.promoInput,
-      activePromo:
-          clearActivePromo ? null : (activePromo ?? this.activePromo),
+      activePromo: clearActivePromo ? null : (activePromo ?? this.activePromo),
       promoError: clearPromoError ? null : (promoError ?? this.promoError),
       cloudSyncFee: cloudSyncFee ?? this.cloudSyncFee,
-      errorMessage:
-          clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
+      errorMessage: clearErrorMessage
+          ? null
+          : (errorMessage ?? this.errorMessage),
       isMock: isMock ?? this.isMock,
     );
   }
@@ -127,16 +121,11 @@ final cartRepositoryProvider = Provider<CartRepository>((ref) {
 class CartNotifier extends StateNotifier<CartState> {
   final CartRepository repository;
 
-  CartNotifier({
-    required this.repository,
-    bool isMock = true,
-  }) : super(CartState(isMock: isMock));
+  CartNotifier({required this.repository, bool isMock = true})
+    : super(CartState(isMock: isMock));
 
   Future<void> loadCart() async {
-    state = state.copyWith(
-      status: CartStatus.loading,
-      clearErrorMessage: true,
-    );
+    state = state.copyWith(status: CartStatus.loading, clearErrorMessage: true);
 
     try {
       final items = await repository.getCartItems();
@@ -149,10 +138,7 @@ class CartNotifier extends StateNotifier<CartState> {
         clearErrorMessage: true,
       );
     } on CartFailure catch (e) {
-      state = state.copyWith(
-        status: CartStatus.error,
-        errorMessage: e.message,
-      );
+      state = state.copyWith(status: CartStatus.error, errorMessage: e.message);
     } catch (_) {
       state = state.copyWith(
         status: CartStatus.error,
@@ -198,29 +184,22 @@ class CartNotifier extends StateNotifier<CartState> {
   }
 
   void clearCart() {
-    state = state.copyWith(
-      items: const <CartItem>[],
-      status: CartStatus.empty,
-    );
+    state = state.copyWith(items: const <CartItem>[], status: CartStatus.empty);
   }
 
   void addItem(CartItem item) {
     final existingIndex = state.items.indexWhere((i) => i.id == item.id);
     if (existingIndex >= 0) {
       final updated = List<CartItem>.from(state.items);
-      updated[existingIndex] = updated[existingIndex].copyWith(isSelected: true);
-      state = state.copyWith(
-        items: updated,
-        status: CartStatus.loaded,
+      updated[existingIndex] = updated[existingIndex].copyWith(
+        isSelected: true,
       );
+      state = state.copyWith(items: updated, status: CartStatus.loaded);
       return;
     }
 
     final updated = List<CartItem>.from(state.items)..add(item);
-    state = state.copyWith(
-      items: updated,
-      status: CartStatus.loaded,
-    );
+    state = state.copyWith(items: updated, status: CartStatus.loaded);
   }
 
   void addCatalogEbook(CatalogEbook ebook) {
@@ -251,7 +230,9 @@ class CartNotifier extends StateNotifier<CartState> {
   }
 
   Future<bool> applyPromoCode([String? customCode]) async {
-    final codeToValidate = (customCode ?? state.promoInput).trim().toUpperCase();
+    final codeToValidate = (customCode ?? state.promoInput)
+        .trim()
+        .toUpperCase();
     if (codeToValidate.isEmpty) {
       state = state.copyWith(
         promoError: 'Masukkan kode promo terlebih dahulu.',
@@ -268,9 +249,7 @@ class CartNotifier extends StateNotifier<CartState> {
       );
       return true;
     } on CartFailure catch (e) {
-      state = state.copyWith(
-        promoError: e.message,
-      );
+      state = state.copyWith(promoError: e.message);
       return false;
     } catch (_) {
       state = state.copyWith(
@@ -281,10 +260,7 @@ class CartNotifier extends StateNotifier<CartState> {
   }
 
   void removeActivePromo() {
-    state = state.copyWith(
-      clearActivePromo: true,
-      clearPromoError: true,
-    );
+    state = state.copyWith(clearActivePromo: true, clearPromoError: true);
   }
 
   void setLoadStatus(CartStatus status) {
@@ -312,10 +288,7 @@ class CartNotifier extends StateNotifier<CartState> {
       );
       return;
     }
-    state = state.copyWith(
-      status: status,
-      clearErrorMessage: true,
-    );
+    state = state.copyWith(status: status, clearErrorMessage: true);
   }
 
   Future<void> retryLoad() async {

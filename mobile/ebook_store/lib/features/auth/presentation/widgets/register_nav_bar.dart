@@ -8,10 +8,7 @@ import '../../../../theme/app_theme.dart';
 class RegisterNavBar extends StatelessWidget {
   final VoidCallback? onBack;
 
-  const RegisterNavBar({
-    super.key,
-    this.onBack,
-  });
+  const RegisterNavBar({super.key, this.onBack});
 
   @override
   Widget build(BuildContext context) {

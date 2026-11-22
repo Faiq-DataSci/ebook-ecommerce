@@ -184,7 +184,9 @@ void main() {
       (WidgetTester tester) async {
         await _pumpCartScreen(tester);
 
-        final removePromoBtn = find.byKey(const Key('cart_remove_promo_button'));
+        final removePromoBtn = find.byKey(
+          const Key('cart_remove_promo_button'),
+        );
         await tester.ensureVisible(removePromoBtn);
         await tester.pumpAndSettle();
 
@@ -201,7 +203,10 @@ void main() {
         await tester.tap(find.byKey(const Key('cart_promo_apply_button')));
         await tester.pumpAndSettle();
 
-        expect(find.byKey(const Key('cart_promo_error_banner')), findsOneWidget);
+        expect(
+          find.byKey(const Key('cart_promo_error_banner')),
+          findsOneWidget,
+        );
 
         // Masukkan kode promo valid SAWHEMAT (-Rp 15.000) -> 133.000 - 15.000 + 1.000 = Rp 119.000
         await tester.enterText(promoInput, 'SAWHEMAT');
@@ -230,7 +235,10 @@ void main() {
         await tester.tap(find.byKey(const Key('cart_clear_all_button')));
         await tester.pumpAndSettle();
 
-        expect(find.byKey(const Key('cart_clear_confirm_dialog')), findsOneWidget);
+        expect(
+          find.byKey(const Key('cart_clear_confirm_dialog')),
+          findsOneWidget,
+        );
 
         // Batal terlebih dahulu
         await tester.tap(find.byKey(const Key('cart_clear_cancel_button')));
@@ -287,9 +295,7 @@ void main() {
         final container = ProviderScope.containerOf(element);
 
         // 1. Loading State
-        container
-            .read(cartProvider.notifier)
-            .setLoadStatus(CartStatus.loading);
+        container.read(cartProvider.notifier).setLoadStatus(CartStatus.loading);
         await tester.pump();
         expect(find.byKey(const Key('cart_loading_state')), findsOneWidget);
         expect(find.text('MEMUAT KERANJANG BELANJA...'), findsOneWidget);
@@ -364,44 +370,47 @@ void main() {
       },
     );
 
-    test('9. Unit test CartItemModel serialization & validasi byte cover AppAssets', () {
-      const model = CartItemModel(
-        id: 'eb-001',
-        title: 'Arsitektur Cloud & DevOps',
-        author: 'Hendra Wijaya',
-        pageCount: 450,
-        category: 'Teknologi',
-        sawRankLabel: 'Rank #2 SAW (V: 0.915)',
-        isTopSawRank: false,
-        formatLabel: 'PDF + EPUB',
-        price: 65000,
-        originalPrice: 95000,
-      );
+    test(
+      '9. Unit test CartItemModel serialization & validasi byte cover AppAssets',
+      () {
+        const model = CartItemModel(
+          id: 'eb-001',
+          title: 'Arsitektur Cloud & DevOps',
+          author: 'Hendra Wijaya',
+          pageCount: 450,
+          category: 'Teknologi',
+          sawRankLabel: 'Rank #2 SAW (V: 0.915)',
+          isTopSawRank: false,
+          formatLabel: 'PDF + EPUB',
+          price: 65000,
+          originalPrice: 95000,
+        );
 
-      final json = model.toJson();
-      final parsed = CartItemModel.fromJson(json);
+        final json = model.toJson();
+        final parsed = CartItemModel.fromJson(json);
 
-      expect(parsed.id, 'eb-001');
-      expect(parsed.title, 'Arsitektur Cloud & DevOps');
-      expect(parsed.price, 65000);
-      expect(parsed.originalPrice, 95000);
-      expect(parsed.hasDiscount, isTrue);
-      expect(parsed.formattedPrice, 'Rp 65.000');
-      expect(parsed.formattedOriginalPrice, 'Rp 95.000');
+        expect(parsed.id, 'eb-001');
+        expect(parsed.title, 'Arsitektur Cloud & DevOps');
+        expect(parsed.price, 65000);
+        expect(parsed.originalPrice, 95000);
+        expect(parsed.hasDiscount, isTrue);
+        expect(parsed.formattedPrice, 'Rp 65.000');
+        expect(parsed.formattedOriginalPrice, 'Rp 95.000');
 
-      for (final assetPath in <String>[
-        AppAssets.coverDesainSistemModern,
-        AppAssets.coverAlgoritmaStrukturData,
-        AppAssets.coverPsikologiProdukDigital,
-        AppAssets.coverArsitekturCloudDevops,
-      ]) {
-        final bytes = AppAssets.getEmbeddedBytes(assetPath);
-        expect(bytes, isNotNull);
-        expect(bytes!.length, greaterThan(100));
-        expect(bytes[0], 0xFF);
-        expect(bytes[1], 0xD8);
-      }
-    });
+        for (final assetPath in <String>[
+          AppAssets.coverDesainSistemModern,
+          AppAssets.coverAlgoritmaStrukturData,
+          AppAssets.coverPsikologiProdukDigital,
+          AppAssets.coverArsitekturCloudDevops,
+        ]) {
+          final bytes = AppAssets.getEmbeddedBytes(assetPath);
+          expect(bytes, isNotNull);
+          expect(bytes!.length, greaterThan(100));
+          expect(bytes[0], 0xFF);
+          expect(bytes[1], 0xD8);
+        }
+      },
+    );
 
     testWidgets(
       '10. Navigasi mouse hover + tap pada cart_button di dalam DevicePreview tanpa OverlayPortal assertion',
@@ -414,10 +423,7 @@ void main() {
         });
 
         await tester.pumpWidget(
-          const MyApp(
-            enableDevicePreview: true,
-            initialScreen: HomeScreen(),
-          ),
+          const MyApp(enableDevicePreview: true, initialScreen: HomeScreen()),
         );
         await tester.pumpAndSettle();
 
@@ -425,7 +431,9 @@ void main() {
         expect(cartBtn, findsOneWidget);
 
         // Simulasikan mouse hover di atas tombol keranjang sebelum klik
-        final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+        final gesture = await tester.createGesture(
+          kind: PointerDeviceKind.mouse,
+        );
         await gesture.addPointer(location: Offset.zero);
         addTearDown(gesture.removePointer);
         await gesture.moveTo(tester.getCenter(cartBtn));

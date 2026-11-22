@@ -57,10 +57,7 @@ class CartSummarySection extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 CartMockDataSourceImpl.transactionMatrixCode,
-                style: AppTheme.dataMono(
-                  AppColors.nbTextMuted,
-                  fontSize: 12,
-                ),
+                style: AppTheme.dataMono(AppColors.nbTextMuted, fontSize: 12),
               ),
             ],
           ),

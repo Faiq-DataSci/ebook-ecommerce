@@ -24,11 +24,7 @@ class HomeBottomNavigation extends StatelessWidget {
   });
 
   static const List<_NavItemSpec> _items = <_NavItemSpec>[
-    _NavItemSpec(
-      id: 'beranda',
-      label: 'Beranda',
-      icon: Icons.home_outlined,
-    ),
+    _NavItemSpec(id: 'beranda', label: 'Beranda', icon: Icons.home_outlined),
     _NavItemSpec(
       id: 'katalog',
       label: 'Katalog',
@@ -39,11 +35,7 @@ class HomeBottomNavigation extends StatelessWidget {
       label: 'Pustaka',
       icon: Icons.local_library_outlined,
     ),
-    _NavItemSpec(
-      id: 'profil',
-      label: 'Profil',
-      icon: Icons.person_outline,
-    ),
+    _NavItemSpec(id: 'profil', label: 'Profil', icon: Icons.person_outline),
   ];
 
   @override
@@ -90,17 +82,11 @@ class HomeBottomNavigation extends StatelessWidget {
                   borderWidth: AppTheme.borderDefault,
                   shadowOffset: 2,
                 )
-              : const BoxDecoration(
-                  color: Colors.transparent,
-                ),
+              : const BoxDecoration(color: Colors.transparent),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(
-                spec.icon,
-                size: 20,
-                color: AppColors.nbBlack,
-              ),
+              Icon(spec.icon, size: 20, color: AppColors.nbBlack),
               const SizedBox(height: 2),
               Text(
                 spec.label,

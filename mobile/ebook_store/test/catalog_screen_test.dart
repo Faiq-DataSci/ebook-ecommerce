@@ -84,9 +84,7 @@ Widget _buildTestableCatalogScreen({
   Size screenSize = const Size(390, 884),
 }) {
   return ProviderScope(
-    overrides: [
-      catalogRepositoryProvider.overrideWithValue(repository),
-    ],
+    overrides: [catalogRepositoryProvider.overrideWithValue(repository)],
     child: MaterialApp(
       home: MediaQuery(
         data: MediaQueryData(
@@ -145,48 +143,55 @@ void main() {
   ];
 
   group('Katalog & Filter E-book Mobile (Neubrutalism) Tests', () {
-    testWidgets('1. Merender seluruh komponen visual katalog sesuai Stitch & Docs',
-        (tester) async {
-      final repo = FakeCatalogRepository(
-        mockCategories: testCategories,
-        mockBooks: testBooks,
-      );
+    testWidgets(
+      '1. Merender seluruh komponen visual katalog sesuai Stitch & Docs',
+      (tester) async {
+        final repo = FakeCatalogRepository(
+          mockCategories: testCategories,
+          mockBooks: testBooks,
+        );
 
-      await tester.binding.setSurfaceSize(const Size(390, 884));
-      await tester.pumpWidget(_buildTestableCatalogScreen(repository: repo));
-      await tester.pumpAndSettle();
+        await tester.binding.setSurfaceSize(const Size(390, 884));
+        await tester.pumpWidget(_buildTestableCatalogScreen(repository: repo));
+        await tester.pumpAndSettle();
 
-      // Header BUKUKITA
-      expect(find.text('BUKUKITA'), findsOneWidget);
+        // Header BUKUKITA
+        expect(find.text('BUKUKITA'), findsOneWidget);
 
-      // Search Bar & Filter Button
-      expect(find.byType(CatalogSearchBar), findsOneWidget);
-      expect(find.byKey(const Key('catalog_search_input')), findsOneWidget);
-      expect(find.byKey(const Key('catalog_filter_button')), findsOneWidget);
+        // Search Bar & Filter Button
+        expect(find.byType(CatalogSearchBar), findsOneWidget);
+        expect(find.byKey(const Key('catalog_search_input')), findsOneWidget);
+        expect(find.byKey(const Key('catalog_filter_button')), findsOneWidget);
 
-      // Toolbar Urutkan & Toggle Grid/List
-      expect(find.byType(CatalogToolbar), findsOneWidget);
-      expect(find.byKey(const Key('catalog_sort_dropdown_button')), findsOneWidget);
-      expect(find.byKey(const Key('catalog_view_mode_grid')), findsOneWidget);
-      expect(find.byKey(const Key('catalog_view_mode_list')), findsOneWidget);
+        // Toolbar Urutkan & Toggle Grid/List
+        expect(find.byType(CatalogToolbar), findsOneWidget);
+        expect(
+          find.byKey(const Key('catalog_sort_dropdown_button')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const Key('catalog_view_mode_grid')), findsOneWidget);
+        expect(find.byKey(const Key('catalog_view_mode_list')), findsOneWidget);
 
-      // Kategori Pills Bar
-      expect(find.byType(CategoryPillsBar), findsOneWidget);
-      expect(find.byKey(const Key('category_pill_all')), findsOneWidget);
+        // Kategori Pills Bar
+        expect(find.byType(CategoryPillsBar), findsOneWidget);
+        expect(find.byKey(const Key('category_pill_all')), findsOneWidget);
 
-      // Result Count & DATA SIMULASI Bar
-      expect(find.byType(CatalogResultBar), findsOneWidget);
-      expect(find.textContaining('HASIL:'), findsOneWidget);
-      expect(find.text('DATA SIMULASI'), findsOneWidget);
+        // Result Count & DATA SIMULASI Bar
+        expect(find.byType(CatalogResultBar), findsOneWidget);
+        expect(find.textContaining('HASIL:'), findsOneWidget);
+        expect(find.text('DATA SIMULASI'), findsOneWidget);
 
-      // E-Book Cards
-      expect(find.byType(EbookCard), findsNWidgets(3));
-      expect(find.text('Arsitektur Cloud & DevOps'), findsOneWidget);
-      expect(find.text('Rp 65.000'), findsOneWidget);
-      expect(find.text('Hendra Wijaya'), findsOneWidget);
-    });
+        // E-Book Cards
+        expect(find.byType(EbookCard), findsNWidgets(3));
+        expect(find.text('Arsitektur Cloud & DevOps'), findsOneWidget);
+        expect(find.text('Rp 65.000'), findsOneWidget);
+        expect(find.text('Hendra Wijaya'), findsOneWidget);
+      },
+    );
 
-    testWidgets('2. Menangani State Katalog Kosong (Empty State)', (tester) async {
+    testWidgets('2. Menangani State Katalog Kosong (Empty State)', (
+      tester,
+    ) async {
       final repo = FakeCatalogRepository(
         mockCategories: testCategories,
         mockBooks: const [],
@@ -211,7 +216,10 @@ void main() {
 
       expect(find.byKey(const Key('catalog_error_state')), findsOneWidget);
       expect(find.text('Gagal Memuat Katalog'), findsOneWidget);
-      expect(find.byKey(const Key('catalog_error_retry_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('catalog_error_retry_button')),
+        findsOneWidget,
+      );
 
       // Uji aksi coba lagi setelah pulih
       repo.shouldFail = false;
@@ -248,8 +256,9 @@ void main() {
       expect(find.byType(EbookCard), findsNWidgets(3));
     });
 
-    testWidgets('5. Pencarian Tidak Ada Hasil (No Result State) & Reset',
-        (tester) async {
+    testWidgets('5. Pencarian Tidak Ada Hasil (No Result State) & Reset', (
+      tester,
+    ) async {
       final repo = FakeCatalogRepository(
         mockCategories: testCategories,
         mockBooks: testBooks,
@@ -272,8 +281,9 @@ void main() {
       expect(find.byType(EbookCard), findsNWidgets(3));
     });
 
-    testWidgets('6. Filter Kategori lewat Pil Horizontal & Chip Aktif',
-        (tester) async {
+    testWidgets('6. Filter Kategori lewat Pil Horizontal & Chip Aktif', (
+      tester,
+    ) async {
       final repo = FakeCatalogRepository(
         mockCategories: testCategories,
         mockBooks: testBooks,
@@ -306,8 +316,9 @@ void main() {
       expect(find.byType(EbookCard), findsNWidgets(3));
     });
 
-    testWidgets('7. Buka Bottom Sheet Filter, Rentang Harga & Reset Kriteria',
-        (tester) async {
+    testWidgets('7. Buka Bottom Sheet Filter, Rentang Harga & Reset Kriteria', (
+      tester,
+    ) async {
       final repo = FakeCatalogRepository(
         mockCategories: testCategories,
         mockBooks: testBooks,
@@ -337,7 +348,9 @@ void main() {
       expect(find.byKey(const Key('chip_rating')), findsOneWidget);
     });
 
-    testWidgets('8. Toggle Tampilan Grid dan Baris (List Mode)', (tester) async {
+    testWidgets('8. Toggle Tampilan Grid dan Baris (List Mode)', (
+      tester,
+    ) async {
       final repo = FakeCatalogRepository(
         mockCategories: testCategories,
         mockBooks: testBooks,
@@ -356,8 +369,9 @@ void main() {
       expect(find.byKey(const Key('ebook_card_list_eb-1')), findsOneWidget);
     });
 
-    testWidgets('9. Navigasi menuju Halaman Detail E-Book berbasis ID',
-        (tester) async {
+    testWidgets('9. Navigasi menuju Halaman Detail E-Book berbasis ID', (
+      tester,
+    ) async {
       final repo = FakeCatalogRepository(
         mockCategories: testCategories,
         mockBooks: testBooks,
@@ -384,71 +398,74 @@ void main() {
       expect(find.byType(CatalogScreen), findsOneWidget);
     });
 
-    testWidgets('10. Responsif pada berbagai ukuran layar mobile (320, 390, 430)',
-        (tester) async {
-      final repo = FakeCatalogRepository(
-        mockCategories: testCategories,
-        mockBooks: testBooks,
-      );
+    testWidgets(
+      '10. Responsif pada berbagai ukuran layar mobile (320, 390, 430)',
+      (tester) async {
+        final repo = FakeCatalogRepository(
+          mockCategories: testCategories,
+          mockBooks: testBooks,
+        );
 
-      final sizes = [
-        const Size(320, 640),
-        const Size(390, 884),
-        const Size(430, 932),
-      ];
+        final sizes = [
+          const Size(320, 640),
+          const Size(390, 884),
+          const Size(430, 932),
+        ];
 
-      for (final size in sizes) {
-        await tester.binding.setSurfaceSize(size);
-        await tester.pumpWidget(_buildTestableCatalogScreen(
-          repository: repo,
-          screenSize: size,
-        ));
+        for (final size in sizes) {
+          await tester.binding.setSurfaceSize(size);
+          await tester.pumpWidget(
+            _buildTestableCatalogScreen(repository: repo, screenSize: size),
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.byType(CatalogScreen), findsOneWidget);
+          expect(tester.takeException(), isNull);
+        }
+      },
+    );
+
+    testWidgets(
+      '11. Menambahkan e-book ke keranjang dari kartu katalog dan counter header bertambah',
+      (tester) async {
+        final repo = FakeCatalogRepository(
+          mockCategories: testCategories,
+          mockBooks: testBooks,
+        );
+
+        await tester.binding.setSurfaceSize(const Size(390, 884));
+        await tester.pumpWidget(_buildTestableCatalogScreen(repository: repo));
         await tester.pumpAndSettle();
 
-        expect(find.byType(CatalogScreen), findsOneWidget);
+        // Tombol + Keranjang pada kartu pertama
+        final addCartBtn = find.byKey(const Key('ebook_card_add_eb-1'));
+        expect(addCartBtn, findsOneWidget);
+
+        await tester.tap(addCartBtn);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        // SnackBar konfirmasi muncul
+        expect(find.text('BERHASIL DITAMBAHKAN'), findsOneWidget);
+
+        // Buka bottom sheet keranjang lewat icon cart di HomeHeader
+        final cartBtn = find.byKey(const Key('cart_button'));
+        expect(cartBtn, findsOneWidget);
+
+        await tester.tap(cartBtn);
+        await tester.pumpAndSettle();
+
+        // Modal keranjang belanja terbuka
+        expect(find.text('KERANJANG BELANJA'), findsOneWidget);
+        expect(find.text('Arsitektur Cloud & DevOps'), findsAtLeastNWidgets(1));
+
+        // Tutup sheet
+        await tester.tap(find.byKey(const Key('close_cart_sheet_button')));
+        await tester.pumpAndSettle();
+
+        expect(find.text('KERANJANG BELANJA'), findsNothing);
         expect(tester.takeException(), isNull);
-      }
-    });
-
-    testWidgets('11. Menambahkan e-book ke keranjang dari kartu katalog dan counter header bertambah',
-        (tester) async {
-      final repo = FakeCatalogRepository(
-        mockCategories: testCategories,
-        mockBooks: testBooks,
-      );
-
-      await tester.binding.setSurfaceSize(const Size(390, 884));
-      await tester.pumpWidget(_buildTestableCatalogScreen(repository: repo));
-      await tester.pumpAndSettle();
-
-      // Tombol + Keranjang pada kartu pertama
-      final addCartBtn = find.byKey(const Key('ebook_card_add_eb-1'));
-      expect(addCartBtn, findsOneWidget);
-
-      await tester.tap(addCartBtn);
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
-
-      // SnackBar konfirmasi muncul
-      expect(find.text('BERHASIL DITAMBAHKAN'), findsOneWidget);
-
-      // Buka bottom sheet keranjang lewat icon cart di HomeHeader
-      final cartBtn = find.byKey(const Key('cart_button'));
-      expect(cartBtn, findsOneWidget);
-
-      await tester.tap(cartBtn);
-      await tester.pumpAndSettle();
-
-      // Modal keranjang belanja terbuka
-      expect(find.text('KERANJANG BELANJA'), findsOneWidget);
-      expect(find.text('Arsitektur Cloud & DevOps'), findsAtLeastNWidgets(1));
-
-      // Tutup sheet
-      await tester.tap(find.byKey(const Key('close_cart_sheet_button')));
-      await tester.pumpAndSettle();
-
-      expect(find.text('KERANJANG BELANJA'), findsNothing);
-      expect(tester.takeException(), isNull);
-    });
+      },
+    );
   });
 }

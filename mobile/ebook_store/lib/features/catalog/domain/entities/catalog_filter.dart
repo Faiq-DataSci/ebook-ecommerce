@@ -100,8 +100,9 @@ class CatalogFilter {
     return CatalogFilter(
       searchQuery: searchQuery ?? this.searchQuery,
       categoryId: clearCategoryId ? null : (categoryId ?? this.categoryId),
-      categoryName:
-          clearCategoryName ? null : (categoryName ?? this.categoryName),
+      categoryName: clearCategoryName
+          ? null
+          : (categoryName ?? this.categoryName),
       author: clearAuthor ? null : (author ?? this.author),
       minPrice: clearMinPrice ? null : (minPrice ?? this.minPrice),
       maxPrice: clearMaxPrice ? null : (maxPrice ?? this.maxPrice),
@@ -130,8 +131,7 @@ class CatalogFilter {
         if (book.categoryId != null) {
           if (book.categoryId != categoryId) return false;
         } else if (categoryName != null && book.categoryName != null) {
-          if (book.categoryName!.toLowerCase() !=
-              categoryName!.toLowerCase()) {
+          if (book.categoryName!.toLowerCase() != categoryName!.toLowerCase()) {
             return false;
           }
         }
@@ -183,7 +183,8 @@ class CatalogFilter {
         break;
       case CatalogSortOption.judulAsc:
         result.sort(
-            (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+          (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+        );
         break;
     }
 

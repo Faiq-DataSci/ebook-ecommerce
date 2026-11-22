@@ -23,7 +23,8 @@ class LoginFormZoneC extends StatefulWidget {
     required String email,
     required String password,
     required bool rememberMe,
-  }) onSubmit;
+  })
+  onSubmit;
   final VoidCallback? onForgotPassword;
 
   const LoginFormZoneC({
@@ -173,12 +174,14 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
 
   @override
   Widget build(BuildContext context) {
-    final showPasswordError = _passwordError != null ||
+    final showPasswordError =
+        _passwordError != null ||
         (widget.isErrorState &&
             (widget.externalErrorField == 'password' ||
                 widget.externalErrorField == null));
 
-    final showEmailError = _emailError != null ||
+    final showEmailError =
+        _emailError != null ||
         (widget.isErrorState && widget.externalErrorField == 'email');
 
     return Container(
@@ -186,10 +189,7 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
       decoration: BoxDecoration(
         color: AppColors.nbWhite,
-        border: Border.all(
-          color: AppColors.nbBlack,
-          width: 3.0,
-        ),
+        border: Border.all(color: AppColors.nbBlack, width: 3.0),
         boxShadow: const [
           BoxShadow(
             color: AppColors.nbBlack,
@@ -223,7 +223,9 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 6.0, vertical: 2.0),
+                      horizontal: 6.0,
+                      vertical: 2.0,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.nbYellow,
                       border: Border.all(color: AppColors.nbBlack, width: 1.0),
@@ -270,7 +272,9 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
               if (widget.isErrorState && _isEmailFormatValid)
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 6.0, vertical: 2.0),
+                    horizontal: 6.0,
+                    vertical: 2.0,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.nbGreen.withValues(alpha: 0.2),
                     border: Border.all(color: AppColors.nbGreen, width: 1.5),
@@ -299,13 +303,12 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
               else
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 6.0, vertical: 2.0),
+                    horizontal: 6.0,
+                    vertical: 2.0,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.surfaceContainer,
-                    border: Border.all(
-                      color: AppColors.nbBlack,
-                      width: 1.0,
-                    ),
+                    border: Border.all(color: AppColors.nbBlack, width: 1.0),
                   ),
                   child: const Text(
                     'Kredensial',
@@ -434,7 +437,9 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                   onTap: _handleForgotPasswordDefault,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0, vertical: 2.0),
+                      horizontal: 8.0,
+                      vertical: 2.0,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.nbYellow,
                       border: Border.all(color: AppColors.nbBlack, width: 1.5),
@@ -460,13 +465,12 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
               else
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 6.0, vertical: 2.0),
+                    horizontal: 6.0,
+                    vertical: 2.0,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.surfaceContainer,
-                    border: Border.all(
-                      color: AppColors.nbBlack,
-                      width: 1.0,
-                    ),
+                    border: Border.all(color: AppColors.nbBlack, width: 1.0),
                   ),
                   child: const Text(
                     'MIN. 8 KARAKTER',
@@ -635,7 +639,7 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                           (widget.isErrorState
                               ? 'Kombinasi kata sandi tidak cocok untuk akun ini.'
                               : (widget.externalError ??
-                                  'Kombinasi kata sandi tidak cocok untuk akun ini.')),
+                                    'Kombinasi kata sandi tidak cocok untuk akun ini.')),
                       style: const TextStyle(
                         fontFamily: AppTheme.fontBody,
                         fontSize: 12.0,
@@ -749,12 +753,10 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                 height: 48.0,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color:
-                      widget.isLoading ? AppColors.nbMuted : AppColors.nbYellow,
-                  border: Border.all(
-                    color: AppColors.nbBlack,
-                    width: 3.0,
-                  ),
+                  color: widget.isLoading
+                      ? AppColors.nbMuted
+                      : AppColors.nbYellow,
+                  border: Border.all(color: AppColors.nbBlack, width: 3.0),
                   boxShadow: widget.isLoading
                       ? const []
                       : const [
@@ -874,8 +876,10 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
           // ================= BADGE SIMULASI (AGENTS.md REQUIREMENT) =================
           Container(
             width: double.infinity,
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10.0,
+              vertical: 8.0,
+            ),
             decoration: BoxDecoration(
               color: AppColors.nbPaper,
               border: Border.all(
@@ -888,8 +892,11 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
               children: [
                 const Row(
                   children: [
-                    Icon(Icons.info_outline,
-                        size: 13.0, color: AppColors.nbTextMuted),
+                    Icon(
+                      Icons.info_outline,
+                      size: 13.0,
+                      color: AppColors.nbTextMuted,
+                    ),
                     SizedBox(width: 4.0),
                     Text(
                       'DATA SIMULASI KREDENSIAL:',
@@ -917,7 +924,9 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                           decoration: BoxDecoration(
                             color: AppColors.nbYellow.withValues(alpha: 0.35),
                             border: Border.all(
-                                color: AppColors.nbBlack, width: 1.0),
+                              color: AppColors.nbBlack,
+                              width: 1.0,
+                            ),
                           ),
                           child: const Text(
                             'Demo Pelanggan',
@@ -944,7 +953,9 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                           decoration: BoxDecoration(
                             color: AppColors.nbLavender.withValues(alpha: 0.35),
                             border: Border.all(
-                                color: AppColors.nbBlack, width: 1.0),
+                              color: AppColors.nbBlack,
+                              width: 1.0,
+                            ),
                           ),
                           child: const Text(
                             'Demo Admin',

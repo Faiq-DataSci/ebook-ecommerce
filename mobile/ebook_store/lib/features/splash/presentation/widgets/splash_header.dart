@@ -45,13 +45,13 @@ class _SplashHeaderState extends State<SplashHeader>
         // Left badge: [ OPEN BOOK ] with pulsing indicator
         Flexible(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.5),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10.0,
+              vertical: 4.5,
+            ),
             decoration: BoxDecoration(
               color: AppColors.nbPaper,
-              border: Border.all(
-                color: AppColors.nbBlack,
-                width: 2.2,
-              ),
+              border: Border.all(color: AppColors.nbBlack, width: 2.2),
               boxShadow: const [
                 BoxShadow(
                   color: AppColors.nbBlack,
@@ -76,10 +76,7 @@ class _SplashHeaderState extends State<SplashHeader>
                     height: 10.0,
                     decoration: BoxDecoration(
                       color: AppColors.nbPink,
-                      border: Border.all(
-                        color: AppColors.nbBlack,
-                        width: 1.5,
-                      ),
+                      border: Border.all(color: AppColors.nbBlack, width: 1.5),
                     ),
                   ),
                 ),
@@ -92,10 +89,7 @@ class _SplashHeaderState extends State<SplashHeader>
                     style: AppTheme.dataMono(
                       AppColors.nbBlack,
                       fontSize: 11.5,
-                    ).copyWith(
-                      letterSpacing: 0.8,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    ).copyWith(letterSpacing: 0.8, fontWeight: FontWeight.w700),
                   ),
                 ),
               ],
@@ -110,10 +104,7 @@ class _SplashHeaderState extends State<SplashHeader>
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.5),
           decoration: BoxDecoration(
             color: AppColors.nbLavender,
-            border: Border.all(
-              color: AppColors.nbBlack,
-              width: 2.2,
-            ),
+            border: Border.all(color: AppColors.nbBlack, width: 2.2),
             boxShadow: const [
               BoxShadow(
                 color: AppColors.nbBlack,
@@ -127,9 +118,7 @@ class _SplashHeaderState extends State<SplashHeader>
             style: AppTheme.dataMono(
               AppColors.nbBlack,
               fontSize: 11.5,
-            ).copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            ).copyWith(fontWeight: FontWeight.w700),
           ),
         ),
       ],

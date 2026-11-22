@@ -41,9 +41,9 @@ class SectionHeader extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: isSmallUppercase
-                ? AppTheme.labelMd(palette.textPrimary).copyWith(
-                    letterSpacing: 0.7,
-                  )
+                ? AppTheme.labelMd(
+                    palette.textPrimary,
+                  ).copyWith(letterSpacing: 0.7)
                 : AppTheme.headlineSmMobile(palette.textPrimary),
           ),
         ),

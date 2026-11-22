@@ -69,9 +69,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
 
     // Default: replace with LoginScreen
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const LoginScreen()));
   }
 
   @override
@@ -113,9 +113,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       // Header Navigation Bar
-                      RegisterNavBar(
-                        onBack: widget.onBack,
-                      ),
+                      RegisterNavBar(onBack: widget.onBack),
 
                       // Zona A: Hero Banner Neubrutalist
                       const RegisterHeroZoneA(),
@@ -126,7 +124,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           title: authState.failure!.title,
                           message: authState.failure!.message,
                           onDismiss: () {
-                            ref.read(authNotifierProvider.notifier).clearError();
+                            ref
+                                .read(authNotifierProvider.notifier)
+                                .clearError();
                           },
                         ),
 
@@ -136,21 +136,24 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       RegisterFormZoneC(
                         isLoading: authState.isLoading,
                         onNavigateToLogin: _handleNavigateToLogin,
-                        onSubmit: ({
-                          required String fullName,
-                          required String email,
-                          required String password,
-                          required String confirmPassword,
-                          required bool agreeTerms,
-                        }) {
-                          ref.read(authNotifierProvider.notifier).register(
-                                fullName: fullName,
-                                email: email,
-                                password: password,
-                                confirmPassword: confirmPassword,
-                                agreeTerms: agreeTerms,
-                              );
-                        },
+                        onSubmit:
+                            ({
+                              required String fullName,
+                              required String email,
+                              required String password,
+                              required String confirmPassword,
+                              required bool agreeTerms,
+                            }) {
+                              ref
+                                  .read(authNotifierProvider.notifier)
+                                  .register(
+                                    fullName: fullName,
+                                    email: email,
+                                    password: password,
+                                    confirmPassword: confirmPassword,
+                                    agreeTerms: agreeTerms,
+                                  );
+                            },
                       ),
 
                       const SizedBox(height: 12.0),

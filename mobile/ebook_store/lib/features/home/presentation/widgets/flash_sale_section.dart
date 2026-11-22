@@ -240,7 +240,11 @@ class FlashSaleSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                for (int i = 0; i < bundle.includedBooks.length; i++) ...<Widget>[
+                for (
+                  int i = 0;
+                  i < bundle.includedBooks.length;
+                  i++
+                ) ...<Widget>[
                   if (i > 0) const SizedBox(height: 6),
                   Row(
                     children: <Widget>[
@@ -303,13 +307,14 @@ class FlashSaleSection extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         bundle.formattedOriginalPrice,
-                        style: AppTheme.dataMono(
-                          AppColors.nbTextMuted,
-                          fontSize: 11,
-                        ).copyWith(
-                          decoration: TextDecoration.lineThrough,
-                          decorationThickness: 2,
-                        ),
+                        style:
+                            AppTheme.dataMono(
+                              AppColors.nbTextMuted,
+                              fontSize: 11,
+                            ).copyWith(
+                              decoration: TextDecoration.lineThrough,
+                              decorationThickness: 2,
+                            ),
                       ),
                       const SizedBox(height: 2),
                       Text(

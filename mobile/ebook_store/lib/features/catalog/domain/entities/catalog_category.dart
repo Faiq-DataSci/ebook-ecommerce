@@ -4,9 +4,5 @@ class CatalogCategory {
   final String name;
   final String slug;
 
-  const CatalogCategory({
-    required this.id,
-    required this.name,
-    this.slug = '',
-  });
+  const CatalogCategory({required this.id, required this.name, this.slug = ''});
 }

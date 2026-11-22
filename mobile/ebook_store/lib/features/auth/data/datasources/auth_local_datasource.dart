@@ -20,7 +20,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   final Map<String, String> _memoryCache = <String, String>{};
 
   AuthLocalDataSourceImpl({FlutterSecureStorage? secureStorage})
-      : _secureStorage = secureStorage ?? const FlutterSecureStorage();
+    : _secureStorage = secureStorage ?? const FlutterSecureStorage();
 
   @override
   Future<void> saveToken(String token) async {

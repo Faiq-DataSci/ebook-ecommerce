@@ -38,11 +38,7 @@ class CatalogSearchBar extends StatelessWidget {
               children: <Widget>[
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Icon(
-                    Icons.search,
-                    size: 20,
-                    color: AppColors.nbBlack,
-                  ),
+                  child: Icon(Icons.search, size: 20, color: AppColors.nbBlack),
                 ),
                 Expanded(
                   child: TextField(
@@ -104,16 +100,14 @@ class CatalogSearchBar extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  const Icon(
-                    Icons.tune,
-                    size: 20,
-                    color: AppColors.nbBlack,
-                  ),
+                  const Icon(Icons.tune, size: 20, color: AppColors.nbBlack),
                   const SizedBox(width: 6),
                   Text(
                     'FILTER',
-                    style: AppTheme.labelSm(AppColors.nbBlack, fontSize: 12)
-                        .copyWith(letterSpacing: 0.5),
+                    style: AppTheme.labelSm(
+                      AppColors.nbBlack,
+                      fontSize: 12,
+                    ).copyWith(letterSpacing: 0.5),
                   ),
                   if (activeFilterCount > 0) ...<Widget>[
                     const SizedBox(width: 6),

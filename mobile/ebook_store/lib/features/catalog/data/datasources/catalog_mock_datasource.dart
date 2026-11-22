@@ -294,7 +294,8 @@ class CatalogMockDataSourceImpl implements CatalogMockDataSource {
   @override
   Future<CatalogEbook> getEbookById(String id) async {
     await Future.delayed(const Duration(milliseconds: 150));
-    final match = _ebooks.where((b) => b.id == id).firstOrNull ??
+    final match =
+        _ebooks.where((b) => b.id == id).firstOrNull ??
         _ebooks.where((b) {
           if (id == 'ebook-saw-1' || id == 'eb-007') return b.id == 'eb-007';
           if (id == 'ebook-new-1' || id == 'eb-008') return b.id == 'eb-008';

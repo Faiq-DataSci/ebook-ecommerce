@@ -51,9 +51,7 @@ class CatalogStateViews {
         children: <Widget>[
           AspectRatio(
             aspectRatio: 2 / 3,
-            child: Container(
-              color: AppColors.nbMuted,
-            ),
+            child: Container(color: AppColors.nbMuted),
           ),
           const SizedBox(height: 10),
           Container(
@@ -62,17 +60,9 @@ class CatalogStateViews {
             color: AppColors.nbMuted,
           ),
           const SizedBox(height: 6),
-          Container(
-            height: 14,
-            width: 90,
-            color: AppColors.nbMuted,
-          ),
+          Container(height: 14, width: 90, color: AppColors.nbMuted),
           const SizedBox(height: 12),
-          Container(
-            height: 24,
-            width: 80,
-            color: AppColors.nbMuted,
-          ),
+          Container(height: 24, width: 80, color: AppColors.nbMuted),
         ],
       ),
     );
@@ -122,9 +112,7 @@ class CatalogStateViews {
   }
 
   /// State saat pencarian atau filter tidak menghasilkan e-book yang cocok (design.md §8.4)
-  static Widget buildNoResult({
-    required VoidCallback onResetFilter,
-  }) {
+  static Widget buildNoResult({required VoidCallback onResetFilter}) {
     return Container(
       key: const Key('catalog_no_result_state'),
       width: double.infinity,

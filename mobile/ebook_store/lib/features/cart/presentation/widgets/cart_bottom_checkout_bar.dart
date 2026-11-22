@@ -67,10 +67,7 @@ class CartBottomCheckoutBar extends StatelessWidget {
                     Text(
                       'Hemat $formattedDiscount',
                       key: const Key('cart_bottom_savings_label'),
-                      style: AppTheme.dataMono(
-                        _stitchErrorColor,
-                        fontSize: 11,
-                      ),
+                      style: AppTheme.dataMono(_stitchErrorColor, fontSize: 11),
                     ),
                   ],
                 ],
@@ -112,7 +109,9 @@ class CartBottomCheckoutBar extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Icon(
-                            isEnabled ? Icons.arrow_forward : Icons.lock_outline,
+                            isEnabled
+                                ? Icons.arrow_forward
+                                : Icons.lock_outline,
                             size: 20,
                             color: isEnabled
                                 ? AppColors.nbBlack

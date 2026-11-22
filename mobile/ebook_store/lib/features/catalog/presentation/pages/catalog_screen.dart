@@ -172,7 +172,10 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
             children: <Widget>[
               // Header Sheet
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
@@ -198,7 +201,10 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: AppTheme.brutalBox(
                         color: AppColors.nbYellow,
                         borderColor: AppColors.nbBlack,
@@ -207,7 +213,10 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                       ),
                       child: Text(
                         '${state.cartCount} ITEM',
-                        style: AppTheme.dataMono(AppColors.nbBlack, fontSize: 11),
+                        style: AppTheme.dataMono(
+                          AppColors.nbBlack,
+                          fontSize: 11,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -238,7 +247,10 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
               // Daftar Item Keranjang
               if (state.cartItems.isEmpty)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 32,
+                    horizontal: 24,
+                  ),
                   child: Column(
                     children: <Widget>[
                       const Icon(
@@ -312,7 +324,8 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                     padding: const EdgeInsets.all(16),
                     shrinkWrap: true,
                     itemCount: state.cartItems.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 10),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 10),
                     itemBuilder: (context, index) {
                       final item = state.cartItems[index];
                       return Container(
@@ -332,7 +345,9 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                               alignment: Alignment.center,
                               child: Text(
                                 item.title.isNotEmpty ? item.title[0] : 'B',
-                                style: AppTheme.headlineSmMobile(AppColors.nbBlack),
+                                style: AppTheme.headlineSmMobile(
+                                  AppColors.nbBlack,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -344,18 +359,27 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                                     item.title,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: AppTheme.labelSm(AppColors.nbBlack, fontSize: 13),
+                                    style: AppTheme.labelSm(
+                                      AppColors.nbBlack,
+                                      fontSize: 13,
+                                    ),
                                   ),
                                   Text(
                                     item.author,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: AppTheme.bodySm(AppColors.nbTextMuted, fontSize: 11),
+                                    style: AppTheme.bodySm(
+                                      AppColors.nbTextMuted,
+                                      fontSize: 11,
+                                    ),
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
                                     item.formattedPrice,
-                                    style: AppTheme.dataMono(AppColors.nbBlack, fontSize: 12),
+                                    style: AppTheme.dataMono(
+                                      AppColors.nbBlack,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -363,12 +387,16 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                             InkWell(
                               key: Key('remove_cart_item_${item.id}_$index'),
                               onTap: () {
-                                ref.read(catalogProvider.notifier).removeFromCart(item.id);
+                                ref
+                                    .read(catalogProvider.notifier)
+                                    .removeFromCart(item.id);
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: AppColors.nbPink.withValues(alpha: 0.15),
+                                  color: AppColors.nbPink.withValues(
+                                    alpha: 0.15,
+                                  ),
                                   border: Border.all(color: AppColors.nbBlack),
                                 ),
                                 child: const Icon(
@@ -408,10 +436,12 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                             style: AppTheme.labelSm(AppColors.nbTextMuted),
                           ),
                           Text(
-                            formatRupiah(state.cartItems.fold<int>(
-                              0,
-                              (sum, item) => sum + item.price,
-                            )),
+                            formatRupiah(
+                              state.cartItems.fold<int>(
+                                0,
+                                (sum, item) => sum + item.price,
+                              ),
+                            ),
                             style: AppTheme.headlineSmMobile(AppColors.nbBlack),
                           ),
                         ],
@@ -473,9 +503,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
 
   void _navigateToDetail(String ebookId) {
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => EbookDetailScreen(ebookId: ebookId),
-      ),
+      MaterialPageRoute(builder: (_) => EbookDetailScreen(ebookId: ebookId)),
     );
   }
 
@@ -527,8 +555,9 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     if (_searchController.text != state.filter.searchQuery) {
       _searchController.value = TextEditingValue(
         text: state.filter.searchQuery,
-        selection:
-            TextSelection.collapsed(offset: state.filter.searchQuery.length),
+        selection: TextSelection.collapsed(
+          offset: state.filter.searchQuery.length,
+        ),
       );
     }
 
@@ -550,9 +579,9 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
               },
               onCartTap: () => _showCartBottomSheet(context, state),
               onProfileTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                );
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
               },
             ),
 
@@ -626,7 +655,8 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                       CatalogStateViews.buildLoadingSkeleton()
                     else if (state.status == CatalogStatus.error)
                       CatalogStateViews.buildError(
-                        message: state.errorMessage ??
+                        message:
+                            state.errorMessage ??
                             'Gagal memuat katalog e-book dari server.',
                         onRetry: notifier.loadInitial,
                       )
@@ -678,9 +708,9 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
             );
           } else if (index == 3) {
             // Profil
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const LoginScreen()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
           } else {
             _showNeubrutalistSnackBar(
               'Tab Pustaka masih dalam rencana pengembangan.',

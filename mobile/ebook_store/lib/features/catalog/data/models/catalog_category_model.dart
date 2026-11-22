@@ -15,9 +15,5 @@ class CatalogCategoryModel extends CatalogCategory {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'slug': slug,
-      };
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'slug': slug};
 }

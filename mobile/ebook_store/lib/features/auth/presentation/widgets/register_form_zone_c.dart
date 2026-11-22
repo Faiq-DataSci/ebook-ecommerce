@@ -20,7 +20,8 @@ class RegisterFormZoneC extends StatefulWidget {
     required String password,
     required String confirmPassword,
     required bool agreeTerms,
-  }) onSubmit;
+  })
+  onSubmit;
   final VoidCallback? onNavigateToLogin;
 
   const RegisterFormZoneC({
@@ -50,7 +51,8 @@ class _RegisterFormZoneCState extends State<RegisterFormZoneC> {
   bool _obscureConfirmPassword = true;
   bool _agreeTerms = false;
 
-  int _passwordScore = 0; // 0: Empty, 1: Weak, 2: Medium, 3: Strong, 4: Very Strong
+  int _passwordScore =
+      0; // 0: Empty, 1: Weak, 2: Medium, 3: Strong, 4: Very Strong
 
   @override
   void dispose() {
@@ -148,11 +150,7 @@ class _RegisterFormZoneCState extends State<RegisterFormZoneC> {
             ),
           ),
 
-          const Divider(
-            height: 1.0,
-            thickness: 2.0,
-            color: AppColors.nbBlack,
-          ),
+          const Divider(height: 1.0, thickness: 2.0, color: AppColors.nbBlack),
 
           const SizedBox(height: 16.0),
 
@@ -242,7 +240,8 @@ class _RegisterFormZoneCState extends State<RegisterFormZoneC> {
             isMatch: isMatch,
             onToggleVisibility: () {
               setState(
-                  () => _obscureConfirmPassword = !_obscureConfirmPassword);
+                () => _obscureConfirmPassword = !_obscureConfirmPassword,
+              );
             },
             onChanged: (_) => setState(() {}),
           ),
@@ -344,7 +343,9 @@ class _RegisterFormZoneCState extends State<RegisterFormZoneC> {
             child: Container(
               height: 52.0,
               decoration: BoxDecoration(
-                color: widget.isLoading ? AppColors.nbMuted : AppColors.nbYellow,
+                color: widget.isLoading
+                    ? AppColors.nbMuted
+                    : AppColors.nbYellow,
                 border: Border.all(color: AppColors.nbBlack, width: 3.0),
                 boxShadow: widget.isLoading
                     ? const []
@@ -369,7 +370,8 @@ class _RegisterFormZoneCState extends State<RegisterFormZoneC> {
                               child: CircularProgressIndicator(
                                 strokeWidth: 2.5,
                                 valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.nbBlack),
+                                  AppColors.nbBlack,
+                                ),
                               ),
                             ),
                             SizedBox(width: 10.0),
@@ -416,11 +418,7 @@ class _RegisterFormZoneCState extends State<RegisterFormZoneC> {
           // -------------------------------------------------------------
           // FOOTER NAVIGASI PERALIHAN: SUDAH PUNYA AKUN? MASUK DI SINI
           // -------------------------------------------------------------
-          const Divider(
-            height: 1.0,
-            thickness: 2.0,
-            color: AppColors.nbBlack,
-          ),
+          const Divider(height: 1.0, thickness: 2.0, color: AppColors.nbBlack),
           const SizedBox(height: 12.0),
 
           Center(
@@ -440,7 +438,9 @@ class _RegisterFormZoneCState extends State<RegisterFormZoneC> {
                   onTap: widget.onNavigateToLogin,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 4.0, vertical: 2.0),
+                      horizontal: 4.0,
+                      vertical: 2.0,
+                    ),
                     child: const Text(
                       'Masuk di sini',
                       style: TextStyle(
@@ -742,13 +742,7 @@ class _RegisterFormZoneCState extends State<RegisterFormZoneC> {
               color: badgeColor,
               border: Border.all(color: AppColors.nbBlack, width: 2.0),
             ),
-            child: Center(
-              child: Icon(
-                badgeIcon,
-                size: 18.0,
-                color: iconColor,
-              ),
-            ),
+            child: Center(child: Icon(badgeIcon, size: 18.0, color: iconColor)),
           ),
         ],
       ),
@@ -832,9 +826,7 @@ class _RegisterFormZoneCState extends State<RegisterFormZoneC> {
               return Expanded(
                 child: Container(
                   height: 12.0,
-                  margin: EdgeInsets.only(
-                    right: index < 3 ? 4.0 : 0.0,
-                  ),
+                  margin: EdgeInsets.only(right: index < 3 ? 4.0 : 0.0),
                   decoration: BoxDecoration(
                     color: segColors[index],
                     border: Border.all(color: AppColors.nbBlack, width: 2.0),

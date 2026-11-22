@@ -15,10 +15,7 @@ import '../providers/catalog_provider.dart';
 class EbookDetailScreen extends ConsumerWidget {
   final String ebookId;
 
-  const EbookDetailScreen({
-    super.key,
-    required this.ebookId,
-  });
+  const EbookDetailScreen({super.key, required this.ebookId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -124,8 +121,9 @@ class EbookDetailScreen extends ConsumerWidget {
                                 ref.refresh(ebookDetailProvider(ebookId)),
                             child: Container(
                               height: 40,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                               alignment: Alignment.center,
                               decoration: AppTheme.brutalBox(
                                 color: AppColors.nbYellow,
@@ -157,7 +155,10 @@ class EbookDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildBottomActionBar(
-      BuildContext context, WidgetRef ref, CatalogEbook book) {
+    BuildContext context,
+    WidgetRef ref,
+    CatalogEbook book,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppTheme.marginMobile,
@@ -213,7 +214,9 @@ class EbookDetailScreen extends ConsumerWidget {
                           behavior: SnackBarBehavior.floating,
                           content: Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 10),
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
                             decoration: AppTheme.brutalBox(
                               color: AppColors.nbGreen,
                               borderColor: AppColors.nbBlack,
@@ -231,8 +234,10 @@ class EbookDetailScreen extends ConsumerWidget {
                                 Expanded(
                                   child: Text(
                                     '"${book.title}" berhasil dimasukkan ke keranjang!',
-                                    style: AppTheme.labelSm(AppColors.nbBlack,
-                                        fontSize: 11),
+                                    style: AppTheme.labelSm(
+                                      AppColors.nbBlack,
+                                      fontSize: 11,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -264,8 +269,10 @@ class EbookDetailScreen extends ConsumerWidget {
                           const SizedBox(width: 6),
                           Text(
                             '+ KERANJANG',
-                            style: AppTheme.labelSm(AppColors.nbBlack,
-                                fontSize: 12),
+                            style: AppTheme.labelSm(
+                              AppColors.nbBlack,
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -323,10 +330,7 @@ class EbookDetailScreen extends ConsumerWidget {
           ],
 
           // Judul E-Book
-          Text(
-            book.title,
-            style: AppTheme.headlineLgMobile(AppColors.nbBlack),
-          ),
+          Text(book.title, style: AppTheme.headlineLgMobile(AppColors.nbBlack)),
           const SizedBox(height: 6),
 
           // Penulis
@@ -342,8 +346,10 @@ class EbookDetailScreen extends ConsumerWidget {
             children: <Widget>[
               // Price Tag (Space Mono)
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: AppTheme.brutalBox(
                   color: AppColors.nbYellow,
                   borderColor: AppColors.nbBlack,
@@ -358,8 +364,10 @@ class EbookDetailScreen extends ConsumerWidget {
               // Rating box
               if (book.hasRating)
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: AppTheme.brutalBox(
                     color: AppColors.nbWhite,
                     borderColor: AppColors.nbBlack,
@@ -379,15 +387,19 @@ class EbookDetailScreen extends ConsumerWidget {
                       const SizedBox(width: 4),
                       Text(
                         formatRating(book.ratingAvg),
-                        style:
-                            AppTheme.dataMono(AppColors.nbBlack, fontSize: 13),
+                        style: AppTheme.dataMono(
+                          AppColors.nbBlack,
+                          fontSize: 13,
+                        ),
                       ),
                       if (book.salesCount > 0) ...<Widget>[
                         const SizedBox(width: 4),
                         Text(
                           '(${book.salesCount})',
-                          style: AppTheme.dataMono(AppColors.nbTextMuted,
-                              fontSize: 11),
+                          style: AppTheme.dataMono(
+                            AppColors.nbTextMuted,
+                            fontSize: 11,
+                          ),
                         ),
                       ],
                     ],
@@ -396,8 +408,10 @@ class EbookDetailScreen extends ConsumerWidget {
               else
                 Text(
                   'Belum ada rating',
-                  style:
-                      AppTheme.bodySm(AppColors.nbDisabledText, fontSize: 12),
+                  style: AppTheme.bodySm(
+                    AppColors.nbDisabledText,
+                    fontSize: 12,
+                  ),
                 ),
             ],
           ),
@@ -440,29 +454,18 @@ class EbookDetailScreen extends ConsumerWidget {
 
     if (book.pageCount != null && book.pageCount! > 0) {
       items.add(
-        _buildMetaItem(
-          label: 'Halaman',
-          value: '${book.pageCount} Hal',
-        ),
+        _buildMetaItem(label: 'Halaman', value: '${book.pageCount} Hal'),
       );
     }
 
     if (book.publishedYear != null && book.publishedYear! > 0) {
       items.add(
-        _buildMetaItem(
-          label: 'Tahun Terbit',
-          value: '${book.publishedYear}',
-        ),
+        _buildMetaItem(label: 'Tahun Terbit', value: '${book.publishedYear}'),
       );
     }
 
     if (book.salesCount > 0) {
-      items.add(
-        _buildMetaItem(
-          label: 'Terjual',
-          value: '${book.salesCount}x',
-        ),
-      );
+      items.add(_buildMetaItem(label: 'Terjual', value: '${book.salesCount}x'));
     }
 
     if (items.isEmpty) {
@@ -525,15 +528,13 @@ class EbookDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildFallback(String title) {
-    final initial =
-        title.trim().isNotEmpty ? title.trim()[0].toUpperCase() : 'B';
+    final initial = title.trim().isNotEmpty
+        ? title.trim()[0].toUpperCase()
+        : 'B';
     return Container(
       color: AppColors.nbMuted,
       alignment: Alignment.center,
-      child: Text(
-        initial,
-        style: AppTheme.headlineLgMobile(AppColors.nbBlack),
-      ),
+      child: Text(initial, style: AppTheme.headlineLgMobile(AppColors.nbBlack)),
     );
   }
 }

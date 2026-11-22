@@ -52,7 +52,10 @@ class CatalogResultBar extends StatelessWidget {
                       children: <InlineSpan>[
                         TextSpan(
                           text: '$totalCount E-BOOK',
-                          style: AppTheme.dataMono(AppColors.nbBlack, fontSize: 12),
+                          style: AppTheme.dataMono(
+                            AppColors.nbBlack,
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
@@ -95,10 +98,7 @@ class CatalogResultBar extends StatelessWidget {
               ),
               child: Text(
                 'LIVE API',
-                style: AppTheme.dataMono(
-                  AppColors.nbBlack,
-                  fontSize: 10,
-                ),
+                style: AppTheme.dataMono(AppColors.nbBlack, fontSize: 10),
               ),
             ),
         ],

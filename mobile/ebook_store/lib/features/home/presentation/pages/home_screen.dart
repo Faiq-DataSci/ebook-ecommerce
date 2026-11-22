@@ -42,10 +42,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.dispose();
   }
 
-  void _showNeubrutalistSnackBar(
-    NbPalette palette,
-    String message,
-  ) {
+  void _showNeubrutalistSnackBar(NbPalette palette, String message) {
     final messenger = ScaffoldMessenger.maybeOf(context);
     if (messenger == null) return;
     messenger.hideCurrentSnackBar();
@@ -86,9 +83,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _openBookDetail(String ebookId) {
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => EbookDetailScreen(ebookId: ebookId),
-      ),
+      MaterialPageRoute(builder: (_) => EbookDetailScreen(ebookId: ebookId)),
     );
   }
 
@@ -102,7 +97,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       builder: (dialogContext) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 24,
+          ),
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: AppTheme.brutalBox(
@@ -188,7 +186,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     _buildCriterionRow(
                       palette: palette,
                       code: 'RATING',
-                      name: 'Rating Pembaca (${book.rating.toStringAsFixed(1)}/5.0)',
+                      name:
+                          'Rating Pembaca (${book.rating.toStringAsFixed(1)}/5.0)',
                       score: '${(saw.c2Score * 100).round()}%',
                       color: palette.green,
                     ),
@@ -281,10 +280,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: palette.secondarySurface,
-        border: Border.all(
-          color: palette.ink,
-          width: AppTheme.borderThin,
-        ),
+        border: Border.all(color: palette.ink, width: AppTheme.borderThin),
       ),
       child: Row(
         children: <Widget>[
@@ -328,10 +324,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           decoration: BoxDecoration(
             color: palette.surface,
             border: Border(
-              top: BorderSide(
-                color: palette.ink,
-                width: AppTheme.borderMedium,
-              ),
+              top: BorderSide(color: palette.ink, width: AppTheme.borderMedium),
             ),
           ),
           child: SafeArea(
@@ -469,14 +462,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 );
               },
               onCartTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const CartScreen()),
-                );
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const CartScreen()));
               },
               onProfileTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                );
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
               },
             ),
             // Main Vertical Scrollable Content
@@ -504,10 +497,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         _searchController.clear();
                         notifier.resetFilters();
                       },
-                      onFilterTap: () => _showFilterAndStateSheet(
-                        palette,
-                        state,
-                      ),
+                      onFilterTap: () =>
+                          _showFilterAndStateSheet(palette, state),
                     ),
                     const SizedBox(height: 20),
                     // Conditional State Rendering (loading / error / empty / loaded)
@@ -516,7 +507,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     else if (state.status == HomeLoadStatus.error)
                       _buildErrorState(
                         palette: palette,
-                        message: state.errorMessage ??
+                        message:
+                            state.errorMessage ??
                             'Gagal memuat katalog dari server.',
                         onRetry: notifier.retryLoad,
                       )
@@ -553,7 +545,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         FeaturedBooksSection(
                           book: state.featuredSawBook,
                           palette: palette,
-                          onDetailTap: () => _openBookDetail(state.featuredSawBook.id),
+                          onDetailTap: () =>
+                              _openBookDetail(state.featuredSawBook.id),
                           onAddToCartTap: () {
                             notifier.addToCart();
                             _showNeubrutalistSnackBar(
@@ -604,13 +597,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         onTap: (index) {
           notifier.selectNavIndex(index);
           if (index == 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const CatalogScreen()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const CatalogScreen()));
           } else if (index == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const LoginScreen()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
           } else if (index != 0) {
             const labels = <String>['Beranda', 'Katalog', 'Pustaka', 'Profil'];
             _showNeubrutalistSnackBar(
@@ -644,10 +637,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ),
                   const SizedBox(width: 6),
-                  const Text(
-                    '\u{1F44B}',
-                    style: TextStyle(fontSize: 20),
-                  ),
+                  const Text('\u{1F44B}', style: TextStyle(fontSize: 20)),
                 ],
               ),
               const SizedBox(height: 2),
@@ -708,9 +698,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           palette: palette,
           actionLabel: 'Lihat Semua',
           onActionTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const CatalogScreen()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const CatalogScreen()));
           },
         ),
         const SizedBox(height: 12),
