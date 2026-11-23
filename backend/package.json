@@ -12,7 +12,8 @@
     "prisma:validate": "npx prisma validate",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate:deploy": "npx prisma migrate deploy",
-    "prisma:seed": "npx prisma db seed"
+    "prisma:seed": "npx prisma db seed",
+    "test:cloud": "tsx scripts/verify-cloud-live.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
