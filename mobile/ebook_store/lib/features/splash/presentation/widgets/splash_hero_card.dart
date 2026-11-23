@@ -301,7 +301,7 @@ class SplashHeroCard extends StatelessWidget {
                   width: 104.0,
                   height: 104.0,
                   decoration: BoxDecoration(
-                    color: AppColors.nbBlue,
+                    color: AppColors.nbYellow,
                     border: Border.all(
                       color: AppColors.nbBlack,
                       width: AppTheme.borderMedium,
@@ -314,7 +314,15 @@ class SplashHeroCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const Center(child: StitchEbookIcon(size: 84.0)),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(6.0),
+                      child: Image.asset(
+                        'assets/icons/app_logo.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
