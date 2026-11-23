@@ -12,14 +12,15 @@ Validasi Prisma memuat skema dan konfigurasi; file migrasi awal `20261116000000_
 | Komponen | Perintah | Hasil | Catatan |
 |---|---|---|---|
 | Backend typecheck | `npm run typecheck` | **PASS** | `tsc --noEmit`, tanpa error |
-| Backend test | `npm run test` | **PASS** | 13 file suite tes (Vitest): 83 skenario pengujian unit & integrasi lulus 100% |
+| Backend test | `npm run test` | **PASS** | 16 file suite tes (Vitest): 104 skenario pengujian unit & integrasi lulus 100% |
+| Backend cloud integration | `npm run test:cloud` | **PASS (Sebagian)** | Database Supabase live terhubung & ter-seed; Supabase Auth Admin valid; Supabase Storage privat bucket `ebooks-private` valid (Signed URL 200, Public blocked 400); Midtrans sandbox API merespons 401 Unauthorized (memerlukan server key aktif). |
 | Backend build | `npm run build` | **PASS** | `tsc` menghasilkan `dist/` |
 | Backend Prisma schema | `npm run prisma:validate` | **PASS** | `"The schema at prisma\schema.prisma is valid 🚀"` |
 | Admin Web lint | `npm run lint` | **PASS** | ESLint tanpa temuan |
-| Admin Web typecheck | `tsc --noEmit` | **PASS** | `tsconfig.app.json` tanpa error |
+| Admin Web typecheck & build | `npm run build` | **PASS** | `tsc` + Vite build sukses tanpa error |
 | Pengunjung Web lint | `npm run lint` | **PASS** | ESLint tanpa temuan |
-| Pengunjung Web typecheck | `tsc --noEmit` | **PASS** | `tsconfig.app.json` tanpa error |
-| Mobile test suite | `flutter test` | **PASS** | 9 suite pengujian unit & widget di `mobile/ebook_store/test/` |
+| Pengunjung Web typecheck & build | `npm run build` | **PASS** | `tsc` + Vite build sukses tanpa error |
+| Mobile test suite | `flutter test` | **PASS** | 151 skenario pengujian unit, widget, dan flow di `mobile/ebook_store/test/` |
 
 ---
 

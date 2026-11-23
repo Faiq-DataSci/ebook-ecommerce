@@ -1,6 +1,6 @@
 # Gambaran Umum API (`API Overview`)
 
-**Status:** `[ADA]` (hanya `GET /api/v1/health` dan `GET /api/v1/admin/ping` pada `backend/src/app.ts`) | `[RENCANA]` (seluruh endpoint bisnis, transaksi, akses PDF, dan `SPK SAW`)
+**Status:** `[ADA]` (seluruh endpoint inti bisnis: autentikasi, profil, katalog, pesanan, pembayaran/webhook, signed URL PDF privat, SPK SAW, serta dashboard & bobot admin terverifikasi di Vitest) | `[RENCANA]` (rute admin CRUD katalog lanjutan & audit live payment gateway)
 
 Dokumen ini menjelaskan arsitektur REST API **E-Book Store** pada `backend/` (*Node.js + Express + TypeScript + Zod + Prisma 7 ESM*), batas tanggung jawab antar komponen, serta daftar status implementasi endpoint.
 
@@ -59,12 +59,13 @@ flowchart LR
 |---|---|---|---|
 | `/api/v1/health` | `GET` | Publik | **`[ADA]`** (`backend/src/app.ts`, teruji di Vitest) |
 | `/api/v1/admin/ping` | `GET` | `ADMIN` | **`[ADA]`** (`backend/src/app.ts`, memakai `authenticate` + `authorize('ADMIN')`) |
-| `/api/v1/auth/sync`, `/api/v1/users/me` | `POST`, `GET`, `PATCH` | `CUSTOMER \| ADMIN` | `[RENCANA]` |
-| `/api/v1/categories`, `/api/v1/ebooks`, `/api/v1/ebooks/{id}` | `GET` | Publik | `[RENCANA]` |
-| `/api/v1/recommendations/saw` | `GET` | Publik / `CUSTOMER` | `[RENCANA]` |
-| `/api/v1/orders*`, `/api/v1/payments*`, `/api/v1/ebooks/{id}/access-url` | `POST`, `GET` | `CUSTOMER` | `[RENCANA]` |
-| `/api/v1/payments/webhook` | `POST` | Payment Gateway | `[RENCANA]` |
-| `/api/v1/admin/dashboard`, `/admin/categories*`, `/admin/ebooks*`, `/admin/customers*`, `/admin/orders*`, `/admin/payments`, `/admin/transactions`, `/admin/reports/sales`, `/admin/saw/weights`, `/admin/accesses/{id}` | `GET`, `POST`, `PATCH`, `PUT`, `DELETE` | `ADMIN` | `[RENCANA]` |
+| `/api/v1/auth/sync`, `/api/v1/users/me` | `POST`, `GET`, `PATCH` | `CUSTOMER \| ADMIN` | **`[ADA]`** (`auth.routes.ts` & `user.routes.ts`, teruji di Vitest) |
+| `/api/v1/categories`, `/api/v1/ebooks`, `/api/v1/ebooks/{id}` | `GET` | Publik | **`[ADA]`** (`catalog.routes.ts`, teruji di Vitest) |
+| `/api/v1/recommendations/saw` | `GET` | Publik / `CUSTOMER` | **`[ADA]`** (`recommendation.routes.ts` & `saw.service.ts`, teruji di Vitest) |
+| `/api/v1/orders*`, `/api/v1/payments*`, `/api/v1/ebooks/{id}/access-url` | `POST`, `GET` | `CUSTOMER` | **`[ADA]`** (`order.routes.ts`, `payment.routes.ts`, `ebook-access.routes`, teruji di Vitest) |
+| `/api/v1/payments/webhook` | `POST` | Payment Gateway | **`[ADA]`** (`payment.routes.ts`, verifikasi HMAC SHA512 & idempoten, teruji di Vitest) |
+| `/api/v1/admin/dashboard`, `/api/v1/admin/saw/weights` | `GET`, `PUT` | `ADMIN` | **`[ADA]`** (`admin.routes.ts`, teruji di Vitest) |
+| `/api/v1/admin/categories*`, `/admin/ebooks*`, `/admin/customers*`, `/admin/reports/sales`, `/admin/accesses/{id}` | `POST`, `PATCH`, `DELETE` | `ADMIN` | `[RENCANA]` (rute operasional CRUD admin lanjutan) |
 
 > **Catatan Sinkronisasi:** Dokumen lama pada `docs/05-api/api-endpoints.md` masih mencantumkan endpoint register/login kredensial lokal serta variasi path `/ebooks/:id/access` dan `/ebooks/recommendations`. Acuan spesifikasi API terbaru adalah [`api-spec.yaml`](./api-spec.yaml).
 

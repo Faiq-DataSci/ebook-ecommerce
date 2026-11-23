@@ -1,7 +1,7 @@
 # Dokumentasi Metode Simple Additive Weighting (SAW)
 
 > **Status Dokumen:** `[ADA]` (Dokumentasi rancangan metode SAW; keputusan arsitektur `backend-only` pada [`ADR-0002`](../adr/0002-backend-only-saw.md))
-> **Status Implementasi & Pengujian:** `[RENCANA]` (Implementasi `saw.service`, endpoint API, konfigurasi bobot persisten, dan unit test backend belum tersedia)
+> **Status Implementasi & Pengujian:** `[ADA]` (Implementasi `saw.service.ts`, endpoint `GET /api/v1/recommendations/saw`, endpoint manajemen bobot admin `GET/PUT /api/v1/admin/saw/weights`, dan 14 pengujian unit Vitest telah lulus 100%)
 > **Sumber Kebenaran Utama:** [`docs-proyek-ebook-ecommerce.md`](../docs-proyek-ebook-ecommerce.md)
 
 ---
