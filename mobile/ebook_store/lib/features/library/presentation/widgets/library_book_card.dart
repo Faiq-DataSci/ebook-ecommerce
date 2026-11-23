@@ -10,11 +10,11 @@ import '../../domain/entities/ebook_access_entity.dart';
 /// - Border: 2.0px hitam solid (AppTheme.borderDefault)
 /// - Shadow: 4.0px hard offset hitam tanpa blur (Offset(4.0, 4.0))
 /// - Radius: 0 (sudut siku murni)
-/// - Cover E-book: rasio 2:3, border 2.0px + shadow 2.0px, badge format dokumen di pojok
+/// - Cover E-book: rasio 2:3, border 2.0px + shadow 2.5px, badge format dokumen di pojok
 /// - Aksen warna: 1 aksen per kartu (design.md §1.1 Zona B)
-/// - Status Akses: Ikon + Teks ("AKSES AKTIF" / "AKSES DICABUT")
+/// - Status Akses: Tipografi kontras tinggi ("AKSES AKTIF" / "AKSES DICABUT") dengan dot indikator
 /// - Progres Membaca: Space Mono untuk halaman & persentase, bar track neubrutalist
-/// - Tombol Aksi: "BACA" (nb-yellow primer) atau "AKSES DICABUT" (nb-muted nonaktif)
+/// - Tombol Aksi: Tipografi tegas tanpa ikon berlebihan ("BACA" / "AKSES DICABUT")
 class LibraryBookCard extends StatelessWidget {
   final EbookAccessEntity access;
   final VoidCallback onRead;
@@ -98,20 +98,8 @@ class LibraryBookCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Badge Status Akses & Ikon Verifikasi Status Lisensi
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildStatusBadge(),
-                        Icon(
-                          access.isActive ? Icons.verified : Icons.block,
-                          size: 16.0,
-                          color: access.isActive
-                              ? AppColors.nbBlack
-                              : AppColors.nbPink,
-                        ),
-                      ],
-                    ),
+                    // Badge Status Akses Tipografis
+                    _buildStatusBadge(),
 
                     const SizedBox(height: 8.0),
 
@@ -122,7 +110,7 @@ class LibraryBookCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontFamily: AppTheme.fontHeadline,
-                        fontSize: 13.5,
+                        fontSize: 14.0,
                         fontWeight: FontWeight.w700,
                         color: AppColors.nbBlack,
                         height: 1.25,
@@ -159,7 +147,7 @@ class LibraryBookCard extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${access.format} • ${access.totalPages} Halaman',
+                        '${access.format} // ${access.totalPages} HALAMAN',
                         style: const TextStyle(
                           fontFamily: AppTheme.fontMono,
                           fontSize: 9.5,
@@ -189,32 +177,24 @@ class LibraryBookCard extends StatelessWidget {
                 vertical: 8.0,
               ),
               decoration: BoxDecoration(
-                color: AppColors.nbPaper,
-                border: Border.all(color: AppColors.nbBlack, width: 1.5),
+                color: AppColors.nbPink.withValues(alpha: 0.15),
+                border: Border.all(color: AppColors.nbPink, width: 1.5),
               ),
-              child: const Row(
-                children: [
-                  Icon(Icons.info_outline, size: 15.0, color: AppColors.nbPink),
-                  SizedBox(width: 8.0),
-                  Expanded(
-                    child: Text(
-                      'Akses e-book ini dicabut oleh Administrator.',
-                      style: TextStyle(
-                        fontFamily: AppTheme.fontBody,
-                        fontSize: 11.0,
-                        color: AppColors.nbPink,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ],
+              child: const Text(
+                'Akses e-book ini dicabut oleh Administrator.',
+                style: TextStyle(
+                  fontFamily: AppTheme.fontBody,
+                  fontSize: 11.0,
+                  color: AppColors.nbBlack,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
 
           const SizedBox(height: 12.0),
 
-          // Tombol Aksi BACA / AKSES DICABUT (Tinggi 44dp, target sentuh nyaman)
+          // Tombol Aksi BACA / AKSES DICABUT (Tinggi 44dp, tipografi tegas tanpa ikon)
           _buildActionButton(),
         ],
       ),
@@ -247,7 +227,7 @@ class LibraryBookCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Gambar cover asli Google Stitch jika tersedia
+          // Gambar cover asli jika tersedia
           if (embeddedBytes != null)
             Image.memory(
               embeddedBytes,
@@ -287,28 +267,51 @@ class LibraryBookCard extends StatelessWidget {
     );
   }
 
-  /// Konten fallback jika gambar cover belum tersedia (design.md §4)
+  /// Sampul Tipografis Neubrutalism Elegan jika gambar cover tidak tersedia (tanpa ikon generik)
   Widget _buildFallbackCoverContent(Color accentColor) {
-    return Center(
+    return Container(
+      color: accentColor,
+      padding: const EdgeInsets.all(6.0),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(
-            Icons.menu_book,
-            size: 28.0,
-            color: AppColors.nbBlack.withValues(alpha: 0.85),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 1.5),
+            color: AppColors.nbBlack,
+            child: const Text(
+              'BUKUKITA',
+              style: TextStyle(
+                fontFamily: AppTheme.fontMono,
+                fontSize: 6.5,
+                fontWeight: FontWeight.w900,
+                color: AppColors.nbWhite,
+                letterSpacing: 0.5,
+              ),
+            ),
           ),
-          const SizedBox(height: 3.0),
-          Container(width: 32.0, height: 2.5, color: AppColors.nbBlack),
+          Text(
+            access.title.toUpperCase(),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontFamily: AppTheme.fontHeadline,
+              fontSize: 8.5,
+              fontWeight: FontWeight.w900,
+              color: AppColors.nbBlack,
+              height: 1.15,
+            ),
+          ),
+          Container(height: 2.0, width: 24.0, color: AppColors.nbBlack),
         ],
       ),
     );
   }
 
-  /// Badge Status Akses ("AKSES AKTIF" / "AKSES DICABUT") sesuai pemetaan semantik status
+  /// Badge Status Akses ("AKSES AKTIF" / "AKSES DICABUT") dengan Dot Indikator Kontras
   Widget _buildStatusBadge() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 2.5),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
       decoration: BoxDecoration(
         color: access.isActive ? AppColors.nbGreen : AppColors.nbPink,
         border: Border.all(color: AppColors.nbBlack, width: 1.5),
@@ -316,12 +319,15 @@ class LibraryBookCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            access.isActive ? Icons.verified : Icons.block,
-            size: 11.0,
-            color: AppColors.nbBlack,
+          Container(
+            width: 6.0,
+            height: 6.0,
+            decoration: const BoxDecoration(
+              color: AppColors.nbBlack,
+              shape: BoxShape.circle,
+            ),
           ),
-          const SizedBox(width: 4.0),
+          const SizedBox(width: 5.0),
           Text(
             access.isActive ? 'AKSES AKTIF' : 'AKSES DICABUT',
             style: const TextStyle(
@@ -329,6 +335,7 @@ class LibraryBookCard extends StatelessWidget {
               fontSize: 9.5,
               fontWeight: FontWeight.w800,
               color: AppColors.nbBlack,
+              letterSpacing: 0.4,
             ),
           ),
         ],
@@ -408,7 +415,7 @@ class LibraryBookCard extends StatelessWidget {
     );
   }
 
-  /// Tombol Aksi BACA / AKSES DICABUT (Tinggi 44dp, target tekan memenuhi WCAG)
+  /// Tombol Aksi BACA / AKSES DICABUT (Tinggi 44dp, tipografi tegas tanpa ikon dekoratif)
   Widget _buildActionButton() {
     return Semantics(
       button: true,
@@ -438,30 +445,17 @@ class LibraryBookCard extends StatelessWidget {
                   ]
                 : const [],
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                access.isActive ? Icons.auto_stories : Icons.lock,
-                size: 16.0,
-                color: access.isActive
-                    ? AppColors.nbBlack
-                    : AppColors.nbDisabledText,
-              ),
-              const SizedBox(width: 8.0),
-              Text(
-                access.isActive ? 'BACA' : 'AKSES DICABUT',
-                style: TextStyle(
-                  fontFamily: AppTheme.fontHeadline,
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w700,
-                  color: access.isActive
-                      ? AppColors.nbBlack
-                      : AppColors.nbDisabledText,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ],
+          child: Text(
+            access.isActive ? 'BACA' : 'AKSES DICABUT',
+            style: TextStyle(
+              fontFamily: AppTheme.fontHeadline,
+              fontSize: 13.0,
+              fontWeight: FontWeight.w800,
+              color: access.isActive
+                  ? AppColors.nbBlack
+                  : AppColors.nbDisabledText,
+              letterSpacing: 0.6,
+            ),
           ),
         ),
       ),

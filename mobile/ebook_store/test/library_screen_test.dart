@@ -16,6 +16,7 @@ import 'package:ebook_store/features/library/presentation/pages/library_screen.d
 import 'package:ebook_store/features/library/presentation/providers/library_provider.dart';
 import 'package:ebook_store/features/library/presentation/widgets/library_book_card.dart';
 import 'package:ebook_store/features/library/presentation/widgets/library_empty_state.dart';
+import 'package:ebook_store/features/library/presentation/widgets/pdf_document_view.dart';
 
 class ErrorLibraryMockDataSource implements LibraryRemoteDataSource {
   int callCount = 0;
@@ -77,6 +78,10 @@ Widget _buildTestableLibraryScreen({
       if (customNotifier != null)
         libraryProvider.overrideWith((ref) => customNotifier),
       dioClientProvider.overrideWithValue(Dio()),
+      pdfDocumentViewBuilderProvider.overrideWithValue(
+        (context, props) =>
+            const SizedBox.shrink(key: Key('pdf_document_view')),
+      ),
     ],
     child: const MaterialApp(home: LibraryScreen()),
   );

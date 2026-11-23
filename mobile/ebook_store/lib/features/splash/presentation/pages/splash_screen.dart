@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../home/presentation/pages/home_screen.dart';
 import '../../../../theme/app_colors.dart';
 import '../widgets/splash_footer.dart';
@@ -11,7 +13,7 @@ import '../widgets/splash_painters.dart';
 /// Project: "Stitch – Sistem Informasi E-Commerce E-Book"
 /// Enhanced with automated app loading: boots application smoothly
 /// and navigates directly without requiring manual button click.
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   final Duration totalDuration;
   final bool autoNavigate;
   final VoidCallback? onLoaded;
@@ -24,10 +26,19 @@ class SplashScreen extends StatefulWidget {
   });
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // P1.2 Auto-Login / Session Restore: Memvalidasi sesi JWT tersimpan saat aplikasi boot
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authNotifierProvider.notifier).checkSession();
+    });
+  }
+
   void _navigateToHome() {
     if (!mounted) return;
     if (widget.onLoaded != null) {

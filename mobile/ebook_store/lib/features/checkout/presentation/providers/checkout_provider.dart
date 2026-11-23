@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/config/api_config.dart';
 import '../../../../core/network/dio_client.dart';
@@ -33,11 +34,58 @@ final checkoutRepositoryProvider = Provider<CheckoutRepository>((ref) {
 
 class CheckoutNotifier extends StateNotifier<CheckoutState> {
   final CheckoutRepository repository;
+  Timer? _statusPollingTimer;
 
   CheckoutNotifier({required this.repository, bool isMock = true})
     : super(CheckoutState(isMock: isMock));
 
+  @override
+  void dispose() {
+    _statusPollingTimer?.cancel();
+    super.dispose();
+  }
+
+  /// Memulai polling berkala status pesanan (default interval 3 detik)
+  void startPollingOrderStatus({
+    Duration interval = const Duration(seconds: 3),
+  }) {
+    _statusPollingTimer?.cancel();
+    _statusPollingTimer = Timer.periodic(interval, (_) async {
+      final order = state.currentOrder;
+      if (order == null ||
+          order.isPaid ||
+          order.status == OrderStatusEnum.cancelled ||
+          order.status == OrderStatusEnum.expired) {
+        stopPollingOrderStatus();
+        return;
+      }
+      try {
+        final updated = await repository.getOrderById(order.id);
+        if (updated.isPaid) {
+          stopPollingOrderStatus();
+          state = state.copyWith(
+            currentOrder: updated,
+            currentStep: CheckoutStep.completed,
+            status: CheckoutStatus.completed,
+            isSubmitting: false,
+          );
+        } else {
+          state = state.copyWith(currentOrder: updated);
+        }
+      } catch (_) {
+        // Retry polling silently
+      }
+    });
+  }
+
+  /// Menghentikan polling status pesanan
+  void stopPollingOrderStatus() {
+    _statusPollingTimer?.cancel();
+    _statusPollingTimer = null;
+  }
+
   void initialize(List<CartItem> items) {
+    stopPollingOrderStatus();
     state = state.copyWith(
       items: items,
       currentStep: CheckoutStep.review,
@@ -56,6 +104,9 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
       isSubmitting: false,
       clearErrorMessage: true,
     );
+    if (order.isPending) {
+      startPollingOrderStatus();
+    }
   }
 
   void selectPaymentMethod(String method) {
@@ -63,6 +114,9 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
   }
 
   void goToStep(CheckoutStep step) {
+    if (step != CheckoutStep.payment) {
+      stopPollingOrderStatus();
+    }
     state = state.copyWith(currentStep: step, clearErrorMessage: true);
   }
 
@@ -91,6 +145,9 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
         isSubmitting: false,
         clearErrorMessage: true,
       );
+      if (order.isPending) {
+        startPollingOrderStatus();
+      }
     } on CheckoutFailure catch (f) {
       state = state.copyWith(
         status: CheckoutStatus.error,
@@ -125,6 +182,7 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
       // In simulation mode, immediately simulate payment or move to Step 3
       if (state.isMock) {
         final paidOrder = await repository.simulatePaymentSuccess(order.id);
+        stopPollingOrderStatus();
         state = state.copyWith(
           currentOrder: paidOrder,
           currentStep: CheckoutStep.completed,
@@ -136,12 +194,18 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
 
       // In live remote mode, payment is pending gateway webhook confirmation
       final latestOrder = await repository.getOrderById(order.id);
-      state = state.copyWith(
-        currentOrder: latestOrder,
-        currentStep: CheckoutStep.completed,
-        status: CheckoutStatus.completed,
-        isSubmitting: false,
-      );
+      if (latestOrder.isPaid) {
+        stopPollingOrderStatus();
+        state = state.copyWith(
+          currentOrder: latestOrder,
+          currentStep: CheckoutStep.completed,
+          status: CheckoutStatus.completed,
+          isSubmitting: false,
+        );
+      } else {
+        state = state.copyWith(currentOrder: latestOrder, isSubmitting: false);
+        startPollingOrderStatus();
+      }
     } on CheckoutFailure catch (f) {
       state = state.copyWith(
         status: CheckoutStatus.error,
@@ -165,7 +229,17 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
 
     try {
       final updated = await repository.getOrderById(order.id);
-      state = state.copyWith(currentOrder: updated, isSubmitting: false);
+      if (updated.isPaid) {
+        stopPollingOrderStatus();
+        state = state.copyWith(
+          currentOrder: updated,
+          currentStep: CheckoutStep.completed,
+          status: CheckoutStatus.completed,
+          isSubmitting: false,
+        );
+      } else {
+        state = state.copyWith(currentOrder: updated, isSubmitting: false);
+      }
     } on CheckoutFailure catch (f) {
       state = state.copyWith(errorMessage: f.message, isSubmitting: false);
     } catch (e) {
@@ -183,7 +257,13 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
     state = state.copyWith(isSubmitting: true);
     try {
       final paid = await repository.simulatePaymentSuccess(order.id);
-      state = state.copyWith(currentOrder: paid, isSubmitting: false);
+      stopPollingOrderStatus();
+      state = state.copyWith(
+        currentOrder: paid,
+        currentStep: CheckoutStep.completed,
+        status: CheckoutStatus.completed,
+        isSubmitting: false,
+      );
     } catch (e) {
       state = state.copyWith(
         errorMessage: 'Gagal simulasi verifikasi: $e',

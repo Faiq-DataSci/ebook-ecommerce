@@ -10,7 +10,7 @@ import 'package:ebook_store/features/library/presentation/pages/in_app_pdf_reade
 import 'package:ebook_store/features/library/presentation/providers/library_provider.dart';
 import 'package:ebook_store/features/library/presentation/widgets/access_denied_card.dart';
 import 'package:ebook_store/features/library/presentation/widgets/in_app_pdf_reader_toolbar.dart';
-import 'package:ebook_store/features/library/presentation/widgets/reader_page_view.dart';
+import 'package:ebook_store/features/library/presentation/widgets/pdf_document_view.dart';
 import 'package:ebook_store/features/library/presentation/widgets/signed_url_recovery_banner.dart';
 
 Widget _buildTestableReaderScreen({
@@ -38,6 +38,13 @@ Widget _buildTestableReaderScreen({
       libraryRepositoryProvider.overrideWithValue(repo),
       getSignedAccessUrlUseCaseProvider.overrideWithValue(useCase),
       dioClientProvider.overrideWithValue(Dio()),
+      pdfDocumentViewBuilderProvider.overrideWithValue(
+        (context, props) => Container(
+          key: const Key('pdf_document_view'),
+          alignment: Alignment.center,
+          child: const Text('PDF VIEWER TEST'),
+        ),
+      ),
     ],
     child: MaterialApp(
       home: InAppPdfReaderScreen(
@@ -74,12 +81,9 @@ void main() {
         // 2. Indikator halaman Space Mono: "Halaman 1 / 50"
         expect(find.text('Halaman 1 / 50'), findsOneWidget);
 
-        // 3. Konten halaman reader
-        expect(find.byType(ReaderPageView), findsOneWidget);
-        expect(
-          find.text('Bab 1: Prinsip & Implementasi Teknis'),
-          findsOneWidget,
-        );
+        // 3. Konten halaman reader berupa dokumen PDF asli
+        expect(find.byKey(const Key('pdf_document_view')), findsOneWidget);
+        expect(find.text('PDF VIEWER TEST'), findsOneWidget);
 
         // 4. Banner pemulihan TIDAK muncul saat signed URL valid
         expect(find.byType(SignedUrlRecoveryBanner), findsNothing);
@@ -124,8 +128,8 @@ void main() {
           findsOneWidget,
         );
 
-        // Halaman reader teks TIDAK BOLEH dibuka sama sekali
-        expect(find.byType(ReaderPageView), findsNothing);
+        // Halaman reader PDF TIDAK BOLEH dibuka sama sekali
+        expect(find.byKey(const Key('pdf_document_view')), findsNothing);
       },
     );
 
@@ -167,7 +171,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byType(SignedUrlRecoveryBanner), findsNothing);
-        expect(find.byType(ReaderPageView), findsOneWidget);
+        expect(find.byKey(const Key('pdf_document_view')), findsOneWidget);
       },
     );
 

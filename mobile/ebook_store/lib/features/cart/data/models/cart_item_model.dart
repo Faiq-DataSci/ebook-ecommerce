@@ -38,6 +38,7 @@ class CartItemModel extends CartItem {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,

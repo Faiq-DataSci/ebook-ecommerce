@@ -3,12 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/utils/rupiah_formatter.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_theme.dart';
-import '../../../auth/presentation/pages/login_screen.dart';
 import '../../../cart/presentation/pages/cart_screen.dart';
 import '../../../cart/presentation/providers/cart_provider.dart';
 import '../../../home/presentation/pages/home_screen.dart';
 import '../../../home/presentation/widgets/home_bottom_navigation.dart';
 import '../../../home/presentation/widgets/home_header.dart';
+import '../../../library/presentation/pages/library_screen.dart';
+import '../../../profile_transactions/presentation/pages/profile_transactions_screen.dart';
 import '../../domain/entities/catalog_category.dart';
 import '../../domain/entities/catalog_ebook.dart';
 import '../providers/catalog_provider.dart';
@@ -24,7 +25,11 @@ import 'ebook_detail_screen.dart';
 
 /// Halaman Katalog & Filter E-Book Mobile (Google Stitch Neubrutalism + design.md §8.4).
 class CatalogScreen extends ConsumerStatefulWidget {
-  const CatalogScreen({super.key});
+  /// Bila `true`, katalog disematkan langsung di dalam navigasi tab (misalnya di [HomeScreen])
+  /// sehingga tidak membuat layer Scaffold atau Header ganda.
+  final bool isEmbedded;
+
+  const CatalogScreen({super.key, this.isEmbedded = false});
 
   @override
   ConsumerState<CatalogScreen> createState() => _CatalogScreenState();
@@ -51,8 +56,9 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.hasClients &&
+        _scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200) {
       ref.read(catalogProvider.notifier).loadMore();
     }
   }
@@ -507,45 +513,6 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     );
   }
 
-  void _showNeubrutalistSnackBar(String message) {
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    if (messenger == null) return;
-    messenger.hideCurrentSnackBar();
-    messenger.showSnackBar(
-      SnackBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
-        content: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: AppTheme.brutalBox(
-            color: AppColors.nbYellow,
-            borderColor: AppColors.nbBlack,
-            borderWidth: AppTheme.borderDefault,
-            shadowOffset: 3,
-          ),
-          child: Row(
-            children: <Widget>[
-              const Icon(
-                Icons.info_outline,
-                size: 18,
-                color: AppColors.nbBlack,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  message,
-                  style: AppTheme.labelSm(AppColors.nbBlack, fontSize: 12),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(catalogProvider);
@@ -561,6 +528,118 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
       );
     }
 
+    final content = RefreshIndicator(
+      key: const Key('catalog_refresh_indicator'),
+      color: AppColors.nbBlack,
+      backgroundColor: AppColors.nbYellow,
+      onRefresh: () => ref.read(catalogProvider.notifier).refresh(),
+      child: SingleChildScrollView(
+        key: const Key('catalog_scroll_view'),
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(
+          AppTheme.marginMobile,
+          12,
+          AppTheme.marginMobile,
+          24,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            // A. Sticky Zone B: Search Bar + Filter Trigger
+            CatalogSearchBar(
+              controller: _searchController,
+              onChanged: notifier.setSearchQuery,
+              onClear: () {
+                _searchController.clear();
+                notifier.setSearchQuery('');
+              },
+              onFilterTap: () => _showFilterSheet(context, state),
+              activeFilterCount: state.filter.activeFilterCount,
+            ),
+            const SizedBox(height: 10),
+
+            // B. Secondary Row: Urutkan + Grid/List Toggle
+            CatalogToolbar(
+              currentSort: state.filter.sort,
+              onSortChanged: notifier.setSortOption,
+              currentViewMode: state.viewMode,
+              onViewModeChanged: notifier.setViewMode,
+            ),
+            const SizedBox(height: 12),
+
+            // C. Active Filter Chips Row (design.md §5.9)
+            if (state.filter.hasActiveFilters) ...<Widget>[
+              ActiveFilterChips(
+                filter: state.filter,
+                onRemoveCategory: notifier.removeCategoryFilter,
+                onRemoveAuthor: notifier.removeAuthorFilter,
+                onRemovePrice: notifier.removePriceFilter,
+                onRemoveRating: notifier.removeRatingFilter,
+                onResetFilters: notifier.resetFiltersOnly,
+              ),
+              const SizedBox(height: 12),
+            ],
+
+            // D. Category Pills Horizontal Scroll
+            CategoryPillsBar(
+              categories: state.categories,
+              selectedCategoryId: state.filter.categoryId,
+              onSelectCategory: (CatalogCategory? cat) {
+                notifier.selectCategory(cat?.id, cat?.name);
+              },
+            ),
+            const SizedBox(height: 12),
+
+            // E. Results Count + DATA SIMULASI Bar
+            CatalogResultBar(
+              totalCount: state.totalCount,
+              isMock: state.isMock,
+            ),
+            const SizedBox(height: 14),
+
+            // F. State-Driven Catalog List / Grid
+            if (state.status == CatalogStatus.loading)
+              CatalogStateViews.buildLoadingSkeleton()
+            else if (state.status == CatalogStatus.error)
+              CatalogStateViews.buildError(
+                message:
+                    state.errorMessage ??
+                    'Gagal memuat katalog e-book dari server.',
+                onRetry: notifier.loadInitial,
+              )
+            else if (state.status == CatalogStatus.empty)
+              CatalogStateViews.buildEmptyCatalog()
+            else if (state.isNoResult)
+              CatalogStateViews.buildNoResult(
+                onResetFilter: () {
+                  _searchController.clear();
+                  notifier.resetAll();
+                },
+              )
+            else ...<Widget>[
+              if (state.viewMode == CatalogViewMode.grid)
+                _buildTwoColumnGrid(state.ebooks)
+              else
+                _buildListColumn(state.ebooks),
+
+              // Footer Infinite Scroll
+              CatalogStateViews.buildInfiniteScrollFooter(
+                isLoadingMore: state.isLoadingMore,
+                hasMore: state.hasMore,
+                loadMoreError: state.loadMoreError,
+                onRetryLoadMore: notifier.loadMore,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+
+    if (widget.isEmbedded) {
+      return Material(color: AppColors.nbPaper, child: content);
+    }
+
     return Scaffold(
       backgroundColor: AppColors.nbPaper,
       body: SafeArea(
@@ -570,123 +649,19 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
             // 1. Header BUKUKITA (sama seperti Beranda)
             HomeHeader(
               palette: palette,
-              isDarkMode: false,
               cartCount: state.cartCount,
-              onToggleTheme: () {
-                _showNeubrutalistSnackBar(
-                  'Tema dikunci pada mode Terang Neubrutalism sesuai Stitch.',
-                );
-              },
               onCartTap: () => _showCartBottomSheet(context, state),
               onProfileTap: () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const ProfileTransactionsScreen(),
+                  ),
+                );
               },
             ),
 
             // 2. Konten Utama
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                padding: const EdgeInsets.fromLTRB(
-                  AppTheme.marginMobile,
-                  12,
-                  AppTheme.marginMobile,
-                  24,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    // A. Sticky Zone B: Search Bar + Filter Trigger
-                    CatalogSearchBar(
-                      controller: _searchController,
-                      onChanged: notifier.setSearchQuery,
-                      onClear: () {
-                        _searchController.clear();
-                        notifier.setSearchQuery('');
-                      },
-                      onFilterTap: () => _showFilterSheet(context, state),
-                      activeFilterCount: state.filter.activeFilterCount,
-                    ),
-                    const SizedBox(height: 10),
-
-                    // B. Secondary Row: Urutkan + Grid/List Toggle
-                    CatalogToolbar(
-                      currentSort: state.filter.sort,
-                      onSortChanged: notifier.setSortOption,
-                      currentViewMode: state.viewMode,
-                      onViewModeChanged: notifier.setViewMode,
-                    ),
-                    const SizedBox(height: 12),
-
-                    // C. Active Filter Chips Row (design.md §5.9)
-                    if (state.filter.hasActiveFilters) ...<Widget>[
-                      ActiveFilterChips(
-                        filter: state.filter,
-                        onRemoveCategory: notifier.removeCategoryFilter,
-                        onRemoveAuthor: notifier.removeAuthorFilter,
-                        onRemovePrice: notifier.removePriceFilter,
-                        onRemoveRating: notifier.removeRatingFilter,
-                        onResetFilters: notifier.resetFiltersOnly,
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-
-                    // D. Category Pills Horizontal Scroll
-                    CategoryPillsBar(
-                      categories: state.categories,
-                      selectedCategoryId: state.filter.categoryId,
-                      onSelectCategory: (CatalogCategory? cat) {
-                        notifier.selectCategory(cat?.id, cat?.name);
-                      },
-                    ),
-                    const SizedBox(height: 12),
-
-                    // E. Results Count + DATA SIMULASI Bar
-                    CatalogResultBar(
-                      totalCount: state.totalCount,
-                      isMock: state.isMock,
-                    ),
-                    const SizedBox(height: 14),
-
-                    // F. State-Driven Catalog List / Grid
-                    if (state.status == CatalogStatus.loading)
-                      CatalogStateViews.buildLoadingSkeleton()
-                    else if (state.status == CatalogStatus.error)
-                      CatalogStateViews.buildError(
-                        message:
-                            state.errorMessage ??
-                            'Gagal memuat katalog e-book dari server.',
-                        onRetry: notifier.loadInitial,
-                      )
-                    else if (state.status == CatalogStatus.empty)
-                      CatalogStateViews.buildEmptyCatalog()
-                    else if (state.isNoResult)
-                      CatalogStateViews.buildNoResult(
-                        onResetFilter: () {
-                          _searchController.clear();
-                          notifier.resetAll();
-                        },
-                      )
-                    else ...<Widget>[
-                      if (state.viewMode == CatalogViewMode.grid)
-                        _buildTwoColumnGrid(state.ebooks)
-                      else
-                        _buildListColumn(state.ebooks),
-
-                      // Footer Infinite Scroll
-                      CatalogStateViews.buildInfiniteScrollFooter(
-                        isLoadingMore: state.isLoadingMore,
-                        hasMore: state.hasMore,
-                        loadMoreError: state.loadMoreError,
-                        onRetryLoadMore: notifier.loadMore,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
+            Expanded(child: content),
           ],
         ),
       ),
@@ -696,24 +671,33 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
         onTap: (index) {
           if (index == 0) {
             // Beranda
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-            );
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const HomeScreen()),
+              );
+            }
           } else if (index == 1) {
             // Sudah di Katalog, scroll ke atas
-            _scrollController.animateTo(
-              0,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
+            if (_scrollController.hasClients) {
+              _scrollController.animateTo(
+                0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            }
+          } else if (index == 2) {
+            // Pustaka
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const LibraryScreen()),
             );
           } else if (index == 3) {
-            // Profil
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
-          } else {
-            _showNeubrutalistSnackBar(
-              'Tab Pustaka masih dalam rencana pengembangan.',
+            // Profil & Transaksi
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => const ProfileTransactionsScreen(),
+              ),
             );
           }
         },

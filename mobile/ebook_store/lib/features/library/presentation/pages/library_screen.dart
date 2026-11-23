@@ -183,10 +183,24 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.error_outline,
-                  size: 36.0,
-                  color: AppColors.nbPink,
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10.0,
+                    vertical: 4.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.nbPink,
+                    border: Border.all(color: AppColors.nbBlack, width: 1.5),
+                  ),
+                  child: const Text(
+                    '[ KENDALA SISTEM ]',
+                    style: TextStyle(
+                      fontFamily: AppTheme.fontMono,
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.nbBlack,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 10.0),
                 const Text(
@@ -275,6 +289,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     // 4. Loaded State: Tampilan Rak Buku Digital Bersih & Menarik (Zona B)
     return RefreshIndicator(
       color: AppColors.nbBlack,
+      backgroundColor: AppColors.nbYellow,
       onRefresh: notifier.refresh,
       child: ListView(
         key: const Key('library_books_list_view'),
@@ -291,26 +306,14 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
               color: AppColors.nbPaper,
               border: Border.all(color: AppColors.nbBlack, width: 1.5),
             ),
-            child: const Row(
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 14.0,
-                  color: AppColors.nbTextMuted,
-                ),
-                SizedBox(width: 6.0),
-                Expanded(
-                  child: Text(
-                    'DATA SIMULASI // KOLEKSI PERPUSTAKAAN PRIBADI',
-                    style: TextStyle(
-                      fontFamily: AppTheme.fontMono,
-                      fontSize: 9.5,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.nbTextMuted,
-                    ),
-                  ),
-                ),
-              ],
+            child: const Text(
+              '[ DATA SIMULASI ] KOLEKSI PUSTAKA PRIBADI // BUCKET PRIVAT',
+              style: TextStyle(
+                fontFamily: AppTheme.fontMono,
+                fontSize: 9.5,
+                fontWeight: FontWeight.w700,
+                color: AppColors.nbTextMuted,
+              ),
             ),
           ),
 
@@ -328,7 +331,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                 boxShadow: const [
                   BoxShadow(
                     color: AppColors.nbBlack,
-                    offset: Offset(3.5, 3.5),
+                    offset: Offset(4.0, 4.0),
                     blurRadius: 0.0,
                   ),
                 ],
@@ -412,6 +415,67 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                       color: AppColors.nbTextMuted,
                     ),
                   ),
+                  const SizedBox(height: 10.0),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 5.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.nbPaper,
+                      border: Border.all(color: AppColors.nbBlack, width: 1.5),
+                    ),
+                    child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 6.0,
+                      runSpacing: 3.0,
+                      children: [
+                        Text(
+                          'AKTIF: ${state.items.where((b) => b.isActive).length}',
+                          style: const TextStyle(
+                            fontFamily: AppTheme.fontMono,
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.nbBlack,
+                          ),
+                        ),
+                        const Text(
+                          '•',
+                          style: TextStyle(
+                            fontFamily: AppTheme.fontMono,
+                            fontSize: 9.5,
+                            color: AppColors.nbBlack,
+                          ),
+                        ),
+                        Text(
+                          'SELESAI: ${state.items.where((b) => b.isCompleted).length}',
+                          style: const TextStyle(
+                            fontFamily: AppTheme.fontMono,
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.nbBlack,
+                          ),
+                        ),
+                        const Text(
+                          '•',
+                          style: TextStyle(
+                            fontFamily: AppTheme.fontMono,
+                            fontSize: 9.5,
+                            color: AppColors.nbBlack,
+                          ),
+                        ),
+                        const Text(
+                          'STORAGE PRIVAT',
+                          style: TextStyle(
+                            fontFamily: AppTheme.fontMono,
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.nbTextMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -442,10 +506,24 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
               ),
               child: Column(
                 children: [
-                  const Icon(
-                    Icons.auto_stories,
-                    size: 32.0,
-                    color: AppColors.nbTextMuted,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0,
+                      vertical: 4.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.nbLavender,
+                      border: Border.all(color: AppColors.nbBlack, width: 1.5),
+                    ),
+                    child: const Text(
+                      '[ 0 BUKU DITEMUKAN ]',
+                      style: TextStyle(
+                        fontFamily: AppTheme.fontMono,
+                        fontSize: 10.0,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.nbBlack,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 10.0),
                   const Text(
@@ -558,8 +636,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   /// - Tinggi 32dp
   /// - Border 2px
   /// - Hard shadow 2px
-  /// - Terpilih: fill nb-yellow + ikon centang
-  /// - Tidak terpilih: fill nb-white
+  /// - Terpilih: fill nb-yellow + font tebal w800
+  /// - Tidak terpilih: fill nb-white + font w700
   Widget _buildChip({
     required String label,
     required bool isSelected,
@@ -573,7 +651,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         onTap: onTap,
         child: Container(
           height: 32.0,
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          padding: const EdgeInsets.symmetric(horizontal: 6.0),
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: isSelected ? AppColors.nbYellow : AppColors.nbWhite,
@@ -589,28 +667,17 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
               ),
             ],
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (isSelected) ...[
-                const Icon(Icons.check, size: 13.0, color: AppColors.nbBlack),
-                const SizedBox(width: 3.0),
-              ],
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontFamily: AppTheme.fontHeadline,
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.nbBlack,
-                  ),
-                ),
-              ),
-            ],
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: AppTheme.fontHeadline,
+              fontSize: 10.5,
+              fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
+              color: AppColors.nbBlack,
+            ),
           ),
         ),
       ),

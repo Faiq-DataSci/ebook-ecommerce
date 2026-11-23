@@ -435,7 +435,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(homeProvider);
     final notifier = ref.read(homeProvider.notifier);
-    final palette = NbPalette(isDark: state.isDarkMode);
+    const palette = NbPalette(isDark: false);
 
     if (_searchController.text != state.searchQuery) {
       _searchController.value = TextEditingValue(
@@ -444,178 +444,167 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       );
     }
 
-    return Scaffold(
-      backgroundColor: palette.background,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: <Widget>[
-            // Top Fixed Header (`BUKUKITA` + Theme + Cart + Avatar)
-            HomeHeader(
-              palette: palette,
-              isDarkMode: false,
-              cartCount: state.cartCount,
-              onToggleTheme: () {
-                notifier.toggleThemeMode();
-                _showNeubrutalistSnackBar(
-                  palette,
-                  'Tema dikunci pada mode Terang Neubrutalism sesuai referensi Google Stitch.',
-                );
-              },
-              onCartTap: () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const CartScreen()));
-              },
-              onProfileTap: () {
-                notifier.selectNavIndex(3);
-              },
-            ),
-            // Main Vertical Content Area (Beranda / Pustaka Digital Embed / Profil Embed)
-            if (state.selectedNavIndex == 2)
-              const Expanded(child: LibraryScreen(isEmbedded: true))
-            else if (state.selectedNavIndex == 3)
-              const Expanded(child: ProfileTransactionsScreen(isEmbedded: true))
-            else
-              Expanded(
-                child: SingleChildScrollView(
-                  key: const Key('home_scroll_view'),
-                  padding: const EdgeInsets.fromLTRB(
-                    AppTheme.marginMobile,
-                    16,
-                    AppTheme.marginMobile,
-                    24,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      // Section 1: Greeting & SAW Status Badge
-                      _buildGreetingSection(palette),
-                      const SizedBox(height: 16),
-                      // Section 2: Search Bar & Filter Action
-                      HomeSearchBar(
-                        palette: palette,
-                        controller: _searchController,
-                        onChanged: notifier.updateSearchQuery,
-                        onClear: () {
-                          _searchController.clear();
-                          notifier.resetFilters();
-                        },
-                        onFilterTap: () =>
-                            _showFilterAndStateSheet(palette, state),
-                      ),
-                      const SizedBox(height: 20),
-                      // Conditional State Rendering (loading / error / empty / loaded)
-                      if (state.status == HomeLoadStatus.loading)
-                        _buildLoadingState(palette)
-                      else if (state.status == HomeLoadStatus.error)
-                        _buildErrorState(
+    return PopScope(
+      canPop: state.selectedNavIndex == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && state.selectedNavIndex != 0) {
+          notifier.selectNavIndex(0);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: palette.background,
+        body: SafeArea(
+          bottom: false,
+          child: Column(
+            children: <Widget>[
+              // Top Fixed Header (`BUKUKITA` + Cart + Avatar)
+              HomeHeader(
+                palette: palette,
+                cartCount: state.cartCount,
+                onCartTap: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const CartScreen()));
+                },
+                onProfileTap: () {
+                  notifier.selectNavIndex(3);
+                },
+              ),
+              // Main Vertical Content Area (Beranda / Katalog / Pustaka Digital / Profil Embed)
+              if (state.selectedNavIndex == 1)
+                const Expanded(child: CatalogScreen(isEmbedded: true))
+              else if (state.selectedNavIndex == 2)
+                const Expanded(child: LibraryScreen(isEmbedded: true))
+              else if (state.selectedNavIndex == 3)
+                const Expanded(
+                  child: ProfileTransactionsScreen(isEmbedded: true),
+                )
+              else
+                Expanded(
+                  child: SingleChildScrollView(
+                    key: const Key('home_scroll_view'),
+                    padding: const EdgeInsets.fromLTRB(
+                      AppTheme.marginMobile,
+                      16,
+                      AppTheme.marginMobile,
+                      24,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        // Section 1: Greeting & SAW Status Badge
+                        _buildGreetingSection(palette),
+                        const SizedBox(height: 16),
+                        // Section 2: Search Bar & Filter Action
+                        HomeSearchBar(
                           palette: palette,
-                          message:
-                              state.errorMessage ??
-                              'Gagal memuat katalog dari server.',
-                          onRetry: notifier.retryLoad,
-                        )
-                      else if (state.status == HomeLoadStatus.empty ||
-                          (!state.isFeaturedVisible &&
-                              state.filteredLatestReleases.isEmpty))
-                        _buildEmptyState(
-                          palette: palette,
-                          onReset: () {
+                          controller: _searchController,
+                          onChanged: notifier.updateSearchQuery,
+                          onClear: () {
                             _searchController.clear();
-                            notifier.retryLoad();
+                            notifier.resetFilters();
                           },
-                        )
-                      else ...<Widget>[
-                        // Section 3: Hero Banner (Zona A)
-                        HomeBanner(
-                          palette: palette,
-                          onCalculateSawTap: () => _showSawDecisionModal(
-                            palette,
-                            state.featuredSawBook,
-                          ),
+                          onFilterTap: () =>
+                              _showFilterAndStateSheet(palette, state),
                         ),
-                        const SizedBox(height: 24),
-                        // Section 4: Kategori Pilihan
-                        CategorySection(
-                          categories: state.categories,
-                          selectedCategoryId: state.selectedCategoryId,
-                          palette: palette,
-                          onSelectCategory: notifier.selectCategory,
-                        ),
-                        const SizedBox(height: 24),
-                        // Section 5: Top Rekomendasi SAW (Zona B)
-                        if (state.isFeaturedVisible) ...<Widget>[
-                          FeaturedBooksSection(
-                            book: state.featuredSawBook,
+                        const SizedBox(height: 20),
+                        // Conditional State Rendering (loading / error / empty / loaded)
+                        if (state.status == HomeLoadStatus.loading)
+                          _buildLoadingState(palette)
+                        else if (state.status == HomeLoadStatus.error)
+                          _buildErrorState(
                             palette: palette,
-                            onDetailTap: () =>
-                                _openBookDetail(state.featuredSawBook.id),
-                            onAddToCartTap: () {
+                            message:
+                                state.errorMessage ??
+                                'Gagal memuat katalog dari server.',
+                            onRetry: notifier.retryLoad,
+                          )
+                        else if (state.status == HomeLoadStatus.empty ||
+                            (!state.isFeaturedVisible &&
+                                state.filteredLatestReleases.isEmpty))
+                          _buildEmptyState(
+                            palette: palette,
+                            onReset: () {
+                              _searchController.clear();
+                              notifier.retryLoad();
+                            },
+                          )
+                        else ...<Widget>[
+                          // Section 3: Hero Banner (Zona A)
+                          HomeBanner(
+                            palette: palette,
+                            onCalculateSawTap: () => _showSawDecisionModal(
+                              palette,
+                              state.featuredSawBook,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          // Section 4: Kategori Pilihan
+                          CategorySection(
+                            categories: state.categories,
+                            selectedCategoryId: state.selectedCategoryId,
+                            palette: palette,
+                            onSelectCategory: notifier.selectCategory,
+                          ),
+                          const SizedBox(height: 24),
+                          // Section 5: Top Rekomendasi SAW (Zona B)
+                          if (state.isFeaturedVisible) ...<Widget>[
+                            FeaturedBooksSection(
+                              book: state.featuredSawBook,
+                              palette: palette,
+                              onDetailTap: () =>
+                                  _openBookDetail(state.featuredSawBook.id),
+                              onAddToCartTap: () {
+                                notifier.addToCart();
+                                _showNeubrutalistSnackBar(
+                                  palette,
+                                  '${state.featuredSawBook.title} ditambahkan ke keranjang.',
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                          // Section 6: Rilisan Terbaru (2-Column Catalog Grid)
+                          _buildLatestReleasesSection(
+                            palette: palette,
+                            books: state.filteredLatestReleases,
+                            onResetFilters: notifier.resetFilters,
+                            onAddBookToCart: (book) {
                               notifier.addToCart();
                               _showNeubrutalistSnackBar(
                                 palette,
-                                '${state.featuredSawBook.title} ditambahkan ke keranjang.',
+                                '${book.title} ditambahkan ke keranjang.',
                               );
                             },
                           ),
                           const SizedBox(height: 24),
+                          // Section 7: Flash Sale & Bundel Hemat + DATA SIMULASI Badge
+                          FlashSaleSection(
+                            bundles: state.bundles,
+                            palette: palette,
+                            onClaimBundle: (bundle) {
+                              notifier.addToCart();
+                              _showNeubrutalistSnackBar(
+                                palette,
+                                '${bundle.title} berhasil diklaim ke keranjang.',
+                              );
+                            },
+                          ),
                         ],
-                        // Section 6: Rilisan Terbaru (2-Column Catalog Grid)
-                        _buildLatestReleasesSection(
-                          palette: palette,
-                          books: state.filteredLatestReleases,
-                          onResetFilters: notifier.resetFilters,
-                          onAddBookToCart: (book) {
-                            notifier.addToCart();
-                            _showNeubrutalistSnackBar(
-                              palette,
-                              '${book.title} ditambahkan ke keranjang.',
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 24),
-                        // Section 7: Flash Sale & Bundel Hemat + DATA SIMULASI Badge
-                        FlashSaleSection(
-                          bundles: state.bundles,
-                          palette: palette,
-                          onClaimBundle: (bundle) {
-                            notifier.addToCart();
-                            _showNeubrutalistSnackBar(
-                              palette,
-                              '${bundle.title} berhasil diklaim ke keranjang.',
-                            );
-                          },
-                        ),
                       ],
-                    ],
+                    ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
-      ),
-      bottomNavigationBar: HomeBottomNavigation(
-        currentIndex: state.selectedNavIndex,
-        palette: palette,
-        onTap: (index) {
-          notifier.selectNavIndex(index);
-          if (index == 1) {
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => const CatalogScreen()));
-          } else if (index == 2) {
-            // Berpindah tab ke Pustaka Digital langsung di navigasi utama tanpa membuat layer baru
-          } else if (index == 3) {
-            // Berpindah tab ke Profil & Riwayat Pesanan langsung di navigasi utama tanpa membuat layer baru
-          } else if (index != 0) {
-            const labels = <String>['Beranda', 'Katalog', 'Pustaka', 'Profil'];
-            _showNeubrutalistSnackBar(
-              palette,
-              'Tab ${labels[index]} masih dalam rencana pengembangan (${HomeMockData.simulationLabel}).',
-            );
-          }
-        },
+        bottomNavigationBar: HomeBottomNavigation(
+          currentIndex: state.selectedNavIndex,
+          palette: palette,
+          onTap: (index) {
+            notifier.selectNavIndex(index);
+          },
+        ),
       ),
     );
   }
@@ -652,38 +641,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
         ),
-        const SizedBox(width: 8),
-        // SAW ONLINE Status Badge
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: AppTheme.brutalBox(
-            color: palette.surface,
-            borderColor: palette.ink,
-            borderWidth: AppTheme.borderDefault,
-            shadowOffset: 2,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: palette.green,
-                  border: Border.all(
-                    color: palette.ink,
-                    width: AppTheme.borderThin,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                HomeMockData.sawStatusText,
-                style: AppTheme.dataMono(palette.textPrimary, fontSize: 11),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
@@ -702,9 +659,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           palette: palette,
           actionLabel: 'Lihat Semua',
           onActionTap: () {
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => const CatalogScreen()));
+            ref.read(homeProvider.notifier).selectNavIndex(1);
           },
         ),
         const SizedBox(height: 12),

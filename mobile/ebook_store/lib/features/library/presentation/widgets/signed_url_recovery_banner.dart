@@ -51,10 +51,14 @@ class SignedUrlRecoveryBanner extends StatelessWidget {
                   border: Border.all(color: AppColors.nbBlack, width: 2.0),
                 ),
                 child: const Center(
-                  child: Icon(
-                    Icons.lock_clock,
-                    size: 18.0,
-                    color: AppColors.nbBlack,
+                  child: Text(
+                    '!',
+                    style: TextStyle(
+                      fontFamily: AppTheme.fontHeadline,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.nbBlack,
+                    ),
                   ),
                 ),
               ),

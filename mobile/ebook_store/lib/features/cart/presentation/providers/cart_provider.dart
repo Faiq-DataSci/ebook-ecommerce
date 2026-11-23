@@ -3,6 +3,7 @@ import '../../../../core/config/api_config.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/utils/rupiah_formatter.dart';
 import '../../../catalog/domain/entities/catalog_ebook.dart';
+import '../../data/datasources/cart_local_datasource.dart';
 import '../../data/datasources/cart_mock_datasource.dart';
 import '../../data/datasources/cart_remote_datasource.dart';
 import '../../data/repositories/cart_repository_impl.dart';
@@ -120,14 +121,43 @@ final cartRepositoryProvider = Provider<CartRepository>((ref) {
 
 class CartNotifier extends StateNotifier<CartState> {
   final CartRepository repository;
+  final CartLocalDataSource? localDataSource;
 
-  CartNotifier({required this.repository, bool isMock = true})
-    : super(CartState(isMock: isMock));
+  CartNotifier({
+    required this.repository,
+    this.localDataSource,
+    bool isMock = true,
+    bool autoLoad = false,
+  }) : super(CartState(isMock: isMock)) {
+    if (autoLoad) {
+      loadCart();
+    }
+  }
+
+  void _persistCart() {
+    localDataSource?.saveCartItems(state.items);
+  }
 
   Future<void> loadCart() async {
     state = state.copyWith(status: CartStatus.loading, clearErrorMessage: true);
 
     try {
+      // 1. Coba pulihkan item dari penyimpanan lokal terlebih dahulu
+      if (localDataSource != null) {
+        final savedItems = await localDataSource!.getCartItems();
+        if (savedItems != null) {
+          final recommendations = await repository.getRecommendedSawItems();
+          state = state.copyWith(
+            status: savedItems.isEmpty ? CartStatus.empty : CartStatus.loaded,
+            items: savedItems,
+            recommendedItems: recommendations,
+            clearErrorMessage: true,
+          );
+          return;
+        }
+      }
+
+      // 2. Jika penyimpanan lokal kosong / belum diinisialisasi, gunakan repositori
       final items = await repository.getCartItems();
       final recommendations = await repository.getRecommendedSawItems();
 
@@ -155,6 +185,7 @@ class CartNotifier extends StateNotifier<CartState> {
         .map((item) => item.copyWith(isSelected: targetSelected))
         .toList();
     state = state.copyWith(items: updated);
+    _persistCart();
   }
 
   void toggleItemSelection(String itemId) {
@@ -165,6 +196,7 @@ class CartNotifier extends StateNotifier<CartState> {
       return item;
     }).toList();
     state = state.copyWith(items: updated);
+    _persistCart();
   }
 
   void removeItem(String itemId) {
@@ -173,6 +205,7 @@ class CartNotifier extends StateNotifier<CartState> {
       items: updated,
       status: updated.isEmpty ? CartStatus.empty : CartStatus.loaded,
     );
+    _persistCart();
   }
 
   void removeSelectedItems() {
@@ -181,10 +214,12 @@ class CartNotifier extends StateNotifier<CartState> {
       items: updated,
       status: updated.isEmpty ? CartStatus.empty : CartStatus.loaded,
     );
+    _persistCart();
   }
 
   void clearCart() {
     state = state.copyWith(items: const <CartItem>[], status: CartStatus.empty);
+    localDataSource?.clearCart();
   }
 
   void addItem(CartItem item) {
@@ -195,11 +230,13 @@ class CartNotifier extends StateNotifier<CartState> {
         isSelected: true,
       );
       state = state.copyWith(items: updated, status: CartStatus.loaded);
+      _persistCart();
       return;
     }
 
     final updated = List<CartItem>.from(state.items)..add(item);
     state = state.copyWith(items: updated, status: CartStatus.loaded);
+    _persistCart();
   }
 
   void addCatalogEbook(CatalogEbook ebook) {
@@ -304,10 +341,16 @@ class CartNotifier extends StateNotifier<CartState> {
   }
 }
 
+final cartLocalDataSourceProvider = Provider<CartLocalDataSource>((ref) {
+  return CartLocalDataSourceImpl();
+});
+
 final cartProvider = StateNotifierProvider<CartNotifier, CartState>((ref) {
   final repository = ref.watch(cartRepositoryProvider);
+  final localDs = ref.watch(cartLocalDataSourceProvider);
   return CartNotifier(
     repository: repository,
+    localDataSource: localDs,
     isMock: !ApiConfig.useRemoteCatalog,
   );
 });

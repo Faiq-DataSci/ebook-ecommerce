@@ -31,7 +31,7 @@ void main() {
         expect(find.text('2'), findsOneWidget);
         expect(find.text('Halo, Raditya'), findsOneWidget);
         expect(find.text('Mau baca apa hari ini?'), findsOneWidget);
-        expect(find.text('KURASI PINTAR'), findsOneWidget);
+        expect(find.text('KURASI PINTAR'), findsNothing);
 
         // Search Bar
         expect(
@@ -141,14 +141,12 @@ void main() {
     });
 
     testWidgets(
-      'Interactive controls: theme toggle, cart increment, search, recommendation modal, and loading/empty/error states',
+      'Interactive controls: cart increment, search, recommendation modal, and loading/empty/error states',
       (WidgetTester tester) async {
         await _pumpAtViewport(tester, const Size(390, 884));
 
-        // 1. Tap Light Mode button (stays in Stitch Light Mode)
-        await tester.tap(find.byKey(const Key('theme_toggle_button')));
-        await tester.pumpAndSettle();
-        expect(find.byIcon(Icons.wb_sunny_outlined), findsOneWidget);
+        // 1. Tombol toggle tema ditiadakan (desain terkunci mode Terang Neubrutalism)
+        expect(find.byKey(const Key('theme_toggle_button')), findsNothing);
 
         // 2. Add to cart increments badge from 2 to 3
         final addCartBtn = find.byKey(const Key('featured_add_cart_button'));

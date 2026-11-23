@@ -146,11 +146,7 @@ Widget _buildTestableWidget({
       authRepositoryProvider.overrideWithValue(fakeAuth),
       profileIsSimulatedProvider.overrideWithValue(isSimulated),
     ],
-    child: MaterialApp(
-      home: Scaffold(
-        body: child,
-      ),
-    ),
+    child: MaterialApp(home: Scaffold(body: child)),
   );
 }
 

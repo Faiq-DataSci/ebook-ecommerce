@@ -25,6 +25,15 @@ class ApiConfig {
 
   static bool get useRemoteCatalog => catalogSource.toLowerCase() == 'remote';
 
+  /// Sumber data rekomendasi SAW: 'mock' (default simulasi) atau 'remote' (live API).
+  static const String recommendationSource = String.fromEnvironment(
+    'RECOMMENDATION_SOURCE',
+    defaultValue: 'mock',
+  );
+
+  static bool get useRemoteRecommendation =>
+      recommendationSource.toLowerCase() == 'remote';
+
   static String get baseUrl {
     if (kIsWeb) {
       return 'http://localhost:$defaultPort/api/v1';

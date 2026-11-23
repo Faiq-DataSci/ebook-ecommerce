@@ -22,6 +22,11 @@ final dioClientProvider = Provider<Dio>((ref) {
   dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) async {
+        // Jangan kirim token aplikasi ke host eksternal (mis. signed URL
+        // Supabase Storage) yang sudah memiliki otorisasi sendiri.
+        if (options.extra['skipAuth'] == true) {
+          return handler.next(options);
+        }
         try {
           final token = await authLocalDataSource.getToken();
           if (token != null &&

@@ -17,6 +17,14 @@ class InAppPdfReaderToolbar extends StatelessWidget {
   final VoidCallback onZoomIn;
   final VoidCallback onZoomOut;
   final VoidCallback onClose;
+  final bool isSearching;
+  final VoidCallback? onToggleSearch;
+  final TextEditingController? searchController;
+  final ValueChanged<String>? onSearchChanged;
+  final VoidCallback? onSearchNext;
+  final VoidCallback? onSearchPrevious;
+  final int currentMatchIndex;
+  final int totalMatches;
 
   const InAppPdfReaderToolbar({
     super.key,
@@ -29,6 +37,14 @@ class InAppPdfReaderToolbar extends StatelessWidget {
     required this.onZoomIn,
     required this.onZoomOut,
     required this.onClose,
+    this.isSearching = false,
+    this.onToggleSearch,
+    this.searchController,
+    this.onSearchChanged,
+    this.onSearchNext,
+    this.onSearchPrevious,
+    this.currentMatchIndex = 0,
+    this.totalMatches = 0,
   });
 
   @override
@@ -161,11 +177,116 @@ class InAppPdfReaderToolbar extends StatelessWidget {
                         onTap: onZoomIn,
                         enabled: zoomLevel < 2.0,
                       ),
+                      if (onToggleSearch != null) ...[
+                        const SizedBox(width: 4.0),
+                        _buildToolbarButton(
+                          key: const Key('reader_toggle_search_button'),
+                          icon: Icons.search,
+                          label: 'Cari Teks',
+                          onTap: onToggleSearch!,
+                          enabled: true,
+                        ),
+                      ],
                     ],
                   ),
                 ],
               ),
             ),
+
+            // Baris Pencarian Teks PDF (P3.2)
+            if (isSearching)
+              Container(
+                key: const Key('reader_search_panel'),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12.0,
+                  vertical: 6.0,
+                ),
+                decoration: const BoxDecoration(
+                  color: AppColors.nbYellow,
+                  border: Border(
+                    top: BorderSide(
+                      color: AppColors.nbBlack,
+                      width: AppTheme.borderThin,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.search,
+                      size: 18.0,
+                      color: AppColors.nbBlack,
+                    ),
+                    const SizedBox(width: 8.0),
+                    Expanded(
+                      child: TextField(
+                        key: const Key('reader_search_input'),
+                        controller: searchController,
+                        onChanged: onSearchChanged,
+                        style: const TextStyle(
+                          fontSize: 12.0,
+                          color: AppColors.nbBlack,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: 'Cari kata dalam PDF...',
+                          hintStyle: TextStyle(
+                            fontSize: 12.0,
+                            color: AppColors.nbTextMuted,
+                          ),
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 6.0,
+                          ),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                    if (totalMatches > 0)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                        child: Text(
+                          '$currentMatchIndex / $totalMatches',
+                          style: const TextStyle(
+                            fontFamily: AppTheme.fontMono,
+                            fontSize: 11.0,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.nbBlack,
+                          ),
+                        ),
+                      ),
+                    InkWell(
+                      key: const Key('reader_search_prev_button'),
+                      onTap: onSearchPrevious,
+                      child: const Icon(
+                        Icons.navigate_before,
+                        size: 22.0,
+                        color: AppColors.nbBlack,
+                      ),
+                    ),
+                    const SizedBox(width: 4.0),
+                    InkWell(
+                      key: const Key('reader_search_next_button'),
+                      onTap: onSearchNext,
+                      child: const Icon(
+                        Icons.navigate_next,
+                        size: 22.0,
+                        color: AppColors.nbBlack,
+                      ),
+                    ),
+                    const SizedBox(width: 8.0),
+                    InkWell(
+                      key: const Key('reader_search_close_button'),
+                      onTap: onToggleSearch,
+                      child: const Icon(
+                        Icons.close,
+                        size: 18.0,
+                        color: AppColors.nbBlack,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
             const Divider(
               height: 1.0,

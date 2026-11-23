@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_assets.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_theme.dart';
+import '../../../recommendations/presentation/pages/saw_ranking_screen.dart';
 import '../../domain/models/ebook.dart';
 import 'section_header.dart';
 
@@ -35,8 +36,12 @@ class FeaturedBooksSection extends StatelessWidget {
         SectionHeader(
           title: 'Rekomendasi Terbaik Untukmu',
           palette: palette,
-          rightBadgeText: 'PILIHAN UTAMA',
-          rightBadgeColor: AppColors.nbLavender,
+          rightBadgeText: book.isRemoteSource
+              ? 'SPK SAW AKTIF'
+              : 'PILIHAN UTAMA',
+          rightBadgeColor: book.isRemoteSource
+              ? AppColors.nbGreen
+              : AppColors.nbLavender,
         ),
         const SizedBox(height: 12),
         Stack(
@@ -442,6 +447,56 @@ class FeaturedBooksSection extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 10),
+                  Semantics(
+                    button: true,
+                    label: 'Lihat peringkat lengkap Top-N rekomendasi SAW',
+                    child: InkWell(
+                      key: const Key('featured_view_all_saw_button'),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const SawRankingScreen(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        height: 38,
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        decoration: AppTheme.brutalBox(
+                          color: AppColors.nbLavender,
+                          borderColor: AppColors.nbBlack,
+                          borderWidth: AppTheme.borderDefault,
+                          shadowOffset: 2,
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.analytics_outlined,
+                              size: 16,
+                              color: AppColors.nbBlack,
+                            ),
+                            SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                'LIHAT PERINGKAT LENGKAP TOP-N SAW →',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w900,
+                                  fontFamily: 'SpaceGrotesk',
+                                  color: AppColors.nbBlack,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),

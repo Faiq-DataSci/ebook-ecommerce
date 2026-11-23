@@ -51,7 +51,15 @@ class AccessDeniedCard extends StatelessWidget {
               ),
               child: const Row(
                 children: [
-                  Icon(Icons.gpp_bad, color: AppColors.nbBlack, size: 20.0),
+                  Text(
+                    '[!]',
+                    style: TextStyle(
+                      fontFamily: AppTheme.fontMono,
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.nbBlack,
+                    ),
+                  ),
                   SizedBox(width: 8.0),
                   Expanded(
                     child: Text(

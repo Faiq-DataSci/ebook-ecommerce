@@ -202,11 +202,16 @@ class PaymentGatewayPendingCard extends StatelessWidget {
                         fontSize: 10,
                       ),
                     ),
-                    Text(
-                      externalRef,
-                      style: AppTheme.dataMono(
-                        AppColors.nbTextMuted,
-                        fontSize: 10,
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        externalRef,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTheme.dataMono(
+                          AppColors.nbTextMuted,
+                          fontSize: 10,
+                        ),
                       ),
                     ),
                   ],
@@ -216,7 +221,39 @@ class PaymentGatewayPendingCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Tombol Cek Status Pembayaran
+          // P1.3 Indikator Auto-Polling Status Pembayaran
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.nbPaper,
+              border: Border.all(
+                color: AppColors.nbBlack,
+                width: AppTheme.borderThin,
+              ),
+            ),
+            child: Row(
+              children: <Widget>[
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: AppColors.nbGreen,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Auto-polling aktif: memantau konfirmasi pelunasan...',
+                    style: AppTheme.dataMono(AppColors.nbBlack, fontSize: 10.5),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Tombol Cek Status Pembayaran (Manual Refresh)
           InkWell(
             key: const Key('check_payment_status_button'),
             onTap: isCheckingStatus ? null : onCheckStatus,

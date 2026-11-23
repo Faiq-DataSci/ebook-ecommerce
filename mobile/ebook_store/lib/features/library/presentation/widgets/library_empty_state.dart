@@ -16,14 +16,14 @@ class LibraryEmptyState extends StatelessWidget {
         padding: const EdgeInsets.all(24.0),
         child: Container(
           key: const Key('library_empty_state'),
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
           decoration: BoxDecoration(
             color: AppColors.nbWhite,
-            border: Border.all(color: AppColors.nbBlack, width: 3.0),
+            border: Border.all(color: AppColors.nbBlack, width: 2.5),
             boxShadow: const [
               BoxShadow(
                 color: AppColors.nbBlack,
-                offset: Offset(5.0, 5.0),
+                offset: Offset(4.0, 4.0),
                 blurRadius: 0.0,
               ),
             ],
@@ -31,29 +31,35 @@ class LibraryEmptyState extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Badge Neubrutalist Typographic Header
               Container(
-                width: 56.0,
-                height: 56.0,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14.0,
+                  vertical: 7.0,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.nbYellow,
-                  border: Border.all(color: AppColors.nbBlack, width: 2.5),
+                  border: Border.all(color: AppColors.nbBlack, width: 2.0),
                   boxShadow: const [
                     BoxShadow(
                       color: AppColors.nbBlack,
-                      offset: Offset(3.0, 3.0),
+                      offset: Offset(2.5, 2.5),
                       blurRadius: 0.0,
                     ),
                   ],
                 ),
-                child: const Center(
-                  child: Icon(
-                    Icons.local_library_outlined,
-                    size: 32.0,
+                child: const Text(
+                  '[ RAK BUKU KOSONG ]',
+                  style: TextStyle(
+                    fontFamily: AppTheme.fontMono,
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w800,
                     color: AppColors.nbBlack,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
-              const SizedBox(height: 16.0),
+              const SizedBox(height: 18.0),
               const Text(
                 'Perpustakaanmu masih kosong. Jelajahi katalog untuk menemukan buku pertamamu.',
                 textAlign: TextAlign.center,
@@ -62,10 +68,10 @@ class LibraryEmptyState extends StatelessWidget {
                   fontSize: 15.0,
                   fontWeight: FontWeight.w800,
                   color: AppColors.nbBlack,
-                  height: 1.35,
+                  height: 1.4,
                 ),
               ),
-              const SizedBox(height: 20.0),
+              const SizedBox(height: 22.0),
               Semantics(
                 button: true,
                 label: 'Jelajahi katalog',
@@ -73,12 +79,12 @@ class LibraryEmptyState extends StatelessWidget {
                   key: const Key('library_explore_catalog_button'),
                   onTap: onExploreCatalog,
                   child: Container(
-                    height: 44.0,
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    height: 46.0,
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: AppColors.nbYellow,
-                      border: Border.all(color: AppColors.nbBlack, width: 2.5),
+                      border: Border.all(color: AppColors.nbBlack, width: 2.0),
                       boxShadow: const [
                         BoxShadow(
                           color: AppColors.nbBlack,
@@ -87,26 +93,15 @@ class LibraryEmptyState extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.search,
-                          size: 18.0,
-                          color: AppColors.nbBlack,
-                        ),
-                        SizedBox(width: 8.0),
-                        Text(
-                          'Jelajahi katalog',
-                          style: TextStyle(
-                            fontFamily: AppTheme.fontHeadline,
-                            fontSize: 13.0,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.nbBlack,
-                            letterSpacing: 0.3,
-                          ),
-                        ),
-                      ],
+                    child: const Text(
+                      'Jelajahi katalog',
+                      style: TextStyle(
+                        fontFamily: AppTheme.fontHeadline,
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.nbBlack,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
                 ),

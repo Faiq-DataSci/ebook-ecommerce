@@ -1,7 +1,13 @@
+// ignore_for_file: prefer_initializing_formals
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/config/api_config.dart';
+import '../../../../core/network/dio_client.dart';
+import '../../data/datasources/recommendation_remote_datasource.dart';
 import '../../data/mock/home_mock_data.dart';
+import '../../data/repositories/recommendation_repository_impl.dart';
 import '../../domain/models/category.dart';
 import '../../domain/models/ebook.dart';
+import '../../domain/repositories/recommendation_repository.dart';
 
 /// UI loading/data states required by `mobile/AGENTS.md` and `antislop` R-27.
 enum HomeLoadStatus { loaded, loading, empty, error }
@@ -9,7 +15,6 @@ enum HomeLoadStatus { loaded, loading, empty, error }
 /// Immutable state for `Beranda Mobile (Neubrutalism)`.
 class HomeState {
   final HomeLoadStatus status;
-  final bool isDarkMode;
   final String searchQuery;
   final String selectedCategoryId;
   final int selectedNavIndex;
@@ -22,7 +27,6 @@ class HomeState {
 
   const HomeState({
     this.status = HomeLoadStatus.loaded,
-    this.isDarkMode = false,
     this.searchQuery = '',
     this.selectedCategoryId = 'semua',
     this.selectedNavIndex = 0,
@@ -74,7 +78,6 @@ class HomeState {
 
   HomeState copyWith({
     HomeLoadStatus? status,
-    bool? isDarkMode,
     String? searchQuery,
     String? selectedCategoryId,
     int? selectedNavIndex,
@@ -87,7 +90,6 @@ class HomeState {
   }) {
     return HomeState(
       status: status ?? this.status,
-      isDarkMode: isDarkMode ?? this.isDarkMode,
       searchQuery: searchQuery ?? this.searchQuery,
       selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
       selectedNavIndex: selectedNavIndex ?? this.selectedNavIndex,
@@ -101,11 +103,61 @@ class HomeState {
   }
 }
 
-class HomeNotifier extends StateNotifier<HomeState> {
-  HomeNotifier() : super(const HomeState());
+// ---------------------------------------------------------------------------
+// Dependency Injection Providers
+// ---------------------------------------------------------------------------
 
-  void toggleThemeMode() {
-    state = state.copyWith(isDarkMode: !state.isDarkMode);
+final recommendationRemoteDataSourceProvider =
+    Provider<RecommendationRemoteDataSource>((ref) {
+      final dio = ref.watch(dioClientProvider);
+      return RecommendationRemoteDataSourceImpl(dio: dio);
+    });
+
+final recommendationRepositoryProvider = Provider<RecommendationRepository>((
+  ref,
+) {
+  final remote = ref.watch(recommendationRemoteDataSourceProvider);
+  return RecommendationRepositoryImpl(
+    remoteDataSource: remote,
+    useRemote: ApiConfig.useRemoteRecommendation,
+  );
+});
+
+// ---------------------------------------------------------------------------
+// State Notifier & Controller
+// ---------------------------------------------------------------------------
+
+class HomeNotifier extends StateNotifier<HomeState> {
+  final RecommendationRepository? _recommendationRepository;
+
+  HomeNotifier({
+    RecommendationRepository? recommendationRepository,
+    bool autoLoad = true,
+  }) : _recommendationRepository = recommendationRepository,
+       super(const HomeState()) {
+    if (autoLoad && _recommendationRepository != null) {
+      loadSawRecommendation();
+    }
+  }
+
+  /// Memuat rekomendasi e-book SAW dari backend secara asinkron
+  Future<void> loadSawRecommendation() async {
+    final repo = _recommendationRepository;
+    if (repo == null) return;
+    try {
+      final categoryId = state.selectedCategoryId == 'semua'
+          ? null
+          : state.selectedCategoryId;
+      final book = await repo.getFeaturedSawBook(categoryId: categoryId);
+      state = state.copyWith(featuredSawBook: book);
+    } catch (_) {
+      // Tetap menggunakan fallback aman data simulasi
+    }
+  }
+
+  /// Memuat ulang data rekomendasi (pull-to-refresh)
+  Future<void> refresh() async {
+    await loadSawRecommendation();
   }
 
   void updateSearchQuery(String query) {
@@ -117,6 +169,7 @@ class HomeNotifier extends StateNotifier<HomeState> {
       selectedCategoryId: categoryId,
       status: HomeLoadStatus.loaded,
     );
+    loadSawRecommendation();
   }
 
   void resetFilters() {
@@ -125,6 +178,7 @@ class HomeNotifier extends StateNotifier<HomeState> {
       selectedCategoryId: 'semua',
       status: HomeLoadStatus.loaded,
     );
+    loadSawRecommendation();
   }
 
   void selectNavIndex(int index) {
@@ -155,9 +209,11 @@ class HomeNotifier extends StateNotifier<HomeState> {
       selectedCategoryId: 'semua',
       errorMessage: null,
     );
+    loadSawRecommendation();
   }
 }
 
 final homeProvider = StateNotifierProvider<HomeNotifier, HomeState>((ref) {
-  return HomeNotifier();
+  final repo = ref.watch(recommendationRepositoryProvider);
+  return HomeNotifier(recommendationRepository: repo);
 });

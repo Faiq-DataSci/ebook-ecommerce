@@ -467,5 +467,34 @@ void main() {
         expect(tester.takeException(), isNull);
       },
     );
+
+    testWidgets(
+      '12. Pull-to-refresh memicu pemuatan ulang katalog dengan RefreshIndicator',
+      (tester) async {
+        final repo = FakeCatalogRepository(
+          mockCategories: testCategories,
+          mockBooks: testBooks,
+        );
+
+        await tester.binding.setSurfaceSize(const Size(390, 884));
+        await tester.pumpWidget(_buildTestableCatalogScreen(repository: repo));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(RefreshIndicator), findsOneWidget);
+
+        // Lakukan gesture pull down untuk memicu refresh
+        await tester.fling(
+          find.byKey(const Key('catalog_scroll_view')),
+          const Offset(0, 300),
+          1000,
+        );
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Arsitektur Cloud & DevOps'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 }

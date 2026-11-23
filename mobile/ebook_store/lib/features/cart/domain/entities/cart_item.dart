@@ -75,4 +75,38 @@ class CartItem {
       isSelected: isSelected ?? this.isSelected,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'author': author,
+    'pageCount': pageCount,
+    'category': category,
+    'sawRankLabel': sawRankLabel,
+    'isTopSawRank': isTopSawRank,
+    'formatLabel': formatLabel,
+    'licenseLabel': licenseLabel,
+    'coverUrl': coverUrl,
+    'price': price,
+    'originalPrice': originalPrice,
+    'ratingAvg': ratingAvg,
+    'isSelected': isSelected,
+  };
+
+  factory CartItem.fromJson(Map<String, dynamic> json) => CartItem(
+    id: json['id'] as String,
+    title: json['title'] as String,
+    author: json['author'] as String,
+    pageCount: (json['pageCount'] as num).toInt(),
+    category: json['category'] as String,
+    sawRankLabel: (json['sawRankLabel'] as String?) ?? 'Rank #1 SAW',
+    isTopSawRank: (json['isTopSawRank'] as bool?) ?? false,
+    formatLabel: (json['formatLabel'] as String?) ?? 'PDF',
+    licenseLabel: (json['licenseLabel'] as String?) ?? '1 Lisensi Digital',
+    coverUrl: json['coverUrl'] as String?,
+    price: (json['price'] as num).toInt(),
+    originalPrice: (json['originalPrice'] as num?)?.toInt(),
+    ratingAvg: (json['ratingAvg'] as num?)?.toDouble() ?? 4.8,
+    isSelected: (json['isSelected'] as bool?) ?? true,
+  );
 }

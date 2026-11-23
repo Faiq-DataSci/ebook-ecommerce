@@ -77,6 +77,14 @@ class StitchBookCover extends StatelessWidget {
     if (assetPath.isEmpty) {
       return _buildFallback();
     }
+    if (assetPath.startsWith('http://') || assetPath.startsWith('https://')) {
+      return Image.network(
+        assetPath,
+        fit: BoxFit.cover,
+        semanticLabel: semanticLabel,
+        errorBuilder: (context, error, stackTrace) => _buildFallback(),
+      );
+    }
     final bytes = AppAssets.getEmbeddedBytes(assetPath);
     if (bytes != null) {
       return Image.memory(

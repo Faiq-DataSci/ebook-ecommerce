@@ -133,6 +133,11 @@ class CatalogNotifier extends StateNotifier<CatalogState> {
     loadInitial();
   }
 
+  /// Memuat ulang katalog dari halaman awal (pull-to-refresh)
+  Future<void> refresh() async {
+    await loadInitial();
+  }
+
   /// Memuat kategori dan halaman pertama e-book
   Future<void> loadInitial() async {
     state = state.copyWith(

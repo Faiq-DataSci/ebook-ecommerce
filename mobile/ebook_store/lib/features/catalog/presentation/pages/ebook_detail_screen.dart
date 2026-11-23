@@ -10,6 +10,8 @@ import '../../../library/presentation/pages/library_screen.dart';
 import '../../../library/presentation/providers/library_provider.dart';
 import '../../domain/entities/catalog_ebook.dart';
 import '../providers/catalog_provider.dart';
+import '../providers/wishlist_provider.dart';
+import '../widgets/book_reviews_section.dart';
 
 /// Halaman Detail E-Book (Google Stitch Zona B + design.md §8.5 & FR-C05).
 /// Memuat data e-book secara aman berbasis ID dari repository/API,
@@ -24,6 +26,8 @@ class EbookDetailScreen extends ConsumerWidget {
     final detailAsync = ref.watch(ebookDetailProvider(ebookId));
     final ownershipAsync = ref.watch(userOwnershipProvider(ebookId));
     final isAlreadyOwned = ownershipAsync.value ?? false;
+    final wishlist = ref.watch(wishlistProvider);
+    final isWishlisted = wishlist.contains(ebookId);
 
     return Scaffold(
       backgroundColor: AppColors.nbPaper,
@@ -75,6 +79,56 @@ class EbookDetailScreen extends ConsumerWidget {
                   Text(
                     'Detail E-Book',
                     style: AppTheme.headlineSmMobile(AppColors.nbBlack),
+                  ),
+                  const Spacer(),
+                  Semantics(
+                    button: true,
+                    label: isWishlisted
+                        ? 'Hapus dari Wishlist'
+                        : 'Tambah ke Wishlist',
+                    child: InkWell(
+                      key: const Key('ebook_detail_wishlist_button'),
+                      onTap: () {
+                        final isAdded = ref
+                            .read(wishlistProvider.notifier)
+                            .toggleWishlist(ebookId);
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: isAdded
+                                ? AppColors.nbYellow
+                                : AppColors.nbPink,
+                            content: Text(
+                              isAdded
+                                  ? 'E-book ditambahkan ke Wishlist!'
+                                  : 'E-book dihapus dari Wishlist.',
+                              style: const TextStyle(
+                                color: AppColors.nbBlack,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: 38,
+                        height: 38,
+                        alignment: Alignment.center,
+                        decoration: AppTheme.brutalBox(
+                          color: isWishlisted
+                              ? AppColors.nbYellow
+                              : AppColors.nbWhite,
+                          borderColor: AppColors.nbBlack,
+                          borderWidth: AppTheme.borderDefault,
+                          shadowOffset: 2,
+                        ),
+                        child: Icon(
+                          isWishlisted ? Icons.bookmark : Icons.bookmark_border,
+                          size: 20,
+                          color: AppColors.nbBlack,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -146,7 +200,11 @@ class EbookDetailScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                data: (book) => _buildDetailContent(context, book),
+                data: (book) => _buildDetailContent(
+                  context,
+                  book,
+                  isAlreadyOwned: isAlreadyOwned,
+                ),
               ),
             ),
           ],
@@ -343,8 +401,13 @@ class EbookDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDetailContent(BuildContext context, CatalogEbook book) {
+  Widget _buildDetailContent(
+    BuildContext context,
+    CatalogEbook book, {
+    bool isAlreadyOwned = false,
+  }) {
     return SingleChildScrollView(
+      key: const Key('ebook_detail_scroll_view'),
       padding: const EdgeInsets.all(AppTheme.marginMobile),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -499,6 +562,10 @@ class EbookDetailScreen extends ConsumerWidget {
               style: AppTheme.bodySm(AppColors.nbBlack, fontSize: 14),
             ),
           ),
+          const SizedBox(height: 24),
+
+          // Seksi Ulasan & Penilaian Pembaca (design.md §5.9 & §8.5, FR-C12)
+          BookReviewsSection(book: book, isVerifiedOwner: isAlreadyOwned),
           const SizedBox(height: 24),
         ],
       ),

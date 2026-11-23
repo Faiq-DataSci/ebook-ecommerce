@@ -93,4 +93,28 @@ class OrderEntity {
 
   PaymentEntity? get latestPayment =>
       payments.isNotEmpty ? payments.last : null;
+
+  OrderEntity copyWith({
+    String? id,
+    String? userId,
+    String? orderNumber,
+    int? totalAmount,
+    OrderStatusEnum? status,
+    DateTime? expiresAt,
+    DateTime? createdAt,
+    List<OrderItemEntity>? items,
+    List<PaymentEntity>? payments,
+  }) {
+    return OrderEntity(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      orderNumber: orderNumber ?? this.orderNumber,
+      totalAmount: totalAmount ?? this.totalAmount,
+      status: status ?? this.status,
+      expiresAt: expiresAt ?? this.expiresAt,
+      createdAt: createdAt ?? this.createdAt,
+      items: items ?? this.items,
+      payments: payments ?? this.payments,
+    );
+  }
 }

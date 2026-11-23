@@ -36,6 +36,7 @@ class Ebook {
   final int reviewCount;
   final String isbn;
   final SawCriteriaBreakdown? sawBreakdown;
+  final bool isRemoteSource;
 
   const Ebook({
     required this.id,
@@ -49,6 +50,7 @@ class Ebook {
     this.reviewCount = 0,
     required this.isbn,
     this.sawBreakdown,
+    this.isRemoteSource = false,
   });
 
   String get coverAssetKey => coverAsset;

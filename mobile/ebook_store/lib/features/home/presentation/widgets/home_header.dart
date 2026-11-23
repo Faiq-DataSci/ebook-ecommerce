@@ -5,22 +5,17 @@ import '../../../../theme/app_theme.dart';
 /// Top header bar matching Google Stitch `Beranda Mobile (Neubrutalism)`:
 /// - Height: `56px` (`h-14`), background `bg-nb-paper` (`#FFFDF5`), no bottom border
 /// - Left: `BUKUKITA` (`Syne` ExtraBold 800, `20px`, uppercase)
-/// - Right: Light mode indicator button (`44x44`), Cart button (`44x44`) with
-///   yellow badge counter (`2`), and circular user profile button (`32x32` `#745C00`).
+/// - Right: Cart button (`44x44`) with yellow badge counter (`2`), and circular user profile button (`32x32` `#745C00`).
 class HomeHeader extends StatelessWidget {
   final NbPalette palette;
-  final bool isDarkMode;
   final int cartCount;
-  final VoidCallback onToggleTheme;
   final VoidCallback onCartTap;
   final VoidCallback onProfileTap;
 
   const HomeHeader({
     super.key,
     required this.palette,
-    required this.isDarkMode,
     required this.cartCount,
-    required this.onToggleTheme,
     required this.onCartTap,
     required this.onProfileTap,
   });
@@ -45,32 +40,6 @@ class HomeHeader extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              // Light Mode Button (44x44) matching Stitch `light_mode` icon
-              Semantics(
-                button: true,
-                label: 'Tema Terang Neubrutalism',
-                child: InkWell(
-                  key: const Key('theme_toggle_button'),
-                  onTap: onToggleTheme,
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    alignment: Alignment.center,
-                    decoration: AppTheme.brutalBox(
-                      color: AppColors.nbWhite,
-                      borderColor: AppColors.nbBlack,
-                      borderWidth: AppTheme.borderDefault,
-                      shadowOffset: 2,
-                    ),
-                    child: const Icon(
-                      Icons.wb_sunny_outlined,
-                      size: 20,
-                      color: AppColors.nbBlack,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
               // Shopping Cart Button (44x44) with yellow counter badge
               Semantics(
                 button: true,
