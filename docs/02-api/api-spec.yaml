@@ -222,8 +222,8 @@ paths:
     get:
       tags: [Recommendations]
       summary: Rekomendasi e-book berbasis metode SAW
-      description: "[RENCANA] Menghitung peringkat SAW di backend menggunakan bobot tersimpan di server (menolak bobot mentah klien). Status akses (Publik vs Customer) mengikuti keputusan terbuka #5."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Menghitung peringkat SAW di backend menggunakan bobot tersimpan di server (menolak bobot mentah klien). Mendukung filter categoryId dan limit."
+      x-implementation-status: "[ADA]"
       x-required-role: PUBLIC | CUSTOMER
       parameters:
         - name: categoryId
@@ -529,8 +529,8 @@ paths:
     get:
       tags: [Admin Dashboard]
       summary: Ringkasan statistik dashboard admin
-      description: "[RENCANA] Agregasi pendapatan, total pesanan per status, e-book aktif, dan pelanggan aktif."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Agregasi pendapatan, total pesanan per status, e-book aktif, dan pelanggan aktif."
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []
@@ -848,8 +848,8 @@ paths:
     get:
       tags: [Admin SAW]
       summary: Lihat konfigurasi bobot kriteria SAW aktif
-      description: "[RENCANA] Bergantung Keputusan #5 dan #9 di docs/00-project/keputusan-terbuka.md."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Konfigurasi bobot kriteria SAW aktif yang dikelola oleh Admin."
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []
@@ -863,8 +863,8 @@ paths:
     put:
       tags: [Admin SAW]
       summary: Perbarui bobot kriteria SAW
-      description: "[RENCANA] Wajib memvalidasi setiap bobot > 0 dan total bobot == 1.0."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Memvalidasi setiap bobot > 0 dan total bobot == 1.0."
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []
