@@ -335,6 +335,42 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
+  /transactions/my:
+    get:
+      tags: [Transactions]
+      summary: Riwayat transaksi pembelian pelanggan
+      description: "[ADA] Mengambil transaksi resmi milik pelanggan berdasarkan userId dari JWT."
+      x-implementation-status: "[ADA]"
+      x-required-role: CUSTOMER
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: Riwayat transaksi pelanggan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+
   /payments:
     post:
       tags: [Payments]

@@ -233,11 +233,11 @@
 
 ---
 
-## 8. Transaksi Pelanggan (`[RENCANA]`)
+## 8. Transaksi Pelanggan (`[ADA]` endpoint & test / `[RENCANA]` verifikasi database live)
 
 ### 8.1 Riwayat Pembelian Pelanggan
 - **HTTP Method:** `GET`
-- **Endpoint:** `/api/v1/transactions/my` *(lihat catatan sinkronisasi `api-spec.yaml` pada [`api-gap-register.md`](./api-gap-register.md))*
+- **Endpoint:** `/api/v1/transactions/my`
 - **Deskripsi:** Mengambil riwayat transaksi keuangan resmi milik Pelanggan aktif.
 - **Authentication:** Wajib (Bearer Token)
 - **Authorization:** `CUSTOMER`
@@ -246,7 +246,7 @@
 - **Response Sukses:** `{ "success": true, "data": [{ "id": "uuid", "transactionCode": "TRX-DATA-SIMULASI-001", "amount": "75000.00" }], "meta": { "page": 1, "limit": 20, "total": 1, "totalPages": 1 } }`
 - **HTTP Status Code:** `200 OK`, `400 Bad Request`, `401 Unauthorized`
 - **Error Handling:** Filter ketat `userId = req.user.id`.
-- **Status:** `[RENCANA]`
+- **Status:** `[ADA]` endpoint & test / `[RENCANA]` verifikasi database live
 
 ---
 

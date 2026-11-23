@@ -1,13 +1,13 @@
 # Modul Riwayat Pembelian & Hak Akses E-Book (`Purchase History & E-Book Access`)
 
-**Status Implementasi:** `[RENCANA]` — Endpoint penerbitan signed URL dan pengelolaan akses admin belum diimplementasikan. Helper `createPrivatePdfSignedUrl` sudah `[ADA]` di [`backend/src/integrations/storage/supabase-storage.ts`](../../backend/src/integrations/storage/supabase-storage.ts) dan model `EbookAccess` sudah `[ADA]` di [`backend/prisma/schema.prisma`](../../backend/prisma/schema.prisma).
+**Status Implementasi:** `[ADA]` untuk helper `createPrivatePdfSignedUrl`, model `EbookAccess`, endpoint penerbitan signed URL, endpoint daftar transaksi pelanggan, serta test terkait. `[RENCANA]` untuk pengelolaan akses admin, reader mobile terverifikasi, dan verifikasi Supabase Storage live.
 
 ---
 
 ## A. Ringkasan Modul
 
 - **Cakupan:** Purchase History Module dan E-Book Access Module.
-- **Status:** `[RENCANA]`.
+- **Status:** `[ADA]` untuk penerbitan signed URL backend dan test; `[RENCANA]` untuk integrasi live serta fitur lanjutan yang tercantum di bagian status implementasi.
 - **Tujuan Modul:** Memberikan akses baca PDF secara aman melalui *signed URL* sementara dari bucket privat Supabase Storage hanya kepada pelanggan yang pembayarannya terverifikasi (`EbookAccess` aktif), menampilkan riwayat pembelian/pesanan pribadi, serta memungkinkan admin mencabut atau memulihkan akses bila diperlukan.
 - **Aktor:** Pelanggan (*Customer*), Sistem (penerbitan otomatis saat webhook `VERIFIED`), dan Admin.
 - **Aplikasi Target:** `mobile/ebook_store`, `web/pengunjung-web`, `web/admin-web`, `backend/`.
@@ -59,7 +59,7 @@ flowchart LR
 | Endpoint | Method | Authentication | Authorization | Deskripsi | Status |
 |---|---|---|---|---|---|
 | `/api/v1/ebooks/:id/access-url` | `GET` | Bearer JWT | `CUSTOMER` | Minta signed URL sementara untuk baca PDF | `[RENCANA]` |
-| `/api/v1/transactions/my` | `GET` | Bearer JWT | `CUSTOMER` | Riwayat transaksi pembelian milik sendiri | `[RENCANA]` |
+| `/api/v1/transactions/my` | `GET` | Bearer JWT | `CUSTOMER` | Riwayat transaksi pembelian milik sendiri | `[ADA]` endpoint & test / `[RENCANA]` verifikasi database live |
 | `/api/v1/orders/me` | `GET` | Bearer JWT | `CUSTOMER` | Riwayat pesanan milik sendiri | `[RENCANA]` |
 | `/api/v1/admin/accesses/:id` | `PATCH` | Bearer JWT | `ADMIN` | Cabut atau pulihkan akses (`{ isRevoked }`) | `[RENCANA]` |
 
@@ -178,4 +178,4 @@ stateDiagram-v2
 ## M. Status Implementasi
 
 - **`[ADA]`:** Helper `createPrivatePdfSignedUrl` (`backend/src/integrations/storage/supabase-storage.ts`) dan model `EbookAccess` (`backend/prisma/schema.prisma`).
-- **`[RENCANA]`:** Endpoint `GET /api/v1/ebooks/:id/access-url`, `PATCH /api/v1/admin/accesses/:id`, dan *in-app PDF reader* di klien.
+- **`[RENCANA]`:** Endpoint `PATCH /api/v1/admin/accesses/:id`, *in-app PDF reader* klien yang telah diverifikasi, dan verifikasi Supabase Storage live.
