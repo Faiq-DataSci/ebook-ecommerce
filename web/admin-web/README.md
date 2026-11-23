@@ -1,132 +1,189 @@
 # Admin Web — E-Book E-Commerce & SPK (Metode SAW)
 
-Aplikasi web administrasi (`web/admin-web`) untuk pengelolaan toko e-book B2C (*single-seller*) dan pemantauan Sistem Pendukung Keputusan (SPK) metode *Simple Additive Weighting* (SAW). Dibangun menggunakan **React 19 + TypeScript + Vite 8** dengan pendekatan desain **Neo-Brutalism (3 Zona Intensitas)**.
+Aplikasi web administrasi (`web/admin-web`) untuk pengelolaan toko e-book B2C (*single-seller*) dan pemantauan Sistem Pendukung Keputusan (SPK) rekomendasi e-book menggunakan metode *Simple Additive Weighting* (SAW).
 
-> **Status Modul:**
-> - **`[ADA]`**: Kerangka proyek React + TypeScript + Vite, sistem token CSS Neo-Brutalism (`src/styles/`), tata letak konsol admin (`AdminLayout`, `AdminHeader`, `AdminSidebar` dengan navigasi *collapsible* Desktop & *drawer* Mobile, *flyout* submenu, aksesibilitas ARIA & pintasan `Escape`), serta halaman pratinjau `DashboardPage` & `DashboardContent` berlabel `"DATA SIMULASI"`.
-> - **`[RENCANA]`**: Integrasi autentikasi login admin ke Supabase Auth & backend (`GET /api/v1/admin/ping` sudah `[ADA]` di backend), koneksi API data nyata (`/api/v1/admin/dashboard`, `/api/v1/admin/reports/sales`), serta halaman modul submenu operasional (Katalog, Transaksi, Analitik, SPK SAW, dan Manajemen Sistem).
+Aplikasi dibangun dengan **React 19 + TypeScript 6 + Vite 8**, mengusung arsitektur berbasis fitur (**Feature-Based Modular Architecture**), serta menerapkan desain sistem **Neo-Brutalism (3 Zona Intensitas)** sesuai spesifikasi [`design.md`](file:///D:/Semester%203/Sistem%20Informasi/Project/ebook-ecommerce/docs/01-design/ui-ux/design.md).
 
 ---
 
-## 1. Prinsip Desain Neo-Brutalism (3 Zona Intensitas)
+## 1. Arsitektur Folder Proyek (Feature-Based Architecture)
 
-Antarmuka `web/admin-web` menerapkan aturan visual Neo-Brutalism yang dibagi ke dalam 3 zona agar tetap tegas namun tidak melelahkan mata saat bekerja dengan tabel data:
-
-1. **Zona 1 — Aksen Tegas (Hero / Primary CTA / Status Penting):**
-   Warna kontras tinggi (`#FFD23F` kuning, `#FF6B6B` koral, `#A8E6CF` mint), border hitam tegas (`2px`–`3px solid #000000`), dan *hard shadow* tanpa blur (`4px 4px 0px #000000`).
-2. **Zona 2 — Navigasi & Kartu Ringkasan (`AdminSidebar`, `AdminHeader`, KPI Cards):**
-   Border jelas (`2px solid #000000`), latar hangat/terang (`#FFFDF5` / `#FFFFFF`), dan *hard shadow* sedang (`3px 3px 0px #000000`).
-3. **Zona 3 — Layar Padat Data (Tabel Pesanan, Daftar Katalog, Form Panjang):**
-   Dibuat lebih tenang dengan latar bersih, pemisah baris yang rapi, dan tipografi monospace (`JetBrains Mono`) untuk angka, nominal Rupiah, kode transaksi, dan skor SAW agar mudah dipindai.
-
-> **Aturan Kejujuran Data (`AGENTS.md`):**
-> Selama endpoint bisnis backend masih berstatus `[RENCANA]`, seluruh metrik, grafik, dan tabel contoh di UI wajib menyertakan penanda eksplisit **`"DATA SIMULASI"`**.
-
----
-
-## 2. Struktur Direktori (`web/admin-web`)
+Struktur kode diatur dengan prinsip **Separation of Concerns (SoC)**, **High Cohesion**, dan **Loose Coupling**:
 
 ```text
 web/admin-web/
-├── .env.example                 # Template variabel environment publik (VITE_*) [ADA]
-├── .gitignore                   # Aturan pengabaian Git lokal admin-web [ADA]
-├── index.html                   # Entry HTML + pemuatan font & Material Symbols [ADA]
-├── package.json                 # Skrip npm & dependensi React 19 + TS + Vite 8 [ADA]
-├── tsconfig.json                # Konfigurasi TypeScript utama [ADA]
-├── vite.config.ts               # Konfigurasi bundler Vite [ADA]
-└── src/
-    ├── main.tsx                 # Entry point aplikasi React (TypeScript) [ADA]
-    ├── App.tsx                  # Root component yang merender DashboardPage [ADA]
-    ├── components/
-    │   └── admin/
-    │       ├── AdminHeader.tsx      # Topbar: toggle sidebar, breadcrumb, pencarian, aksi [ADA]
-    │       ├── AdminSidebar.tsx     # Sidebar responsif (collapsed rail & mobile drawer) [ADA]
-    │       ├── SidebarMenuItem.tsx  # Item menu tunggal dengan tooltip saat collapsed [ADA]
-    │       ├── SidebarDropdown.tsx  # Grup menu akordeon + flyout saat collapsed [ADA]
-    │       └── DashboardContent.tsx # Konten utama dashboard (KPI, chart, tabel, SAW) [ADA]
-    ├── data/
-    │   ├── adminNavigation.ts   # Konfigurasi grup menu, rute, & status [ADA]/[RENCANA] [ADA]
-    │   └── dashboardData.ts     # Dataset pratinjau berlabel "DATA SIMULASI" [ADA]
-    ├── hooks/
-    │   └── useSidebar.ts        # Custom hook state sidebar, localStorage, & History API [ADA]
-    ├── layouts/
-    │   └── AdminLayout.tsx      # Pembungkus layout sidebar + header + main content [ADA]
-    ├── pages/
-    │   └── admin/
-    │       └── DashboardPage.tsx # Halaman konsol admin & banner status rute [ADA]
-    ├── styles/
-    │   ├── tokens.css           # Token warna, border, shadow, dan font Neo-Brutalism [ADA]
-    │   ├── admin-layout.css     # Styling kerangka halaman dan topbar [ADA]
-    │   ├── admin-sidebar.css    # Styling sidebar, dropdown, tooltip, dan flyout [ADA]
-    │   └── dashboard.css        # Styling kartu KPI, grafik, tabel, dan komponen SAW [ADA]
-    └── types/
-        └── admin.ts             # Definisi tipe TypeScript navigasi & data dashboard [ADA]
+├── public/                          # Aset statis publik (favicon, icons, manifest)
+├── src/
+│   ├── app/                         # Shell aplikasi & infrastruktur tata letak global
+│   │   ├── layouts/                 # Shell layout admin & subkomponen layout
+│   │   │   ├── AdminLayout.tsx      # Pembungkus layout utama (Sidebar + Header + Main Area)
+│   │   │   └── components/
+│   │   │       ├── AdminHeader.tsx  # Topbar: breadcrumb, pencarian, notifikasi, profil
+│   │   │       ├── AdminSidebar.tsx # Sidebar navigasi (desktop rail & mobile drawer)
+│   │   │       ├── SidebarDropdown.tsx # Submenu akordeon & flyout
+│   │   │       └── SidebarMenuItem.tsx # Item menu tunggal
+│   │   ├── navigation/              # Definisi rute, menu, breadcrumb resolver
+│   │   │   └── adminNavigation.ts   # Skema menu grup & resolver navigasi
+│   │   └── hooks/                   # Hooks infrastruktur shell
+│   │       └── useSidebar.ts        # State management collapse, drawer, & history router
+│   │
+│   ├── features/                    # Modul bisnis independen per domain
+│   │   ├── dashboard/               # Fitur: Dashboard & Ringkasan Penjualan
+│   │   │   ├── components/          # DashboardContent, grafik penjualan, aktivitas
+│   │   │   ├── data/                # dashboardData.ts (KPI simulation dataset)
+│   │   │   ├── types/               # dashboard.ts (Domain models)
+│   │   │   └── pages/               # DashboardPage.tsx
+│   │   │
+│   │   ├── ebooks/                  # Fitur: Manajemen Katalog E-Book
+│   │   │   ├── components/          # PrivateAssetUploader (upload PDF bucket privat)
+│   │   │   ├── data/                # catalogData.ts
+│   │   │   ├── types/               # catalog.ts
+│   │   │   └── pages/               # EbookCatalogPage.tsx
+│   │   │
+│   │   ├── categories/              # Fitur: Kategori & Tag Katalog
+│   │   │   └── pages/               # CategoryCatalogPage.tsx
+│   │   │
+│   │   ├── authors-publishers/      # Fitur: Penulis & Penerbit E-Book
+│   │   │   ├── data/                # authorPublisherData.ts
+│   │   │   ├── types/               # authorPublisher.ts
+│   │   │   └── pages/               # AuthorPublisherPage.tsx
+│   │   │
+│   │   ├── transactions/            # Fitur: Operasional Transaksi & Webhook
+│   │   │   ├── components/          # OrderWebhookTimeline, EbookAccessControlPanel,
+│   │   │   │                        # OrderDetailModal, RawWebhookModal
+│   │   │   ├── data/                # transactionFinanceData.ts (Orders & Payment audit)
+│   │   │   ├── types/               # transactionFinance.ts
+│   │   │   └── pages/               # TransactionFinancePage.tsx
+│   │   │
+│   │   ├── finance/                 # Fitur: Akuntansi, Omzet, & Settlement Kas
+│   │   │   ├── components/          # SettlementBatchModal
+│   │   │   └── pages/               # FinancePage.tsx
+│   │   │
+│   │   └── analytics/               # Fitur: Analitik Bisnis & Konversi SAW
+│   │       ├── data/                # analyticsData.ts
+│   │       ├── types/               # analytics.ts
+│   │       └── pages/               # AnalyticsPage.tsx
+│   │
+│   ├── shared/                      # Komponen & utilitas bersama lintas modul
+│   │   ├── components/
+│   │   │   └── ui/                  # Komponen antarmuka Neo-Brutalism reusable
+│   │   │       ├── ConfirmDialog.tsx # Dialog konfirmasi tindakan destruktif/kritis
+│   │   │       ├── EmptyState.tsx   # Tampilan kosong informatif
+│   │   │       ├── FilterChipGroup.tsx # Filter pil horizontal
+│   │   │       ├── FilterSelect.tsx # Dropdown filter kustom
+│   │   │       ├── Pagination.tsx   # Navigasi paginasi tabel
+│   │   │       ├── SearchInput.tsx  # Input pencarian terpadu
+│   │   │       ├── SimulationBadge.tsx # Label identifikasi data simulasi
+│   │   │       ├── StatusBadge.tsx  # Badge status transaksi/katalog
+│   │   │       ├── TableSkeleton.tsx # Skeleton loader tabel Zona C
+│   │   │       ├── Toast.tsx        # Notifikasi feedback sistem
+│   │   │       ├── ToggleSwitch.tsx # Sakelar status aktif/non-aktif
+│   │   │       └── index.ts         # Barrel export shared UI components
+│   │   ├── types/                   # Tipe data bersama (navigation.ts, dll)
+│   │   └── utils/                   # Fungsi murni (formatRupiah, formatPercent)
+│   │       └── formatters.ts
+│   │
+│   ├── styles/                      # Desain token & stylesheet Neo-Brutalism
+│   │   ├── tokens.css               # Variabel CSS (warna, border 2px-3px, shadow 3px-4px)
+│   │   ├── admin-layout.css         # Styling grid layout utama
+│   │   ├── admin-sidebar.css        # Styling sidebar & akordeon menu
+│   │   ├── dashboard.css            # Styling KPI & chart dashboard
+│   │   ├── catalog.css              # Styling katalog e-book & form
+│   │   ├── transaction-finance.css  # Styling Zona C (tabel transaksi, timeline, ledger)
+│   │   └── analytics.css            # Styling grafik metrik analitik
+│   │
+│   ├── App.tsx                      # Root component pengatur router halaman
+│   ├── main.tsx                     # React application entry point
+│   ├── index.css                    # Pemuatan token global
+│   └── vite-env.d.ts                # TypeScript definition untuk Vite client
+│
+├── index.html                       # HTML Template & Web Fonts
+├── package.json                     # Konfigurasi dependensi dan skrip proyek
+├── tsconfig.json                    # Root TypeScript configuration
+├── tsconfig.app.json                # Strict TypeScript configuration untuk aplikasi
+├── tsconfig.node.json               # TypeScript configuration untuk lingkungan Vite
+└── vite.config.ts                   # Konfigurasi bundler Vite
 ```
 
 ---
 
-## 3. Daftar Rute Navigasi & Status Implementasi
+## 2. Penjelasan Tanggung Jawab Folder
 
-| Grup | Menu / Submenu | Path Rute | Status UI |
-|---|---|---|---|
-| **UTAMA** | Dashboard | `/admin/dashboard` | `[ADA]` (dengan `"DATA SIMULASI"`) |
-| **OPERASIONAL & TOKO** | Koleksi E-Book | `/admin/katalog/ebook` | `[RENCANA]` |
-| **OPERASIONAL & TOKO** | Kategori & Tag | `/admin/katalog/kategori` | `[RENCANA]` |
-| **OPERASIONAL & TOKO** | Penulis & Penerbit | `/admin/katalog/penulis` | `[RENCANA]` |
-| **OPERASIONAL & TOKO** | Semua Pesanan | `/admin/transaksi/pesanan` | `[RENCANA]` |
-| **OPERASIONAL & TOKO** | Verifikasi Bayar | `/admin/transaksi/verifikasi` | `[RENCANA]` |
-| **OPERASIONAL & TOKO** | Laporan Omzet | `/admin/transaksi/laporan` | `[RENCANA]` |
-| **INTELIJEN & SISTEM** | Analitik Bisnis | `/admin/analitik` | `[RENCANA]` |
-| **INTELIJEN & SISTEM** | Kriteria & Bobot (SAW) | `/admin/spk/kriteria` | `[RENCANA]` |
-| **INTELIJEN & SISTEM** | Matriks SAW | `/admin/spk/matriks` | `[RENCANA]` |
-| **INTELIJEN & SISTEM** | Pelanggan & User | `/admin/sistem/pelanggan` | `[RENCANA]` |
-| **INTELIJEN & SISTEM** | Lisensi & DRM | `/admin/sistem/drm` | `[RENCANA]` |
-| **INTELIJEN & SISTEM** | Pengaturan | `/admin/sistem/pengaturan` | `[RENCANA]` |
-
-> **Catatan Arsitektur SPK SAW:**
-> Sesuai `AGENTS.md` dan `ADR-0002`, seluruh perhitungan normalisasi matriks dan perankingan SAW dilakukan **eksklusif di backend**. Antarmuka `web/admin-web` hanya menampilkan hasil perhitungan dari API backend dan mengelola parameter yang diizinkan.
+| Folder | Tanggung Jawab |
+| :--- | :--- |
+| `src/app/` | Mengelola *app shell*, routing navigation resolver, layout wrapper (`AdminLayout`), sidebar, dan header global. Folder ini tidak memuat business logic spesifik fitur bisnis. |
+| `src/features/` | Mengelompokkan kode berdasarkan domain fitur bisnis. Setiap sub-folder fitur bersifat modular dan mandiri (memiliki `components/`, `pages/`, `types/`, dan `data/` sendiri). |
+| `src/shared/components/ui/` | Berisi komponen antarmuka umum yang benar-benar digunakan lintas fitur (misal: `ConfirmDialog`, `Toast`, `Pagination`, `StatusBadge`). |
+| `src/shared/utils/` | Fungsi utilitas murni (*pure functions*) tanpa dependensi state, seperti pemformatan Rupiah dan tanggal. |
+| `src/shared/types/` | Definisi TypeScript antarmuka bersama yang dipakai lintas domain (misal: navigasi dan rute). |
+| `src/styles/` | Desain token Neo-Brutalism (Zona A, B, C) yang terpusat agar konsistensi border hitam, bayangan kaku, dan palet warna tetap terjaga. |
 
 ---
 
-## 4. Konfigurasi Environment (`.env`)
+## 3. Standar Penamaan & Clean Code
 
-Salin file [`.env.example`](./.env.example) menjadi `.env` di dalam direktori `web/admin-web/`:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Isi variabel yang tersedia di `.env`:
-
-```env
-VITE_API_BASE_URL="http://localhost:3000/api/v1"
-VITE_SUPABASE_URL="https://PROJECT_REF.supabase.co"
-VITE_SUPABASE_ANON_KEY="ganti_dengan_supabase_anon_key"
-```
-
-> **PERINGATAN KEAMANAN (`VITE_*`):**
-> Semua variabel yang diawali `VITE_` akan **dibundle ke dalam kode JavaScript browser** dan dapat dilihat oleh publik.
-> - **BOLEH:** URL API backend (`VITE_API_BASE_URL`), URL proyek Supabase (`VITE_SUPABASE_URL`), dan kunci publik anonim (`VITE_SUPABASE_ANON_KEY`).
-> - **DILARANG KERAS:** Menaruh `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL`, `DIRECT_URL`, secret JWT, atau *server key* payment gateway di dalam `web/admin-web/.env` maupun kode frontend.
+- **Komponen React**: Wajib menggunakan `PascalCase` (contoh: `OrderDetailModal.tsx`, `ConfirmDialog.tsx`).
+- **Fungsi & Variabel**: Wajib menggunakan `camelCase` (contoh: `formatRupiah`, `handleToggleAccess`).
+- **Tipe Data / Interface**: Wajib menggunakan `PascalCase` (contoh: `OrderRecord`, `SettlementRecord`).
+- **File Data / Utilities**: Wajib menggunakan `camelCase` (contoh: `formatters.ts`, `catalogData.ts`).
+- **Prinsip Separation of Concerns**:
+  1. Halaman (`pages/`) bertugas mengatur komposisi komponen dan alur rute.
+  2. Komponen fitur (`components/`) menangani UI spesifik domain.
+  3. Formatter dan logika matematika murni diletakkan di `shared/utils/`.
+  4. Hindari membuat file berukuran raksasa; pecah komponen modal atau section kompleks menjadi sub-komponen terpisah di folder `components/` milik fitur terkait.
 
 ---
 
-## 5. Cara Menjalankan & Memverifikasi
+## 4. Panduan Pengembangan
 
-Jalankan perintah berikut dari direktori `web/admin-web` (atau gunakan `--prefix web/admin-web` dari root monorepo):
+### A. Cara Menambahkan Fitur Baru
 
-```powershell
-# 1. Pasang dependensi
-npm install
+1. Buat folder baru di bawah `src/features/<nama-fitur>/`.
+2. Siapkan struktur internal fitur sesuai kebutuhan:
+   ```text
+   src/features/<nama-fitur>/
+   ├── components/    # Komponen spesifik fitur
+   ├── data/          # Dataset simulasi / mock awal
+   ├── types/         # Interface & type TypeScript domain
+   └── pages/         # Halaman utama fitur
+   ```
+3. Daftarkan path rute baru di `src/app/navigation/adminNavigation.ts` pada grup yang sesuai (`ADMIN_NAVIGATION_GROUPS`).
+4. Hubungkan halaman baru ke switch-case di `src/App.tsx`.
 
-# 2. Jalankan server development (HMR)
+### B. Cara Menambahkan Komponen Reusable
+
+1. Jika komponen digunakan oleh **lebih dari dua domain berbeda**, letakkan di `src/shared/components/ui/<NamaKomponen>.tsx`.
+2. Pastikan komponen menggunakan token Neo-Brutalism (`var(--nb-border-25)`, `var(--nb-shadow-sm)`).
+3. Ekspor komponen melalui `src/shared/components/ui/index.ts` agar dapat di-import secara ringkas:
+   ```tsx
+   import { ConfirmDialog, StatusBadge } from '../../../shared/components/ui'
+   ```
+
+### C. Cara Menambahkan Service API / Integrasi Backend
+
+Ketika mengintegrasikan endpoint backend Express atau Supabase:
+1. Buat folder `src/services/api/` untuk menyimpan HTTP client terpusat.
+2. Buat file service per domain di dalam folder fitur masing-masing (misal: `src/features/ebooks/services/ebookService.ts`).
+3. Selalu simpan token otentikasi di storage yang aman dan jangan pernah menaruh credential sensitif / *service role key* di kode frontend.
+
+---
+
+## 5. Cara Menjalankan Project
+
+Pastikan Node.js (v20+ disarankan) telah terinstal.
+
+```bash
+# 1. Masuk ke direktori admin-web
+cd web/admin-web
+
+# 2. Menjalankan server pengembangan (Hot Module Replacement)
 npm run dev
 
-# 3. Periksa kualitas kode (ESLint)
-npm run lint
-
-# 4. Pemeriksaan tipe TypeScript & build produksi
+# 3. Menjalankan pemeriksaan typecheck TypeScript & build produksi Vite
 npm run build
+
+# 4. Menjalankan pemeriksaan linting kode (ESLint)
+npm run lint
 
 # 5. Pratinjau hasil build produksi secara lokal
 npm run preview
@@ -134,45 +191,8 @@ npm run preview
 
 ---
 
-## 6. Checklist Pengecekan `.gitignore` & Keamanan (Agar Tidak Lupa Sebelum Commit/Push)
+## 6. Kepatuhan Aturan Data Simulasi
 
-Sebelum melakukan `git add`, `git commit`, atau `git push`, selalu jalankan daftar periksa berikut di PowerShell agar file sensitif atau artefak build tidak ikut ter-commit:
-
-### A. Pastikan File `.env` Ter-ignore oleh Git
-Jalankan perintah `git check-ignore -v` untuk membuktikan bahwa file `.env` benar-benar diabaikan oleh `.gitignore` (baik di root maupun di `web/admin-web`):
-
-```powershell
-# Dari direktori web/admin-web:
-git check-ignore -v .env .env.local .env.production ../backend/.env
-```
-- **Hasil yang benar:** Git menampilkan baris aturan `.gitignore` yang cocok untuk setiap file `.env` tersebut.
-- **File yang BOLEH ter-track:** Hanya `.env.example` (karena dikecualikan melalui `!.env.example`).
-
-### B. Pastikan Artefak Build & Dependensi Tidak Masuk Staging
-Folder `node_modules/`, `dist/`, `dist-ssr/`, dan file `*.log` / `*.local` sudah terdaftar di [`.gitignore`](./.gitignore) dan [`../../.gitignore`](../../.gitignore). Pastikan dengan:
-
-```powershell
-git status --ignored
-```
-
-### C. Periksa Daftar File yang Ter-track di Git
-Pastikan tidak ada file `.env`, kunci privat (`*.pem`, `*.key`), atau database dump yang tidak sengaja sudah ter-track:
-
-```powershell
-git ls-files
-```
-
-### D. Pindai Potensi Kebocoran Secret di Variabel `VITE_*`
-Pastikan tidak ada `SERVICE_ROLE` atau secret backend di dalam folder `web/admin-web`:
-
-```powershell
-Select-String -Path "src/**/*", ".env*" -Pattern "SERVICE_ROLE|DATABASE_URL|DIRECT_URL|SECRET" -ErrorAction SilentlyContinue
-```
-
----
-
-## 7. Referensi Dokumen Terkait
-- Sumber Kebenaran Proyek: [`docs/docs-proyek-ebook-ecommerce.md`](../../docs/docs-proyek-ebook-ecommerce.md)
-- Spesifikasi Modul Dashboard Admin: [`docs/06-modules/admin-dashboard.md`](../../docs/06-modules/admin-dashboard.md)
-- Panduan Agen & Aturan Proyek: [`AGENTS.md`](../../AGENTS.md)
-- Kebijakan Keamanan: [`SECURITY.md`](../../SECURITY.md)
+Sesuai ketentuan **`AGENTS.md`**:
+- Seluruh data yang belum terhubung ke endpoint REST API produksi backend wajib diberi tanda/label eksplisit **`"DATA SIMULASI"`**.
+- Tidak diperbolehkan membuat tombol tanpa aksi; seluruh tombol interaktif telah dilengkapi dialog konfirmasi atau notifikasi toast.

@@ -52,7 +52,7 @@ export function AuthLayout() {
                 fontSize: '1.125rem',
               }}
             >
-              {APP_CONFIG.BRAND_NAME}
+              <span>{APP_CONFIG.BRAND_NAME}</span>
             </Link>
             <SimulationBadge />
           </div>

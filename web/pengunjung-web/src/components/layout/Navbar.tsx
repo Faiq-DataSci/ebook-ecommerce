@@ -209,7 +209,6 @@ export function Navbar() {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '10px',
               backgroundColor: 'var(--nb-yellow)',
               padding: '8px 16px',
               fontFamily: 'var(--nb-font-display)',
@@ -218,7 +217,6 @@ export function Navbar() {
               flexShrink: 0,
             }}
           >
-            <BookOpen size={20} strokeWidth={2.5} aria-hidden="true" />
             <span>{APP_CONFIG.BRAND_NAME}</span>
           </Link>
 
@@ -378,27 +376,13 @@ export function Navbar() {
           <div className="nb-menu-panel" id="nb-menu-flyout">
             {/* Panel Header */}
             <div className="nb-menu-panel-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div
-                  style={{
-                    backgroundColor: 'var(--nb-black)',
-                    color: 'var(--nb-yellow)',
-                    padding: '6px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <BookOpen size={20} strokeWidth={2.5} aria-hidden="true" />
-                </div>
-                <div>
-                  <h3 className="nb-h3" style={{ fontSize: '1rem', lineHeight: 1.1 }}>
-                    {APP_CONFIG.BRAND_NAME}
-                  </h3>
-                  <p className="nb-mono" style={{ fontSize: '0.6875rem' }}>
-                    Pusat Pencarian & Navigasi Toko
-                  </p>
-                </div>
+              <div>
+                <h3 className="nb-h3" style={{ fontSize: '1rem', lineHeight: 1.1 }}>
+                  {APP_CONFIG.BRAND_NAME}
+                </h3>
+                <p className="nb-mono" style={{ fontSize: '0.6875rem' }}>
+                  Pusat Pencarian & Navigasi Toko
+                </p>
               </div>
 
               <Button

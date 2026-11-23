@@ -155,20 +155,6 @@
   flex-shrink: 0;
 }
 
-.system-online-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  background-color: var(--nb-green);
-  border: var(--nb-border-2);
-  box-shadow: var(--nb-shadow-xs);
-  color: var(--nb-black);
-}
-
 .status-square-dot {
   width: 10px;
   height: 10px;
@@ -378,10 +364,6 @@
 
 /* Responsive Breakpoints */
 @media (max-width: 1024px) {
-  .system-online-pill {
-    display: none;
-  }
-
   .main-content {
     padding: 24px;
   }
