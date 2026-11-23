@@ -6,6 +6,7 @@ import '../../data/datasources/checkout_mock_datasource.dart';
 import '../../data/datasources/checkout_remote_datasource.dart';
 import '../../data/repositories/checkout_repository_impl.dart';
 import '../../domain/entities/checkout_failure.dart';
+import '../../domain/entities/order_entity.dart';
 import '../../domain/repositories/checkout_repository.dart';
 import 'checkout_state.dart';
 
@@ -43,6 +44,17 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
       status: CheckoutStatus.initial,
       clearErrorMessage: true,
       clearCurrentOrder: true,
+    );
+  }
+
+  void resumeOrder(OrderEntity order) {
+    state = state.copyWith(
+      items: const <CartItem>[],
+      currentOrder: order,
+      currentStep: CheckoutStep.payment,
+      status: CheckoutStatus.orderCreated,
+      isSubmitting: false,
+      clearErrorMessage: true,
     );
   }
 

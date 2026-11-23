@@ -6,6 +6,8 @@ import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../cart/presentation/providers/cart_provider.dart';
 import '../../../home/presentation/providers/home_provider.dart';
+import '../../../library/presentation/pages/library_screen.dart';
+import '../../../library/presentation/providers/library_provider.dart';
 import '../../domain/entities/catalog_ebook.dart';
 import '../providers/catalog_provider.dart';
 
@@ -20,6 +22,8 @@ class EbookDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final detailAsync = ref.watch(ebookDetailProvider(ebookId));
+    final ownershipAsync = ref.watch(userOwnershipProvider(ebookId));
+    final isAlreadyOwned = ownershipAsync.value ?? false;
 
     return Scaffold(
       backgroundColor: AppColors.nbPaper,
@@ -149,7 +153,12 @@ class EbookDetailScreen extends ConsumerWidget {
         ),
       ),
       bottomNavigationBar: detailAsync.valueOrNull != null
-          ? _buildBottomActionBar(context, ref, detailAsync.valueOrNull!)
+          ? _buildBottomActionBar(
+              context,
+              ref,
+              detailAsync.valueOrNull!,
+              isAlreadyOwned: isAlreadyOwned,
+            )
           : null,
     );
   }
@@ -157,8 +166,9 @@ class EbookDetailScreen extends ConsumerWidget {
   Widget _buildBottomActionBar(
     BuildContext context,
     WidgetRef ref,
-    CatalogEbook book,
-  ) {
+    CatalogEbook book, {
+    bool isAlreadyOwned = false,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppTheme.marginMobile,
@@ -193,93 +203,139 @@ class EbookDetailScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(width: 16),
-            // Tombol + Keranjang
+            // Tombol Aksi: DuplicateOwnershipGuard (design.md §5 & §8.5)
             Expanded(
-              child: Semantics(
-                button: true,
-                label: 'Tambah ${book.title} ke keranjang belanja',
-                child: InkWell(
-                  key: const Key('detail_add_to_cart_button'),
-                  onTap: () {
-                    ref.read(catalogProvider.notifier).addToCart(book);
-                    ref.read(cartProvider.notifier).addCatalogEbook(book);
-                    ref.read(homeProvider.notifier).addToCart();
-                    final messenger = ScaffoldMessenger.maybeOf(context);
-                    if (messenger != null) {
-                      messenger.hideCurrentSnackBar();
-                      messenger.showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          behavior: SnackBarBehavior.floating,
-                          content: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 10,
+              child: isAlreadyOwned
+                  ? Semantics(
+                      button: true,
+                      label: 'Buka di perpustakaan',
+                      child: InkWell(
+                        key: const Key('detail_open_in_library_button'),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const LibraryScreen(),
                             ),
-                            decoration: AppTheme.brutalBox(
-                              color: AppColors.nbGreen,
-                              borderColor: AppColors.nbBlack,
-                              borderWidth: AppTheme.borderDefault,
-                              shadowOffset: 3,
-                            ),
+                          );
+                        },
+                        child: Container(
+                          height: 44,
+                          alignment: Alignment.center,
+                          decoration: AppTheme.brutalBox(
+                            color: AppColors.nbGreen,
+                            borderColor: AppColors.nbBlack,
+                            borderWidth: AppTheme.borderDefault,
+                            shadowOffset: 2,
+                          ),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 const Icon(
-                                  Icons.check_circle,
+                                  Icons.local_library_outlined,
                                   size: 18,
                                   color: AppColors.nbBlack,
                                 ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    '"${book.title}" berhasil dimasukkan ke keranjang!',
-                                    style: AppTheme.labelSm(
-                                      AppColors.nbBlack,
-                                      fontSize: 11,
-                                    ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'BUKA DI PERPUSTAKAAN',
+                                  style: AppTheme.labelSm(
+                                    AppColors.nbBlack,
+                                    fontSize: 12,
                                   ),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                      );
-                    }
-                  },
-                  child: Container(
-                    height: 44,
-                    alignment: Alignment.center,
-                    decoration: AppTheme.brutalBox(
-                      color: AppColors.nbYellow,
-                      borderColor: AppColors.nbBlack,
-                      borderWidth: AppTheme.borderDefault,
-                      shadowOffset: 2,
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          const Icon(
-                            Icons.add_shopping_cart,
-                            size: 18,
-                            color: AppColors.nbBlack,
+                      ),
+                    )
+                  : Semantics(
+                      button: true,
+                      label: 'Tambah ${book.title} ke keranjang belanja',
+                      child: InkWell(
+                        key: const Key('detail_add_to_cart_button'),
+                        onTap: () {
+                          ref.read(catalogProvider.notifier).addToCart(book);
+                          ref.read(cartProvider.notifier).addCatalogEbook(book);
+                          ref.read(homeProvider.notifier).addToCart();
+                          final messenger = ScaffoldMessenger.maybeOf(context);
+                          if (messenger != null) {
+                            messenger.hideCurrentSnackBar();
+                            messenger.showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                                behavior: SnackBarBehavior.floating,
+                                content: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 10,
+                                  ),
+                                  decoration: AppTheme.brutalBox(
+                                    color: AppColors.nbGreen,
+                                    borderColor: AppColors.nbBlack,
+                                    borderWidth: AppTheme.borderDefault,
+                                    shadowOffset: 3,
+                                  ),
+                                  child: Row(
+                                    children: <Widget>[
+                                      const Icon(
+                                        Icons.check_circle,
+                                        size: 18,
+                                        color: AppColors.nbBlack,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          '"${book.title}" berhasil dimasukkan ke keranjang!',
+                                          style: AppTheme.labelSm(
+                                            AppColors.nbBlack,
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: Container(
+                          height: 44,
+                          alignment: Alignment.center,
+                          decoration: AppTheme.brutalBox(
+                            color: AppColors.nbYellow,
+                            borderColor: AppColors.nbBlack,
+                            borderWidth: AppTheme.borderDefault,
+                            shadowOffset: 2,
                           ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '+ KERANJANG',
-                            style: AppTheme.labelSm(
-                              AppColors.nbBlack,
-                              fontSize: 12,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                const Icon(
+                                  Icons.add_shopping_cart,
+                                  size: 18,
+                                  color: AppColors.nbBlack,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '+ KERANJANG',
+                                  style: AppTheme.labelSm(
+                                    AppColors.nbBlack,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ),
             ),
           ],
         ),

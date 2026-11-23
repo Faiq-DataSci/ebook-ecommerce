@@ -4,6 +4,7 @@ import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../cart/domain/entities/cart_item.dart';
 import '../../../cart/presentation/providers/cart_provider.dart';
+import '../../domain/entities/order_entity.dart';
 import '../providers/checkout_provider.dart';
 import '../providers/checkout_state.dart';
 import '../widgets/checkout_error_state.dart';
@@ -13,12 +14,21 @@ import '../widgets/order_status_badge.dart';
 import '../widgets/order_summary_card.dart';
 import '../widgets/payment_gateway_card.dart';
 import '../widgets/payment_gateway_pending_card.dart';
+import '../../../library/presentation/pages/library_screen.dart';
 import 'order_history_screen.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
   final List<CartItem> checkoutItems;
 
-  const CheckoutScreen({super.key, required this.checkoutItems});
+  /// Bila diisi, layar melanjutkan pembayaran pesanan `PENDING` yang sudah ada
+  /// (langkah Bayar) dan tidak membuat pesanan baru dari keranjang.
+  final OrderEntity? resumeOrder;
+
+  const CheckoutScreen({
+    super.key,
+    required this.checkoutItems,
+    this.resumeOrder,
+  });
 
   @override
   ConsumerState<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -29,7 +39,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(checkoutProvider.notifier).initialize(widget.checkoutItems);
+      final notifier = ref.read(checkoutProvider.notifier);
+      final resume = widget.resumeOrder;
+      if (resume != null) {
+        notifier.resumeOrder(resume);
+      } else {
+        notifier.initialize(widget.checkoutItems);
+      }
     });
   }
 
@@ -466,7 +482,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 color: AppColors.nbGreen,
                 icon: Icons.auto_stories,
               );
-              Navigator.of(context).pop();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const LibraryScreen()),
+              );
             },
             child: Container(
               height: 48,

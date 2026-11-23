@@ -836,11 +836,11 @@ class _LoginFormZoneCState extends State<LoginFormZoneC> {
                                 ? 'COBA MASUK LAGI'
                                 : 'MASUK SEKARANG',
                             style: const TextStyle(
-                                fontFamily: AppTheme.fontHeadline,
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.nbBlack,
-                                letterSpacing: 0.5,
+                              fontFamily: AppTheme.fontHeadline,
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.nbBlack,
+                              letterSpacing: 0.5,
                             ),
                           ),
                           const SizedBox(width: 8.0),
