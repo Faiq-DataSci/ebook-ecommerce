@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { SYSTEM_NOTIFICATIONS } from '../../../features/dashboard/data/dashboardData'
+import { useAuth } from '../../../features/authentication/hooks/useAuth'
 
 interface AdminHeaderProps {
   isSidebarCollapsed: boolean
@@ -8,6 +9,7 @@ interface AdminHeaderProps {
   onSearchChange: (value: string) => void
   onToggleMobileMenu: () => void
   onNavigate?: (path: string) => void
+  onLogoutClick?: () => void
 }
 
 export function AdminHeader({
@@ -17,7 +19,9 @@ export function AdminHeader({
   onSearchChange,
   onToggleMobileMenu,
   onNavigate,
+  onLogoutClick,
 }: AdminHeaderProps) {
+  const { user } = useAuth()
   const [isNotifOpen, setIsNotifOpen] = useState<boolean>(false)
   const notifContainerRef = useRef<HTMLDivElement | null>(null)
   const searchInputRef = useRef<HTMLInputElement | null>(null)
@@ -177,12 +181,40 @@ export function AdminHeader({
         </div>
 
         <div className="header-profile-card">
-          <div className="header-avatar">BS</div>
+          <div className="header-avatar">
+            {user?.fullName
+              ? user.fullName
+                  .replace('DATA SIMULASI - ', '')
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+                  .slice(0, 2)
+                  .toUpperCase()
+              : 'AD'}
+          </div>
           <div className="header-profile-info">
-            <span className="header-profile-name">Budi Santoso</span>
-            <span className="header-profile-role">SUPER ADMIN</span>
+            <span className="header-profile-name">
+              {user?.fullName || 'Administrator Toko'}
+            </span>
+            <span className="header-profile-role">
+              {user?.isSimulation ? 'ADMIN (SIMULASI)' : 'SUPER ADMIN'}
+            </span>
           </div>
         </div>
+
+        {onLogoutClick && (
+          <button
+            type="button"
+            onClick={onLogoutClick}
+            className="header-logout-btn nb-btn"
+            title="Keluar dari sesi administrator"
+            aria-label="Keluar dari sesi administrator"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+              logout
+            </span>
+          </button>
+        )}
       </div>
     </header>
   )

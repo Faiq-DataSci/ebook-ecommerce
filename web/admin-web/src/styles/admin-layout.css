@@ -343,6 +343,32 @@
   margin-top: 1px;
 }
 
+.header-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: var(--nb-pink);
+  border: var(--nb-border-2);
+  box-shadow: var(--nb-shadow-xs);
+  cursor: pointer;
+  color: var(--nb-black);
+  padding: 0;
+  transition: transform var(--nb-duration-fast), box-shadow var(--nb-duration-fast);
+}
+
+.header-logout-btn:hover {
+  background-color: var(--nb-red-hover);
+  transform: translate(-1.5px, -1.5px);
+  box-shadow: var(--nb-shadow-sm);
+}
+
+.header-logout-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
 /* Main Content Area */
 .main-content {
   flex: 1;

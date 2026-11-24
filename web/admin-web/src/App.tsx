@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AdminLayout } from './app/layouts/AdminLayout'
 import { resolveRouteMeta } from './app/navigation/adminNavigation'
 import { useSidebar } from './app/hooks/useSidebar'
@@ -9,6 +9,11 @@ import { AuthorPublisherPage } from './features/authors-publishers/pages/AuthorP
 import { TransactionFinancePage } from './features/transactions/pages/TransactionFinancePage'
 import { FinancePage } from './features/finance/pages/FinancePage'
 import { AnalyticsPage } from './features/analytics/pages/AnalyticsPage'
+import { LoginPage } from './features/authentication/pages/LoginPage'
+import { AuthProvider } from './app/providers/AuthProvider'
+import { ProtectedRoute } from './app/router/ProtectedRoute'
+import { useAuth } from './features/authentication/hooks/useAuth'
+import { ConfirmDialog } from './shared/components/ui/ConfirmDialog'
 import './styles/tokens.css'
 import './styles/admin-layout.css'
 import './styles/admin-sidebar.css'
@@ -17,14 +22,36 @@ import './styles/catalog.css'
 import './styles/transaction-finance.css'
 import './styles/analytics.css'
 
-export function App() {
+function AdminAppContent() {
   const sidebar = useSidebar()
+  const { user, isAuthenticated, logout } = useAuth()
   const [customBreadcrumb, setCustomBreadcrumb] = useState<{
     path: string
     text: string
   } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [actionNotice, setActionNotice] = useState<string | null>(null)
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
+
+  // Auto-redirect from /login to /admin/dashboard if already authenticated as ADMIN
+  useEffect(() => {
+    if (sidebar.activePath === '/login' && isAuthenticated && user?.role === 'ADMIN') {
+      sidebar.navigateTo('/admin/dashboard')
+    }
+  }, [sidebar.activePath, isAuthenticated, user?.role, sidebar])
+
+  // Explicit /login route view
+  if (sidebar.activePath === '/login') {
+    if (isAuthenticated && user?.role === 'ADMIN') {
+      // Admin is already logged in, redirect handled in effect
+    } else {
+      return (
+        <LoginPage
+          onLoginSuccess={() => sidebar.navigateTo('/admin/dashboard')}
+        />
+      )
+    }
+  }
 
   const routeMeta = resolveRouteMeta(sidebar.activePath)
   const breadcrumbText =
@@ -86,26 +113,55 @@ export function App() {
   }
 
   return (
-    <AdminLayout
-      isCollapsed={sidebar.isCollapsed}
-      isMobileOpen={sidebar.isMobileOpen}
-      expandedDropdowns={sidebar.expandedDropdowns}
-      activePath={sidebar.activePath}
-      breadcrumbText={breadcrumbText}
-      searchQuery={searchQuery}
-      onSearchChange={setSearchQuery}
-      onToggleCollapse={sidebar.toggleSidebarCollapse}
-      onToggleMobileMenu={sidebar.toggleMobileSidebar}
-      onCloseMobileMenu={sidebar.closeMobileSidebar}
-      onToggleDropdown={sidebar.toggleDropdown}
-      onCloseDropdown={sidebar.closeDropdown}
-      onNavigate={sidebar.navigateTo}
-      onLogoutClick={() =>
-        setActionNotice('Aksi Logout: Sesi pratinjau admin tetap aktif untuk pengujian UI.')
-      }
+    <ProtectedRoute
+      onNavigateToLogin={() => sidebar.navigateTo('/login')}
+      onNavigateToDashboard={() => sidebar.navigateTo('/admin/dashboard')}
     >
-      {pageContent}
-    </AdminLayout>
+      <AdminLayout
+        isCollapsed={sidebar.isCollapsed}
+        isMobileOpen={sidebar.isMobileOpen}
+        expandedDropdowns={sidebar.expandedDropdowns}
+        activePath={sidebar.activePath}
+        breadcrumbText={breadcrumbText}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onToggleCollapse={sidebar.toggleSidebarCollapse}
+        onToggleMobileMenu={sidebar.toggleMobileSidebar}
+        onCloseMobileMenu={sidebar.closeMobileSidebar}
+        onToggleDropdown={sidebar.toggleDropdown}
+        onCloseDropdown={sidebar.closeDropdown}
+        onNavigate={sidebar.navigateTo}
+        onLogoutClick={() => setIsLogoutDialogOpen(true)}
+      >
+        {pageContent}
+      </AdminLayout>
+
+      <ConfirmDialog
+        open={isLogoutDialogOpen}
+        title="Konfirmasi Keluar Sesi"
+        confirmLabel="Ya, Keluar"
+        cancelLabel="Batal"
+        confirmVariant="danger"
+        onConfirm={async () => {
+          setIsLogoutDialogOpen(false)
+          await logout()
+          sidebar.navigateTo('/login')
+        }}
+        onCancel={() => setIsLogoutDialogOpen(false)}
+      >
+        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5 }}>
+          Apakah Anda yakin ingin mengakhiri sesi administrator ini? Anda harus masuk kembali dengan akun <strong>ADMIN</strong> untuk mengakses konsol manajemen.
+        </p>
+      </ConfirmDialog>
+    </ProtectedRoute>
+  )
+}
+
+export function App() {
+  return (
+    <AuthProvider>
+      <AdminAppContent />
+    </AuthProvider>
   )
 }
 

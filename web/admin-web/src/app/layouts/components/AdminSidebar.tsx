@@ -1,5 +1,6 @@
 import type { MouseEvent } from 'react'
 import { ADMIN_NAVIGATION_GROUPS } from '../../navigation/adminNavigation'
+import { useAuth } from '../../../features/authentication/hooks/useAuth'
 import { SidebarDropdown } from './SidebarDropdown'
 import { SidebarMenuItem } from './SidebarMenuItem'
 
@@ -26,6 +27,18 @@ export function AdminSidebar({
   onNavigate,
   onLogoutClick,
 }: AdminSidebarProps) {
+  const { user } = useAuth()
+  const displayName = user?.fullName || 'Administrator Toko'
+  const initials = user?.fullName
+    ? user.fullName
+        .replace('DATA SIMULASI - ', '')
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+    : 'AD'
+
   const handleLogout = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
     onLogoutClick()
@@ -142,12 +155,14 @@ export function AdminSidebar({
 
       {/* Sidebar Footer */}
       <div className="sidebar-footer">
-        <div className="sidebar-user-card" title="Budi Santoso">
+        <div className="sidebar-user-card" title={displayName}>
           <div className="sidebar-user-left">
-            <div className="sidebar-user-avatar">BS</div>
+            <div className="sidebar-user-avatar">{initials}</div>
             <div className="sidebar-label sidebar-user-meta">
-              <span className="sidebar-user-name">Budi Santoso</span>
-              <span className="sidebar-user-id">ID-JKT-01 • ONLINE</span>
+              <span className="sidebar-user-name">{displayName}</span>
+              <span className="sidebar-user-id">
+                {user?.isSimulation ? 'DATA SIMULASI' : 'ADMINISTRATOR'}
+              </span>
             </div>
           </div>
           <span
