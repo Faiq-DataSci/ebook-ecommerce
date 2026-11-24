@@ -5,7 +5,7 @@
 - **Apa proyek ini:** Sistem informasi e-commerce penjualan buku elektronik (`e-book`) berbasis *single-seller B2C* yang dilengkapi Sistem Pendukung Keputusan (`SPK SAW`) untuk rekomendasi `e-book`.
 - **Tujuan sistem:** Mempermudah **Pelanggan** menemukan, membeli, dan membaca `e-book` secara aman di dalam aplikasi, serta membantu **Admin** mengelola katalog, transaksi, laporan penjualan, dan bobot rekomendasi secara terpusat.
 - **Pengguna utama:** **Pelanggan** (`mobile/ebook_store` dan `web/pengunjung-web`) serta **Admin** (`web/admin-web`).
-- **Status umum proyek:** Sebagian `[ADA]` (fondasi `backend/`, skema & file migrasi awal Prisma, skrip seeding berlabel `"DATA SIMULASI"`, 4 file unit test Vitest, antarmuka `web/admin-web` Neo-Brutalism, etalase `web/pengunjung-web` 9 layar, modul `mobile/ebook_store` [Splash, Auth, Katalog, Beranda], serta 9 test suite Flutter); sebagian `[RENCANA]` (seluruh REST API bisnis backend, eksekusi migrasi live ke PostgreSQL Supabase remote, integrasi payment gateway nyata, signed URL PDF privat backend, dan mesin kalkulasi SPK SAW).
+- **Status umum proyek:** Sebagian besar `[ADA]` (fondasi `backend/`, REST API inti katalog/pesanan/transaksi/webhook/signed URL/rekomendasi SAW, skema & migrasi Prisma yang sudah terdeploy ke PostgreSQL Supabase live, skrip seeding berlabel `"DATA SIMULASI"`, bucket privat Supabase Storage live, 16 file Vitest dengan 104 test lulus, antarmuka `web/admin-web` Neo-Brutalism, etalase `web/pengunjung-web` 9 layar, serta modul `mobile/ebook_store` [Splash, Auth, Katalog, Beranda, Keranjang, Checkout, Library/PDF Reader, Profil & Transaksi, Ulasan, Peringkat SAW] dengan 23 file test dan 151 skenario Flutter, 150 lulus / 1 gagal). Sebagian `[RENCANA]` (server key Midtrans sandbox aktif, koneksi REST API penuh pada `pengunjung-web`, aktivasi default remote pada `mobile/ebook_store`, submenu operasional admin-web, dan deployment hosting).
 - **Sumber kebenaran utama:** [`docs-proyek-ebook-ecommerce.md`](./docs-proyek-ebook-ecommerce.md).
 
 ---
@@ -59,19 +59,19 @@ docs/
 | **`01-project-overview/`** | Ringkasan, kebutuhan bisnis, ruang lingkup, stakeholder, metrik, glosarium | [`project-overview.md`](./01-project-overview/project-overview.md), [`business-requirements.md`](./01-project-overview/business-requirements.md), [`system-scope.md`](./01-project-overview/system-scope.md) | `[ADA]` dokumen / `[RENCANA]` fitur |
 | **`01-design/`** | Diagram UML/Mermaid, arsitektur, ERD terkini, DFD, keterlacakan | [`architecture.md`](./01-design/architecture.md), [`erd.md`](./01-design/erd.md), [`use-cases.md`](./01-design/use-cases.md), [`dfd.md`](./01-design/dfd.md) | `[ADA]` dokumen / `[RENCANA]` implementasi |
 | **`02-architecture/`** | Arsitektur sistem, aplikasi monorepo, perbandingan stack | [`system-architecture.md`](./02-architecture/system-architecture.md), [`technology-stack.md`](./02-architecture/technology-stack.md) | `[ADA]` dokumen awal |
-| **`02-api/`** | Spesifikasi OpenAPI 3.1, autentikasi, konvensi, error, kontrak webhook | [`api-spec.yaml`](./02-api/api-spec.yaml), [`api-overview.md`](./02-api/api-overview.md), [`webhook-contract.md`](./02-api/webhook-contract.md) | `[ADA]` spesifikasi / `[RENCANA]` endpoint bisnis |
-| **`03-business-process/`** | Alur proses Pelanggan, Admin, dan siklus transaksi | [`customer-workflow.md`](./03-business-process/customer-workflow.md), [`transaction-workflow.md`](./03-business-process/transaction-workflow.md) | `[RENCANA]` |
-| **`03-saw/`** | Metodologi SAW dan perhitungan manual dataset uji | [`saw-method.md`](./03-saw/saw-method.md), [`perhitungan-manual.md`](./03-saw/perhitungan-manual.md) | `[RENCANA]` (kerangka awal) |
-| **`04-database/`** | Rancangan konseptual database & kamus data tahap awal | [`database-design.md`](./04-database/database-design.md), [`data-dictionary.md`](./04-database/data-dictionary.md) | `[RENCANA]` (perlu selaras `schema.prisma`) |
+| **`02-api/`** | Spesifikasi OpenAPI 3.1, autentikasi, konvensi, error, kontrak webhook | [`api-spec.yaml`](./02-api/api-spec.yaml), [`api-overview.md`](./02-api/api-overview.md), [`webhook-contract.md`](./02-api/webhook-contract.md) | `[ADA]` spesifikasi & endpoint bisnis inti / `[RENCANA]` endpoint admin lanjutan |
+| **`03-business-process/`** | Alur proses Pelanggan, Admin, dan siklus transaksi | [`customer-workflow.md`](./03-business-process/customer-workflow.md), [`transaction-workflow.md`](./03-business-process/transaction-workflow.md) | `[ADA]` dokumen alur / sebagian `[ADA]` implementasi backend |
+| **`03-saw/`** | Metodologi SAW dan perhitungan manual dataset uji | [`saw-method.md`](./03-saw/saw-method.md), [`perhitungan-manual.md`](./03-saw/perhitungan-manual.md) | `[ADA]` metode, kalkulator backend & dataset uji |
+| **`04-database/`** | Rancangan konseptual database & kamus data tahap awal | [`database-design.md`](./04-database/database-design.md), [`data-dictionary.md`](./04-database/data-dictionary.md) | `[ADA]` skema & migrasi live / `[RENCANA]` penyelarasan dokumen lama |
 | **`04-testing/`** | Laporan pengujian struktur lama (referensi historis) | [`test-report.md`](./04-testing/test-report.md) | `[ADA]` arsip awal |
 | **`05-api/`** | Rancangan endpoint API tahap awal (referensi transisi) | [`api-overview.md`](./05-api/api-overview.md), [`api-endpoints.md`](./05-api/api-endpoints.md) | `[RENCANA]` |
 | **`05-deployment/`** | Panduan deployment sistem | [`deployment.md`](./05-deployment/deployment.md) | `[RENCANA]` |
-| **`06-modules/`** | Deskripsi tanggung jawab per modul aplikasi | [`authentication.md`](./06-modules/authentication.md), [`ebook-catalog.md`](./06-modules/ebook-catalog.md), [`ebook-access.md`](./06-modules/ebook-access.md) | `[RENCANA]` |
+| **`06-modules/`** | Deskripsi tanggung jawab per modul aplikasi | [`authentication.md`](./06-modules/authentication.md), [`ebook-catalog.md`](./06-modules/ebook-catalog.md), [`ebook-access.md`](./06-modules/ebook-access.md) | `[ADA]` modul inti / `[RENCANA]` modul admin lanjutan |
 | **`07-security/`** | Kebijakan dan pedoman keamanan sistem | [`security-overview.md`](./07-security/security-overview.md), [`security-guidelines.md`](./07-security/security-guidelines.md) | `[ADA]` pedoman / `[RENCANA]` kontrol runtime |
 | **`08-development/`** | Panduan instalasi, konfigurasi `.env`, dan konvensi kode | [`installation.md`](./08-development/installation.md), [`coding-conventions.md`](./08-development/coding-conventions.md) | `[ADA]` panduan |
-| **`09-testing/`** | Strategi uji, skenario uji, dan hasil validasi aktual | [`testing-strategy.md`](./09-testing/testing-strategy.md), [`test-cases.md`](./09-testing/test-cases.md), [`test-results.md`](./09-testing/test-results.md) | `[ADA]` hasil fondasi / `[RENCANA]` uji bisnis |
+| **`09-testing/`** | Strategi uji, skenario uji, dan hasil validasi aktual | [`testing-strategy.md`](./09-testing/testing-strategy.md), [`test-cases.md`](./09-testing/test-cases.md), [`test-results.md`](./09-testing/test-results.md) | `[ADA]` hasil backend & mobile / `[RENCANA]` uji live berulang |
 | **`10-maintenance/`** | Pemecahan masalah dan panduan pemeliharaan | [`troubleshooting.md`](./10-maintenance/troubleshooting.md), [`maintenance-guide.md`](./10-maintenance/maintenance-guide.md) | `[ADA]` panduan |
-| **`adr/`** | *Architecture Decision Records* proyek | [`0001-single-seller-b2c.md`](./adr/0001-single-seller-b2c.md), [`0002-backend-only-saw.md`](./adr/0002-backend-only-saw.md), [`0003-admin-web-sebelum-mobile.md`](./adr/0003-admin-web-sebelum-mobile.md) | `[ADA]` keputusan terkunci |
+| **`adr/`** | *Architecture Decision Records* proyek | [`0001-single-seller-b2c.md`](./adr/0001-single-seller-b2c.md), [`0002-backend-only-saw.md`](./adr/0002-backend-only-saw.md), [`0003-admin-web-sebelum-mobile.md`](./adr/0003-admin-web-sebelum-mobile.md), [`0004-supabase-auth.md`](./adr/0004-supabase-auth.md), [`0005-payment-gateway-nyata.md`](./adr/0005-payment-gateway-nyata.md), [`0006-pdf-storage-privat-signed-url.md`](./adr/0006-pdf-storage-privat-signed-url.md) | `[ADA]` keputusan terkunci |
 
 ---
 
@@ -91,13 +91,13 @@ docs/
 
 | Area | Teknologi | Status Berdasarkan Bukti |
 |---|---|---|
-| **Backend** | Node.js, Express, TypeScript, Zod, Prisma 7 (ESM) | `[ADA]` di `backend/package.json`, `src/`, dan 4 file test Vitest; endpoint bisnis `[RENCANA]` |
-| **Database** | PostgreSQL Supabase | `[ADA]` skema di `backend/prisma/schema.prisma`, file migrasi awal `20261116000000_init/`, skrip `seed.ts` & fixtures `seed-data.ts`; eksekusi live `[RENCANA]` |
-| **Storage** | Supabase Storage privat (`signed URL`) | `[ADA]` helper dasar di `backend/src/integrations/storage/`; bucket live & endpoint signed URL `[RENCANA]` |
-| **Admin Web** | React, TypeScript, Vite (Neo-Brutalism) | `[ADA]` konsol admin Neo-Brutalism di `web/admin-web/src/` (`AdminLayout`, `AdminSidebar`, `DashboardPage` berlabel `"DATA SIMULASI"`; `lint` & `tsc` PASS); modul CRUD & integrasi API `[RENCANA]` |
-| **Pengunjung Web** | React, TypeScript, Vite (Neubrutalism) | `[ADA]` etalase pelanggan 9 layar di `web/pengunjung-web/src/` berlabel `"DATA SIMULASI"` (`lint` & `typecheck` PASS); integrasi API `[RENCANA]` |
-| **Mobile** | Flutter, Riverpod, Dio (Android) | `[ADA]` modul Splash, Auth (Login, Register), Katalog, Beranda di `mobile/ebook_store/lib/` + 9 test suite; integrasi API `[RENCANA]` |
-| **SPK** | Metode SAW di `backend/` | Aturan arsitektur terkunci ([ADR-0002](./adr/0002-backend-only-saw.md)); dataset diadopsi di seed & UI; kalkulator backend `[RENCANA]` |
+| **Backend** | Node.js, Express, TypeScript, Zod, Prisma 7 (ESM) | `[ADA]` di `backend/package.json`, `src/`, dan 16 file test Vitest (104 test lulus); endpoint bisnis inti `[ADA]`, endpoint admin lanjutan `[RENCANA]` |
+| **Database** | PostgreSQL Supabase | `[ADA]` skema di `backend/prisma/schema.prisma`, migrasi `20261116000000_init/`, skrip `seed.ts` & fixtures `seed-data.ts`; migrasi & seeding live terverifikasi via `npm run test:cloud` |
+| **Storage** | Supabase Storage privat (`signed URL`) | `[ADA]` helper di `backend/src/integrations/storage/`; bucket `ebooks-private` live (`public: false`) & endpoint signed URL terverifikasi (TTL 60 detik) |
+| **Admin Web** | React, TypeScript, Vite (Neo-Brutalism) | `[ADA]` konsol admin Neo-Brutalism di `web/admin-web/src/` (`AdminLayout`, `AdminSidebar`, `DashboardPage`, halaman katalog/transaksi/keuangan/analitik berlabel `"DATA SIMULASI"`; `lint` & `tsc` PASS); integrasi API dashboard/SAW `[ADA]`, submenu operasional live `[RENCANA]` |
+| **Pengunjung Web** | React, TypeScript, Vite (Neubrutalism) | `[ADA]` etalase pelanggan 9 layar di `web/pengunjung-web/src/` berlabel `"DATA SIMULASI"` (`lint` & `typecheck` PASS); koneksi REST API backend penuh `[RENCANA]` (baru health check) |
+| **Mobile** | Flutter, Riverpod, Dio (Android) | `[ADA]` modul Splash, Auth, Katalog, Beranda, Keranjang, Checkout, Library/PDF Reader, Profil & Transaksi, Ulasan, Peringkat SAW di `mobile/ebook_store/lib/`; 23 file test / 151 skenario (150 lulus, 1 gagal); remote datasource `[ADA]` via flag, default masih mock |
+| **SPK** | Metode SAW di `backend/` | `[ADA]` kalkulator SAW (`saw.service.ts`), endpoint rekomendasi & bobot admin, dataset uji cocok `perhitungan-manual.md`; bobot aktif masih in-memory (persistensi DB `[RENCANA]`) |
 
 ---
 

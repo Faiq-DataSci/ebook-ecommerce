@@ -1,6 +1,6 @@
 # Hasil Pengujian (`Test Results`)
 
-**Status:** `[ADA]` — diperbarui pada 17 November 2026 (pembaruan suite backend & mobile).
+**Status:** `[ADA]` — diperbarui pada 24 November 2026 (verifikasi ulang suite backend & mobile di mesin ini).
 
 **Lingkungan eksekusi:** Windows PowerShell 5.1, Node.js `v24.15.0`, npm `11.12.1`, Flutter `3.44.0` / Dart `3.12.0`.  
 Validasi Prisma memuat skema dan konfigurasi; file migrasi awal `20261116000000_init/` telah terverifikasi.
@@ -17,10 +17,11 @@ Validasi Prisma memuat skema dan konfigurasi; file migrasi awal `20261116000000_
 | Backend build | `npm run build` | **PASS** | `tsc` menghasilkan `dist/` |
 | Backend Prisma schema | `npm run prisma:validate` | **PASS** | `"The schema at prisma\schema.prisma is valid 🚀"` |
 | Admin Web lint | `npm run lint` | **PASS** | ESLint tanpa temuan |
+| Admin Web test | `npm test` | **PASS** | 10 skenario unit test validasi email/password, proteksi RBAC admin, dan pesan generik (Node test runner) |
 | Admin Web typecheck & build | `npm run build` | **PASS** | `tsc` + Vite build sukses tanpa error |
 | Pengunjung Web lint | `npm run lint` | **PASS** | ESLint tanpa temuan |
 | Pengunjung Web typecheck & build | `npm run build` | **PASS** | `tsc` + Vite build sukses tanpa error |
-| Mobile test suite | `flutter test` | **PASS** | 151 skenario pengujian unit, widget, dan flow di `mobile/ebook_store/test/` |
+| Mobile test suite | `flutter test` | **PASS (Sebagian)** | 151 skenario unit, widget, dan flow di 23 file `mobile/ebook_store/test/`: 150 lulus, 1 gagal (`splash_screen_test.dart` — `StitchEbookIcon` tidak ditemukan) |
 
 ---
 
@@ -41,6 +42,9 @@ Validasi Prisma memuat skema dan konfigurasi; file migrasi awal `20261116000000_
 | 11 | `backend/tests/integration/user-auth-routes.test.ts` | Guard 401 dan flow endpoint `/api/v1/auth/sync` serta `/api/v1/users/me` | Integration (Supertest) | **PASS** |
 | 12 | `backend/tests/integration/catalog-routes.test.ts` | Endpoint publik `/api/v1/categories`, `/api/v1/ebooks`, dan `/api/v1/ebooks/:id` | Integration (Supertest) | **PASS** |
 | 13 | `backend/tests/integration/order-payment-routes.test.ts` | Endpoint `/api/v1/orders`, `/api/v1/orders/me`, `/api/v1/orders/:id`, `/api/v1/payments/webhook`, dan `/api/v1/ebooks/:id/access-url` | Integration (Supertest) | **PASS** |
+| 14 | `backend/tests/integration/saw-routes.test.ts` | Endpoint `GET /api/v1/recommendations/saw`, validasi query, dan otorisasi rute bobot admin | Integration (Supertest) | **PASS** |
+| 15 | `backend/tests/integration/transaction-routes.test.ts` | Endpoint `GET /api/v1/transactions/my` (autentikasi & filter role `CUSTOMER`) | Integration (Supertest) | **PASS** |
+| 16 | `backend/tests/integration/admin-routes.test.ts` | Endpoint `GET /api/v1/admin/ping`, `GET /api/v1/admin/dashboard`, `GET/PUT /api/v1/admin/saw/weights`, dan guard role `ADMIN` | Integration (Supertest) | **PASS** |
 
 ---
 
@@ -48,24 +52,39 @@ Validasi Prisma memuat skema dan konfigurasi; file migrasi awal `20261116000000_
 
 | No | File Sumber | Cakupan Pengujian | Tipe Test |
 |---|---|---|---|
-| 1 | `test/splash_screen_test.dart` | Tampilan awal & transisi loading aplikasi | Widget Test |
-| 2 | `test/login_screen_test.dart` | Formulir login, interaksi field, & tombol masuk | Widget Test |
-| 3 | `test/register_screen_test.dart` | Validasi pendaftaran akun baru & konfirmasi password | Widget Test |
-| 4 | `test/login_error_state_test.dart` | Penanganan pesan error login dan feedback visual | Widget Test |
-| 5 | `test/catalog_screen_test.dart` | Grid buku, search bar, dan render katalog | Widget Test |
-| 6 | `test/catalog_filter_test.dart` | Filter harga, pill kategori, dan perubahan state | Unit / Widget Test |
-| 7 | `test/catalog_model_test.dart` | Parsing JSON dan integritas data model katalog | Unit Test |
-| 8 | `test/home_book_detail_test.dart` | Navigasi ke detail e-book dari beranda | Widget Test |
-| 9 | `test/widget_test.dart` | Sanity check render widget aplikasi | Widget Test |
+| 1 | `test/splash_screen_test.dart` | Tampilan awal & transisi loading aplikasi (**1 skenario gagal**: `StitchEbookIcon` tidak ditemukan) | Widget Test |
+| 2 | `test/splash_auto_login_test.dart` | Auto-login / pemulihan sesi saat boot | Widget Test |
+| 3 | `test/login_screen_test.dart` | Formulir login, interaksi field, & tombol masuk | Widget Test |
+| 4 | `test/register_screen_test.dart` | Validasi pendaftaran akun baru & konfirmasi password | Widget Test |
+| 5 | `test/login_error_state_test.dart` | Penanganan pesan error login dan feedback visual | Widget Test |
+| 6 | `test/catalog_screen_test.dart` | Grid buku, search bar, dan render katalog | Widget Test |
+| 7 | `test/catalog_filter_test.dart` | Filter harga, pill kategori, dan perubahan state | Unit / Widget Test |
+| 8 | `test/catalog_model_test.dart` | Parsing JSON dan integritas data model katalog | Unit Test |
+| 9 | `test/home_book_detail_test.dart` | Navigasi ke detail e-book dari beranda | Widget Test |
+| 10 | `test/widget_test.dart` | Sanity check render Beranda & kontrol interaktif | Widget Test |
+| 11 | `test/book_reviews_test.dart` | Seksi ulasan & rating bintang pembaca | Widget Test |
+| 12 | `test/cart_screen_test.dart` | Keranjang belanja, kondisi loading/error/empty, & checkout modal | Widget Test |
+| 13 | `test/cart_persistence_test.dart` | Persistensi item keranjang | Unit Test |
+| 14 | `test/checkout_feature_test.dart` | Alur checkout & pembayaran | Widget Test |
+| 15 | `test/checkout_auto_polling_test.dart` | Auto-polling status pembayaran | Unit Test |
+| 16 | `test/e2e_remote_flow_test.dart` | Alur E2E remote: rekomendasi SAW → keranjang → checkout | Integration |
+| 17 | `test/home_recommendation_remote_test.dart` | Render rekomendasi SAW remote di Beranda | Widget Test |
+| 18 | `test/library_screen_test.dart` | Perpustakaan digital & navigasi pustaka | Widget Test |
+| 19 | `test/in_app_pdf_reader_test.dart` | _In-app PDF reader_ & signed URL | Widget Test |
+| 20 | `test/reader_resume_progress_test.dart` | Resume progres baca | Unit Test |
+| 21 | `test/profile_transactions_test.dart` | Profil, riwayat transaksi, & logout | Widget Test |
+| 22 | `test/saw_ranking_screen_test.dart` | Halaman peringkat SAW & kartu bobot kriteria | Widget Test |
+| 23 | `test/wishlist_and_search_pdf_test.dart` | Wishlist, pencarian, & akses PDF | Widget Test |
 
 ---
 
 ## 4. Temuan dan Tindak Lanjut
 
-1. **Migrasi Prisma awal telah dibuat:** `backend/prisma/migrations/20261116000000_init/` sudah tersedia; eksekusi live ke instance Supabase menunggu jaringan/kredensial live (`[RENCANA]`).
-2. **Skrip Seeding telah dibuat:** `backend/prisma/seed.ts` dan `backend/prisma/seed-data.ts` sudah siap dengan proteksi production.
-3. **Tes endpoint bisnis backend:** Pengujian endpoint katalog, transaksi, webhook pembayaran, dan kalkulasi SAW backend masih `[RENCANA]` (menunggu implementasi router & service bisnis).
+1. **Migrasi Prisma sudah live:** `backend/prisma/migrations/20261116000000_init/` telah terdeploy ke instance Supabase live dan terverifikasi melalui `npm run test:cloud`.
+2. **Skrip Seeding telah dibuat & dijalankan:** `backend/prisma/seed.ts` dan `backend/prisma/seed-data.ts` siap dengan proteksi production; seeding live terverifikasi.
+3. **Tes endpoint bisnis backend `[ADA]`:** Endpoint katalog, pesanan, transaksi, webhook pembayaran, signed URL, rekomendasi SAW, dashboard admin, dan bobot SAW sudah diuji (104 test lulus).
 4. **Admin Web & Pengunjung Web:** Telah lolos linting dan pemeriksaan tipe TypeScript (`tsc --noEmit`).
+5. **Mobile Flutter `[ADA]` sebagian:** 150 dari 151 skenario lulus. Satu kegagalan pada `splash_screen_test.dart` karena test masih mencari widget `StitchEbookIcon` yang tidak lagi ada pada implementasi splash saat ini; perlu disinkronkan antara test dan widget.
 
 ---
 

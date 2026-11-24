@@ -1,7 +1,7 @@
 # Hardening API (`API Hardening`)
 
 **Status:** `[ADA]` (`helmet()`, CORS, `validate.ts`, `errorHandler`, batas `1mb`, berkas `rate-limit.middleware.ts`) | `[RENCANA]` (pemasangan rate limiter di `app.ts`, skema Zod per modul, audit keamanan)  
-**Referensi Utama:** [`backend/src/app.ts`](../../backend/src/app.ts), [`backend/src/middleware/validate.ts`](../../backend/src/middleware/validate.ts), [`backend/src/middlewares/error.middleware.ts`](../../backend/src/middlewares/error.middleware.ts), [`backend/src/middlewares/rate-limit.middleware.ts`](../../backend/src/middlewares/rate-limit.middleware.ts).
+**Referensi Utama:** [`backend/src/app.ts`](../../backend/src/app.ts), [`backend/src/middlewares/validate.middleware.ts`](../../backend/src/middlewares/validate.middleware.ts), [`backend/src/middlewares/error.middleware.ts`](../../backend/src/middlewares/error.middleware.ts), [`backend/src/middlewares/rate-limit.middleware.ts`](../../backend/src/middlewares/rate-limit.middleware.ts).
 
 ---
 
@@ -78,7 +78,7 @@
 |---|---|---|---|
 | **HTTP Security Headers** | `helmet()` di `app.ts` | Ada di `backend/src/app.ts` | `[ADA]` (default) / `[RENCANA]` (CSP/HSTS) |
 | **CORS Whitelist** | `cors({ origin, credentials: true })` | Ada di `app.ts` & `env.ts` | `[ADA]` mekanisme / `[RENCANA]` prod origin |
-| **Input Validation** | `validate.ts` (Zod) | Ada di `backend/src/middleware/validate.ts` | `[ADA]` helper / `[RENCANA]` skema modul |
+| **Input Validation** | `validate.middleware.ts` (Zod) | Ada di `backend/src/middlewares/validate.middleware.ts` | `[ADA]` helper / `[RENCANA]` skema modul |
 | **Rate Limiting** | `sensitiveEndpointLimiter` (`express-rate-limit`) | Ada file `rate-limit.middleware.ts` | `[ADA]` file / `[RENCANA]` mount di `app.ts` |
 | **Error Sanitization** | `errorHandler` | Ada di `error.middleware.ts` | `[ADA]` |
 | **Body Size Limit** | `express.json({ limit: '1mb' })` | Ada di `app.ts` | `[ADA]` |

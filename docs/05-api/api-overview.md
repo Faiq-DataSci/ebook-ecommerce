@@ -75,19 +75,22 @@ REST API ini berfungsi sebagai satu-satunya gerbang terpusat (*single source of 
 
 ## 4. Status Implementasi Aktual & Ringkasan Kategori Endpoint
 
-Berdasarkan [`backend/src/app.ts`](../../backend/src/app.ts) dan [`api-spec.yaml`](../02-api/api-spec.yaml) (memuat **29 path** terencana):
-- **Sudah `[ADA]` (2 endpoint):**
+> **Catatan:** Dokumen `docs/05-api/` adalah rancangan tahap awal. Sumber kebenaran terkini adalah [`docs/02-api/`](../02-api/api-overview.md) dan kode di `backend/src/`.
+
+Berdasarkan [`backend/src/app.ts`](../../backend/src/app.ts) dan [`api-spec.yaml`](../02-api/api-spec.yaml):
+- **Sudah `[ADA]` (endpoint inti):**
   - `GET /api/v1/health` — Cek kesehatan server Express.
   - `GET /api/v1/admin/ping` — Uji otorisasi `authenticate` + `authorize('ADMIN')`.
-- **Masih `[RENCANA]` (27 path bisnis pada `api-spec.yaml` + `/transactions/my`):**
-  1. **Autentikasi & Profil:** `/auth/sync`, `/users/me`
-  2. **Katalog & Kategori:** `/categories`, `/ebooks`, `/ebooks/:id`
-  3. **Rekomendasi SPK SAW:** `/recommendations/saw`
-  4. **Pesanan:** `/orders`, `/orders/me`, `/orders/:id`
-  5. **Pembayaran & Webhook:** `/payments`, `/payments/:id`, `/payments/webhook`
-  6. **Akses E-Book:** `/ebooks/:id/access-url`
-  7. **Transaksi Pelanggan:** `/transactions/my` *(lihat catatan sinkronisasi pada [`api-gap-register.md`](./api-gap-register.md))*
-  8. **Admin (`/admin/*`):** `/admin/dashboard`, `/admin/categories*`, `/admin/ebooks*`, `/admin/customers*`, `/admin/orders*`, `/admin/payments`, `/admin/transactions`, `/admin/reports/sales`, `/admin/saw/weights`, `/admin/accesses/:id`
+  - `POST /api/v1/auth/sync`, `GET/PATCH /api/v1/users/me`
+  - `GET /api/v1/categories`, `GET /api/v1/ebooks`, `GET /api/v1/ebooks/:id`, `GET /api/v1/ebooks/:id/access-url`
+  - `GET /api/v1/recommendations/saw`
+  - `POST /api/v1/orders`, `GET /api/v1/orders/me`, `GET /api/v1/orders/:id`
+  - `POST /api/v1/payments/webhook`
+  - `GET /api/v1/transactions/my`
+  - `GET /api/v1/admin/dashboard`, `GET/PUT /api/v1/admin/saw/weights`
+- **Masih `[RENCANA]`:**
+  1. **Pembayaran:** `POST /payments`, `GET /payments/:id`
+  2. **Admin CRUD & laporan:** `/admin/categories*`, `/admin/ebooks*`, `/admin/customers*`, `/admin/orders*`, `/admin/payments`, `/admin/transactions`, `/admin/reports/sales`, `/admin/accesses/:id`
 
 ---
 
