@@ -1192,18 +1192,19 @@ body::-webkit-scrollbar {
 }
 
 .nb-skeleton {
-  background: linear-gradient(90deg, var(--nb-muted) 25%, var(--nb-paper) 50%, var(--nb-muted) 75%);
-  background-size: 200% 100%;
-  animation: nbSkeletonLoading 1.5s infinite;
+  background-color: var(--nb-muted);
+  animation: nbSkeletonPulse 1.2s ease-in-out infinite alternate;
   border: var(--nb-border-thin);
 }
 
-@keyframes nbSkeletonLoading {
+@keyframes nbSkeletonPulse {
   0% {
-    background-position: 200% 0;
+    background-color: var(--nb-muted);
+    opacity: 0.65;
   }
   100% {
-    background-position: -200% 0;
+    background-color: var(--nb-muted);
+    opacity: 1;
   }
 }
 

@@ -1,9 +1,18 @@
 // Tipe data Domain Katalog & Produk (Admin Web)
-// Sesuai model Prisma Ebook & Category dan spesifikasi design.md Zona C
+// Re-export tipe kategori dari fitur categories agar impor lama tetap kompatibel
+
+export type {
+  CategoryFormData,
+  CategoryFormErrors,
+  CategoryFormField,
+  CategoryListItem,
+  CategoryOption,
+  CategorySortColumn,
+  CategoryStatus,
+  CategoryTableFilters,
+} from '../../categories/types/category'
 
 export type EbookStatus = 'AKTIF' | 'ARSIP'
-
-export type CategoryStatus = 'AKTIF' | 'NONAKTIF'
 
 export interface EbookListItem {
   id: string
@@ -19,6 +28,8 @@ export interface EbookListItem {
   publishedYear: number | null
   isActive: boolean
   coverUrl: string | null
+  storagePath?: string | null
+  description?: string | null
   createdAt: string // ISO string untuk sorting
 }
 
@@ -35,23 +46,6 @@ export interface EbookFormData {
   pdfFileName?: string
 }
 
-export interface CategoryListItem {
-  id: string
-  name: string // DATA SIMULASI
-  slug: string
-  description: string | null
-  isActive: boolean
-  ebookCount: number // Jumlah e-book berelasi untuk proteksi hapus
-  createdAt: string
-}
-
-export interface CategoryFormData {
-  name: string
-  slug: string
-  description: string
-  isActive: boolean
-}
-
 export interface EbookTableFilters {
   search: string
   categoryId: string // '' = semua
@@ -60,18 +54,4 @@ export interface EbookTableFilters {
   sortOrder: 'asc' | 'desc'
   page: number
   limit: number
-}
-
-export interface CategoryTableFilters {
-  search: string
-  status: 'ALL' | CategoryStatus
-  sortBy: 'name' | 'slug' | 'ebookCount' | 'createdAt'
-  sortOrder: 'asc' | 'desc'
-  page: number
-  limit: number
-}
-
-export interface CategoryOption {
-  id: string
-  name: string
 }

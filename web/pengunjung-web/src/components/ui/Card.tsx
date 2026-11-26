@@ -59,7 +59,6 @@ export function Card({
         backgroundColor: toneColorMap[tone],
         border: zone === 'C' ? 'var(--nb-border-thin)' : 'var(--nb-border)',
         boxShadow: interactive ? undefined : shadowByZone,
-        borderRadius: 'var(--nb-radius)',
         padding: paddingMap[padding],
         ...style,
       }}

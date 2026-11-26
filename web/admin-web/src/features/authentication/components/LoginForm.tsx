@@ -1,5 +1,4 @@
 import { useState, type FC, type FormEvent } from 'react'
-import { isSupabaseConfigured } from '../../../services/supabase/client'
 import {
   validateEmail,
   validateLoginForm,
@@ -129,12 +128,42 @@ export const LoginForm: FC<LoginFormProps> = ({
         </button>
       </form>
 
-      {!isSupabaseConfigured && (
-        <div className="login-simulation-hint">
-          <strong>Mode Simulasi Aktif:</strong> Kredensial Supabase belum terkonfigurasi pada file <code>.env</code>.
-          Gunakan akun seeder: <code>admin.simulasi@example.com</code> dengan kata sandi bebas untuk pengujian.
+      <div className="login-simulation-hint">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+          <strong>KREDENSIAL AKSES ADMIN:</strong>
+          <button
+            type="button"
+            onClick={async () => {
+              const creds = {
+                email: 'admin.simulasi@example.com',
+                password: 'AdminPassword123!',
+              }
+              setCredentials(creds)
+              setErrors({})
+              await onSubmit(creds)
+            }}
+            disabled={isSubmitting}
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '11px',
+              fontWeight: 900,
+              padding: '3px 8px',
+              backgroundColor: 'var(--nb-yellow)',
+              border: '2px solid #000',
+              boxShadow: '2px 2px 0 #000',
+              cursor: 'pointer',
+            }}
+          >
+            MASUK CEPAT (1-KLIK)
+          </button>
         </div>
-      )}
+        <div>
+          Email: <code>admin.simulasi@example.com</code>
+        </div>
+        <div>
+          Kata Sandi: <code>AdminPassword123!</code>
+        </div>
+      </div>
 
       <div className="login-footer-info">
         <span>VERSI SISTEM v1.0</span>

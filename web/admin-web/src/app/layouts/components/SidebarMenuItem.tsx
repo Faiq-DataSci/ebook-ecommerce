@@ -25,18 +25,15 @@ export function SidebarMenuItem({
       title={item.label}
       aria-current={isActive ? 'page' : undefined}
     >
-      <div className="sidebar-item-left">
-        <span className="material-symbols-outlined sidebar-item-icon">
+      <span className="sidebar-item-left">
+        <span
+          className="material-symbols-outlined sidebar-item-icon"
+          aria-hidden="true"
+        >
           {item.icon}
         </span>
         <span className="sidebar-label sidebar-item-label">{item.label}</span>
-      </div>
-      {isActive && (
-        <span
-          className="sidebar-label sidebar-active-square"
-          aria-hidden="true"
-        />
-      )}
+      </span>
     </a>
   )
 }

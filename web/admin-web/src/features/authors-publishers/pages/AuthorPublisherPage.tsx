@@ -1,27 +1,23 @@
 import { useMemo, useState } from 'react'
 import {
+  CatalogKpiGrid,
   ConfirmDialog,
-  EmptyState,
-  FilterChipGroup,
-  Pagination,
-  SearchInput,
   SimulationBadge,
-  StatusBadge,
-  TableSkeleton,
   Toast,
   type ToastMessage,
-  ToggleSwitch,
 } from '../../../shared/components/ui'
+import { AuthorFormModal } from '../components/AuthorFormModal'
+import { AuthorTablePanel } from '../components/AuthorTablePanel'
+import { PublisherFormModal } from '../components/PublisherFormModal'
+import { PublisherTablePanel } from '../components/PublisherTablePanel'
 import { MOCK_AUTHORS, MOCK_PUBLISHERS } from '../data/authorPublisherData'
 import type {
   ActiveTab,
   AuthorFormData,
   AuthorListItem,
-  AuthorStatus,
   AuthorTableFilters,
   PublisherFormData,
   PublisherListItem,
-  PublisherStatus,
   PublisherTableFilters,
 } from '../types/authorPublisher'
 
@@ -94,9 +90,7 @@ export function AuthorPublisherPage() {
     setToasts((prev) => prev.filter((t) => t.id !== id))
   }
 
-  // =========================================================================
-  // Authors Filter & Sort Logic
-  // =========================================================================
+  // Filter & Sort Logic Penulis
   const filteredAuthors = useMemo(() => {
     let result = [...authors]
 
@@ -136,9 +130,7 @@ export function AuthorPublisherPage() {
     return filteredAuthors.slice(start, start + authorFilters.limit)
   }, [filteredAuthors, authorFilters.page, authorFilters.limit])
 
-  // =========================================================================
-  // Publishers Filter & Sort Logic
-  // =========================================================================
+  // Filter & Sort Logic Penerbit
   const filteredPublishers = useMemo(() => {
     let result = [...publishers]
 
@@ -200,7 +192,7 @@ export function AuthorPublisherPage() {
     }))
   }
 
-  // Author Modal Handlers
+  // Author Actions
   const handleOpenAddAuthor = () => {
     setEditingAuthor(null)
     setAuthorFormData({
@@ -294,7 +286,7 @@ export function AuthorPublisherPage() {
     setAuthorToDelete(null)
   }
 
-  // Publisher Modal Handlers
+  // Publisher Actions
   const handleOpenAddPublisher = () => {
     setEditingPublisher(null)
     setPublisherFormData({
@@ -385,6 +377,25 @@ export function AuthorPublisherPage() {
     setPublisherToDelete(null)
   }
 
+  const summaryMetrics = useMemo(() => {
+    const activeAuthors = authors.filter((a) => a.isActive).length
+    const activePublishers = publishers.filter((p) => p.isActive).length
+    const totalAuthorEbooks = authors.reduce((sum, a) => sum + a.ebookCount, 0)
+    const totalPublisherEbooks = publishers.reduce((sum, p) => sum + p.ebookCount, 0)
+
+    return {
+      totalAuthors: authors.length,
+      activeAuthors,
+      inactiveAuthors: authors.length - activeAuthors,
+      totalPublishers: publishers.length,
+      activePublishers,
+      inactivePublishers: publishers.length - activePublishers,
+      totalActiveContributors: activeAuthors + activePublishers,
+      totalAuthorEbooks,
+      totalPublisherEbooks,
+    }
+  }, [authors, publishers])
+
   return (
     <>
       <Toast toasts={toasts} onDismiss={dismissToast} />
@@ -415,6 +426,82 @@ export function AuthorPublisherPage() {
             </span>
           </button>
         </div>
+
+        {/* Ringkasan Metrik Penulis & Penerbit (Zona 2) */}
+        <CatalogKpiGrid
+          ariaLabel="Ringkasan metrik penulis dan penerbit"
+          isLoading={isLoading}
+          items={[
+            {
+              id: 'ap-total-authors',
+              label: 'Total Penulis',
+              value: summaryMetrics.totalAuthors,
+              unit: 'penulis',
+              subtext: `${summaryMetrics.activeAuthors} aktif · ${summaryMetrics.inactiveAuthors} nonaktif`,
+              icon: 'person',
+              tone: 'yellow',
+              isSelected: activeTab === 'AUTHORS' && authorFilters.status === 'ALL',
+              onClick: () => {
+                setActiveTab('AUTHORS')
+                setAuthorFilters((prev) => ({ ...prev, status: 'ALL', page: 1 }))
+              },
+            },
+            {
+              id: 'ap-total-publishers',
+              label: 'Mitra Penerbit',
+              value: summaryMetrics.totalPublishers,
+              unit: 'penerbit',
+              subtext: `${summaryMetrics.activePublishers} aktif · ${summaryMetrics.inactivePublishers} nonaktif`,
+              icon: 'domain',
+              tone: 'blue',
+              isSelected: activeTab === 'PUBLISHERS' && publisherFilters.status === 'ALL',
+              onClick: () => {
+                setActiveTab('PUBLISHERS')
+                setPublisherFilters((prev) => ({
+                  ...prev,
+                  status: 'ALL',
+                  page: 1,
+                }))
+              },
+            },
+            {
+              id: 'ap-active-contributors',
+              label: 'Kontributor Aktif',
+              value: summaryMetrics.totalActiveContributors,
+              unit: 'entitas',
+              subtext: `${summaryMetrics.activeAuthors} penulis & ${summaryMetrics.activePublishers} penerbit aktif`,
+              icon: 'verified',
+              tone: 'green',
+              isSelected:
+                (activeTab === 'AUTHORS' && authorFilters.status === 'AKTIF') ||
+                (activeTab === 'PUBLISHERS' && publisherFilters.status === 'AKTIF'),
+              onClick: () => {
+                if (activeTab === 'AUTHORS') {
+                  setAuthorFilters((prev) => ({
+                    ...prev,
+                    status: 'AKTIF',
+                    page: 1,
+                  }))
+                } else {
+                  setPublisherFilters((prev) => ({
+                    ...prev,
+                    status: 'AKTIF',
+                    page: 1,
+                  }))
+                }
+              },
+            },
+            {
+              id: 'ap-linked-ebooks',
+              label: 'E-Book Terhubung',
+              value: summaryMetrics.totalAuthorEbooks,
+              unit: 'judul',
+              subtext: `${summaryMetrics.totalPublisherEbooks} judul terbitan mitra`,
+              icon: 'menu_book',
+              tone: 'muted',
+            },
+          ]}
+        />
 
         {/* In-Page Tabs Bar (design.md §5.5) */}
         <div className="nb-page-tabs-bar" role="tablist" aria-label="Tab Penulis dan Penerbit">
@@ -451,1033 +538,76 @@ export function AuthorPublisherPage() {
           </button>
         </div>
 
-        {/* ===================================================================
-            TAB 1: DIREKTORI PENULIS
-            =================================================================== */}
+        {/* TAB 1: DIREKTORI PENULIS */}
         {activeTab === 'AUTHORS' && (
-          <div
-            id="panel-authors"
-            role="tabpanel"
-            aria-labelledby="tab-authors"
-            style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
-          >
-            {/* Filter Bar Penulis */}
-            <div className="catalog-filter-bar">
-              <div className="catalog-filter-left">
-                <SearchInput
-                  value={authorFilters.search}
-                  onChange={(search) =>
-                    setAuthorFilters((prev) => ({ ...prev, search, page: 1 }))
-                  }
-                  onClear={() =>
-                    setAuthorFilters((prev) => ({ ...prev, search: '', page: 1 }))
-                  }
-                  placeholder="Cari nama, afiliasi, atau email..."
-                  ariaLabel="Cari penulis"
-                />
-
-                <FilterChipGroup
-                  label="Status:"
-                  icon="tune"
-                  value={authorFilters.status}
-                  onChange={(val) =>
-                    setAuthorFilters((prev) => ({
-                      ...prev,
-                      status: val as 'ALL' | AuthorStatus,
-                      page: 1,
-                    }))
-                  }
-                  options={[
-                    {
-                      value: 'ALL',
-                      label: 'Semua Status',
-                      count: authors.length,
-                      icon: 'apps',
-                      activeBg: 'var(--nb-yellow)',
-                    },
-                    {
-                      value: 'AKTIF',
-                      label: 'Aktif',
-                      count: authors.filter((a) => a.isActive).length,
-                      icon: 'check_circle',
-                      activeBg: 'var(--nb-green)',
-                    },
-                    {
-                      value: 'NONAKTIF',
-                      label: 'Nonaktif',
-                      count: authors.filter((a) => !a.isActive).length,
-                      icon: 'do_not_disturb_on',
-                      activeBg: 'var(--nb-muted)',
-                    },
-                  ]}
-                />
-              </div>
-
-              <div className="catalog-filter-right">
-                <button
-                  type="button"
-                  className="nb-btn nb-page-btn"
-                  onClick={() => {
-                    setIsLoading(true)
-                    setTimeout(() => {
-                      setIsLoading(false)
-                      addToast('info', 'Data direktori penulis berhasil disegarkan.')
-                    }, 400)
-                  }}
-                  title="Segarkan data tabel penulis"
-                >
-                  <span className="material-symbols-outlined" aria-hidden="true">
-                    refresh
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            {/* Active Filter Strip Penulis */}
-            {(authorFilters.search || authorFilters.status !== 'ALL') && (
-              <div className="nb-active-filter-strip">
-                <div className="nb-active-tags">
-                  <span style={{ fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
-                    Filter Aktif:
-                  </span>
-                  {authorFilters.search && (
-                    <span className="nb-active-tag-badge">
-                      <span>Cari: &ldquo;{authorFilters.search}&rdquo;</span>
-                      <button
-                        type="button"
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                        onClick={() =>
-                          setAuthorFilters((prev) => ({ ...prev, search: '', page: 1 }))
-                        }
-                        aria-label="Hapus filter pencarian"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                  {authorFilters.status !== 'ALL' && (
-                    <span className="nb-active-tag-badge">
-                      <span>
-                        Status: {authorFilters.status === 'AKTIF' ? 'Aktif' : 'Nonaktif'}
-                      </span>
-                      <button
-                        type="button"
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                        onClick={() =>
-                          setAuthorFilters((prev) => ({ ...prev, status: 'ALL', page: 1 }))
-                        }
-                        aria-label="Hapus filter status"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                  <span style={{ color: 'var(--nb-text-muted)', fontSize: 12 }}>
-                    (Ditemukan {filteredAuthors.length} penulis)
-                  </span>
-                </div>
-
-                <button
-                  type="button"
-                  className="nb-btn nb-reset-filters-btn"
-                  onClick={() =>
-                    setAuthorFilters((prev) => ({
-                      ...prev,
-                      search: '',
-                      status: 'ALL',
-                      page: 1,
-                    }))
-                  }
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
-                    close
-                  </span>
-                  <span>Reset Filter</span>
-                </button>
-              </div>
-            )}
-
-            {/* Tabel Penulis */}
-            {isLoading ? (
-              <TableSkeleton rows={5} cols={6} />
-            ) : filteredAuthors.length === 0 ? (
-              <EmptyState
-                title="Tidak Ada Penulis Ditemukan"
-                description={
-                  authorFilters.search || authorFilters.status !== 'ALL'
-                    ? 'Tidak ada profil penulis yang cocok dengan kriteria pencarian.'
-                    : 'Belum ada profil penulis terdaftar. Tambahkan penulis pertama sekarang.'
-                }
-                icon="person"
-                actionLabel="+ Tambah Penulis Pertama"
-                onAction={handleOpenAddAuthor}
-              />
-            ) : (
-              <div className="nb-table-container">
-                <table className="nb-table">
-                  <caption className="visually-hidden">Daftar Penulis Buku Digital</caption>
-                  <thead>
-                    <tr>
-                      <th scope="col" style={{ width: 60, textAlign: 'center' }}>
-                        Profil
-                      </th>
-                      <th
-                        scope="col"
-                        className="is-sortable"
-                        onClick={() => handleAuthorSort('name')}
-                        aria-sort={
-                          authorFilters.sortBy === 'name'
-                            ? authorFilters.sortOrder === 'asc'
-                              ? 'ascending'
-                              : 'descending'
-                            : 'none'
-                        }
-                      >
-                        <div className="nb-th-inner">
-                          <span>Nama Penulis</span>
-                          <span className="material-symbols-outlined nb-sort-icon">
-                            {authorFilters.sortBy === 'name'
-                              ? authorFilters.sortOrder === 'asc'
-                                ? 'arrow_upward'
-                                : 'arrow_downward'
-                              : 'unfold_more'}
-                          </span>
-                        </div>
-                      </th>
-                      <th scope="col">Afiliasi & Keahlian</th>
-                      <th scope="col">Email Kontak</th>
-                      <th
-                        scope="col"
-                        className="is-sortable"
-                        style={{ textAlign: 'right', width: 120 }}
-                        onClick={() => handleAuthorSort('ebookCount')}
-                        aria-sort={
-                          authorFilters.sortBy === 'ebookCount'
-                            ? authorFilters.sortOrder === 'asc'
-                              ? 'ascending'
-                              : 'descending'
-                            : 'none'
-                        }
-                      >
-                        <div className="nb-th-inner" style={{ justifyContent: 'flex-end' }}>
-                          <span>E-Book Ditulis</span>
-                          <span className="material-symbols-outlined nb-sort-icon">
-                            {authorFilters.sortBy === 'ebookCount'
-                              ? authorFilters.sortOrder === 'asc'
-                                ? 'arrow_upward'
-                                : 'arrow_downward'
-                              : 'unfold_more'}
-                          </span>
-                        </div>
-                      </th>
-                      <th scope="col" style={{ width: 110 }}>
-                        Status
-                      </th>
-                      <th scope="col" style={{ width: 90 }}>
-                        Aksi
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginatedAuthors.map((author) => {
-                      const cleanName = author.name.replace('DATA SIMULASI — ', '')
-                      const initials = cleanName.slice(0, 2).toUpperCase()
-
-                      return (
-                        <tr key={author.id}>
-                          <td data-label="Profil" style={{ textAlign: 'center', width: 60 }}>
-                            <div className="nb-entity-avatar is-author">{initials}</div>
-                          </td>
-                          <td data-label="Nama Penulis">
-                            <span className="font-heading" style={{ fontWeight: 700 }}>
-                              {author.name}
-                            </span>
-                            {author.bio && (
-                              <div
-                                style={{
-                                  fontSize: 12,
-                                  color: 'var(--nb-text-muted)',
-                                  marginTop: 2,
-                                  display: '-webkit-box',
-                                  WebkitLineClamp: 1,
-                                  WebkitBoxOrient: 'vertical',
-                                  overflow: 'hidden',
-                                }}
-                              >
-                                {author.bio}
-                              </div>
-                            )}
-                          </td>
-                          <td data-label="Afiliasi & Keahlian">{author.affiliation}</td>
-                          <td data-label="Email Kontak" className="nb-td-mono">
-                            {author.email}
-                          </td>
-                          <td
-                            data-label="E-Book Ditulis"
-                            className="nb-td-mono nb-td-right"
-                            style={{ fontWeight: 700 }}
-                          >
-                            {author.ebookCount}
-                          </td>
-                          <td data-label="Status">
-                            {author.isActive ? (
-                              <StatusBadge
-                                status="Aktif"
-                                fill="var(--nb-green)"
-                                icon="check_circle"
-                              />
-                            ) : (
-                              <StatusBadge
-                                status="Nonaktif"
-                                fill="var(--nb-muted)"
-                                icon="do_not_disturb_on"
-                              />
-                            )}
-                          </td>
-                          <td data-label="Aksi">
-                            <div className="nb-action-btn-group">
-                              <button
-                                type="button"
-                                className="nb-btn nb-table-action-btn"
-                                onClick={() => handleOpenEditAuthor(author)}
-                                aria-label={`Ubah profil ${author.name}`}
-                                title="Ubah data penulis"
-                              >
-                                <span
-                                  className="material-symbols-outlined"
-                                  style={{ fontSize: 18 }}
-                                  aria-hidden="true"
-                                >
-                                  edit
-                                </span>
-                              </button>
-                              <button
-                                type="button"
-                                className="nb-btn nb-table-action-btn is-danger"
-                                onClick={() => setAuthorToDelete(author)}
-                                aria-label={`Hapus profil ${author.name}`}
-                                title="Hapus profil penulis"
-                              >
-                                <span
-                                  className="material-symbols-outlined"
-                                  style={{ fontSize: 18 }}
-                                  aria-hidden="true"
-                                >
-                                  delete
-                                </span>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-
-                <Pagination
-                  currentPage={authorFilters.page}
-                  totalPages={totalAuthorPages}
-                  totalItems={filteredAuthors.length}
-                  pageSize={authorFilters.limit}
-                  onPageChange={(page) => setAuthorFilters((prev) => ({ ...prev, page }))}
-                  labelItemName="penulis"
-                />
-              </div>
-            )}
-          </div>
+          <AuthorTablePanel
+            authors={authors}
+            filteredAuthors={filteredAuthors}
+            paginatedAuthors={paginatedAuthors}
+            authorFilters={authorFilters}
+            totalAuthorPages={totalAuthorPages}
+            isLoading={isLoading}
+            setAuthorFilters={setAuthorFilters}
+            onSort={handleAuthorSort}
+            onOpenAdd={handleOpenAddAuthor}
+            onOpenEdit={handleOpenEditAuthor}
+            onDelete={setAuthorToDelete}
+            onRefresh={() => {
+              setIsLoading(true)
+              setTimeout(() => {
+                setIsLoading(false)
+                addToast('info', 'Data direktori penulis berhasil disegarkan.')
+              }, 400)
+            }}
+          />
         )}
 
-        {/* ===================================================================
-            TAB 2: MITRA PENERBIT
-            =================================================================== */}
+        {/* TAB 2: MITRA PENERBIT */}
         {activeTab === 'PUBLISHERS' && (
-          <div
-            id="panel-publishers"
-            role="tabpanel"
-            aria-labelledby="tab-publishers"
-            style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
-          >
-            {/* Filter Bar Penerbit */}
-            <div className="catalog-filter-bar">
-              <div className="catalog-filter-left">
-                <SearchInput
-                  value={publisherFilters.search}
-                  onChange={(search) =>
-                    setPublisherFilters((prev) => ({ ...prev, search, page: 1 }))
-                  }
-                  onClear={() =>
-                    setPublisherFilters((prev) => ({ ...prev, search: '', page: 1 }))
-                  }
-                  placeholder="Cari nama penerbit atau kota..."
-                  ariaLabel="Cari penerbit"
-                />
-
-                <FilterChipGroup
-                  label="Status:"
-                  icon="tune"
-                  value={publisherFilters.status}
-                  onChange={(val) =>
-                    setPublisherFilters((prev) => ({
-                      ...prev,
-                      status: val as 'ALL' | PublisherStatus,
-                      page: 1,
-                    }))
-                  }
-                  options={[
-                    {
-                      value: 'ALL',
-                      label: 'Semua Status',
-                      count: publishers.length,
-                      icon: 'apps',
-                      activeBg: 'var(--nb-yellow)',
-                    },
-                    {
-                      value: 'AKTIF',
-                      label: 'Aktif',
-                      count: publishers.filter((p) => p.isActive).length,
-                      icon: 'check_circle',
-                      activeBg: 'var(--nb-green)',
-                    },
-                    {
-                      value: 'NONAKTIF',
-                      label: 'Nonaktif',
-                      count: publishers.filter((p) => !p.isActive).length,
-                      icon: 'do_not_disturb_on',
-                      activeBg: 'var(--nb-muted)',
-                    },
-                  ]}
-                />
-              </div>
-
-              <div className="catalog-filter-right">
-                <button
-                  type="button"
-                  className="nb-btn nb-page-btn"
-                  onClick={() => {
-                    setIsLoading(true)
-                    setTimeout(() => {
-                      setIsLoading(false)
-                      addToast('info', 'Data mitra penerbit berhasil disegarkan.')
-                    }, 400)
-                  }}
-                  title="Segarkan data tabel penerbit"
-                >
-                  <span className="material-symbols-outlined" aria-hidden="true">
-                    refresh
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            {/* Active Filter Strip Penerbit */}
-            {(publisherFilters.search || publisherFilters.status !== 'ALL') && (
-              <div className="nb-active-filter-strip">
-                <div className="nb-active-tags">
-                  <span style={{ fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
-                    Filter Aktif:
-                  </span>
-                  {publisherFilters.search && (
-                    <span className="nb-active-tag-badge">
-                      <span>Cari: &ldquo;{publisherFilters.search}&rdquo;</span>
-                      <button
-                        type="button"
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                        onClick={() =>
-                          setPublisherFilters((prev) => ({ ...prev, search: '', page: 1 }))
-                        }
-                        aria-label="Hapus filter pencarian"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                  {publisherFilters.status !== 'ALL' && (
-                    <span className="nb-active-tag-badge">
-                      <span>
-                        Status: {publisherFilters.status === 'AKTIF' ? 'Aktif' : 'Nonaktif'}
-                      </span>
-                      <button
-                        type="button"
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                        onClick={() =>
-                          setPublisherFilters((prev) => ({ ...prev, status: 'ALL', page: 1 }))
-                        }
-                        aria-label="Hapus filter status"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                  <span style={{ color: 'var(--nb-text-muted)', fontSize: 12 }}>
-                    (Ditemukan {filteredPublishers.length} penerbit)
-                  </span>
-                </div>
-
-                <button
-                  type="button"
-                  className="nb-btn nb-reset-filters-btn"
-                  onClick={() =>
-                    setPublisherFilters((prev) => ({
-                      ...prev,
-                      search: '',
-                      status: 'ALL',
-                      page: 1,
-                    }))
-                  }
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
-                    close
-                  </span>
-                  <span>Reset Filter</span>
-                </button>
-              </div>
-            )}
-
-            {/* Tabel Penerbit */}
-            {isLoading ? (
-              <TableSkeleton rows={5} cols={6} />
-            ) : filteredPublishers.length === 0 ? (
-              <EmptyState
-                title="Tidak Ada Penerbit Ditemukan"
-                description={
-                  publisherFilters.search || publisherFilters.status !== 'ALL'
-                    ? 'Tidak ada mitra penerbit yang cocok dengan filter saat ini.'
-                    : 'Belum ada data penerbit terdaftar. Tambahkan mitra penerbit baru sekarang.'
-                }
-                icon="domain"
-                actionLabel="+ Tambah Penerbit Pertama"
-                onAction={handleOpenAddPublisher}
-              />
-            ) : (
-              <div className="nb-table-container">
-                <table className="nb-table">
-                  <caption className="visually-hidden">Daftar Mitra Penerbit E-Book</caption>
-                  <thead>
-                    <tr>
-                      <th scope="col" style={{ width: 60, textAlign: 'center' }}>
-                        Logo
-                      </th>
-                      <th
-                        scope="col"
-                        className="is-sortable"
-                        onClick={() => handlePublisherSort('name')}
-                        aria-sort={
-                          publisherFilters.sortBy === 'name'
-                            ? publisherFilters.sortOrder === 'asc'
-                              ? 'ascending'
-                              : 'descending'
-                            : 'none'
-                        }
-                      >
-                        <div className="nb-th-inner">
-                          <span>Nama Penerbit</span>
-                          <span className="material-symbols-outlined nb-sort-icon">
-                            {publisherFilters.sortBy === 'name'
-                              ? publisherFilters.sortOrder === 'asc'
-                                ? 'arrow_upward'
-                                : 'arrow_downward'
-                              : 'unfold_more'}
-                          </span>
-                        </div>
-                      </th>
-                      <th
-                        scope="col"
-                        className="is-sortable"
-                        onClick={() => handlePublisherSort('city')}
-                        aria-sort={
-                          publisherFilters.sortBy === 'city'
-                            ? publisherFilters.sortOrder === 'asc'
-                              ? 'ascending'
-                              : 'descending'
-                            : 'none'
-                        }
-                      >
-                        <div className="nb-th-inner">
-                          <span>Kota Asal</span>
-                          <span className="material-symbols-outlined nb-sort-icon">
-                            {publisherFilters.sortBy === 'city'
-                              ? publisherFilters.sortOrder === 'asc'
-                                ? 'arrow_upward'
-                                : 'arrow_downward'
-                              : 'unfold_more'}
-                          </span>
-                        </div>
-                      </th>
-                      <th scope="col">Website & Kontak</th>
-                      <th
-                        scope="col"
-                        className="is-sortable"
-                        style={{ textAlign: 'right', width: 130 }}
-                        onClick={() => handlePublisherSort('ebookCount')}
-                        aria-sort={
-                          publisherFilters.sortBy === 'ebookCount'
-                            ? publisherFilters.sortOrder === 'asc'
-                              ? 'ascending'
-                              : 'descending'
-                            : 'none'
-                        }
-                      >
-                        <div className="nb-th-inner" style={{ justifyContent: 'flex-end' }}>
-                          <span>E-Book Terbitan</span>
-                          <span className="material-symbols-outlined nb-sort-icon">
-                            {publisherFilters.sortBy === 'ebookCount'
-                              ? publisherFilters.sortOrder === 'asc'
-                                ? 'arrow_upward'
-                                : 'arrow_downward'
-                              : 'unfold_more'}
-                          </span>
-                        </div>
-                      </th>
-                      <th scope="col" style={{ width: 110 }}>
-                        Status
-                      </th>
-                      <th scope="col" style={{ width: 90 }}>
-                        Aksi
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginatedPublishers.map((pub) => {
-                      const cleanName = pub.name.replace('DATA SIMULASI — ', '')
-                      const initials = cleanName.slice(0, 2).toUpperCase()
-
-                      return (
-                        <tr key={pub.id}>
-                          <td data-label="Logo" style={{ textAlign: 'center', width: 60 }}>
-                            <div className="nb-entity-avatar is-publisher">{initials}</div>
-                          </td>
-                          <td data-label="Nama Penerbit">
-                            <span className="font-heading" style={{ fontWeight: 700 }}>
-                              {pub.name}
-                            </span>
-                            {pub.description && (
-                              <div
-                                style={{
-                                  fontSize: 12,
-                                  color: 'var(--nb-text-muted)',
-                                  marginTop: 2,
-                                  display: '-webkit-box',
-                                  WebkitLineClamp: 1,
-                                  WebkitBoxOrient: 'vertical',
-                                  overflow: 'hidden',
-                                }}
-                              >
-                                {pub.description}
-                              </div>
-                            )}
-                          </td>
-                          <td data-label="Kota Asal">{pub.city}</td>
-                          <td data-label="Website & Kontak" className="nb-td-mono">
-                            {pub.website ? (
-                              <a
-                                href={pub.website}
-                                target="_blank"
-                                rel="noreferrer"
-                                style={{ color: 'var(--nb-focus)', textDecoration: 'underline' }}
-                              >
-                                {pub.website.replace('https://', '')}
-                              </a>
-                            ) : pub.contactEmail ? (
-                              pub.contactEmail
-                            ) : (
-                              <span className="nb-td-muted-italic">—</span>
-                            )}
-                          </td>
-                          <td
-                            data-label="E-Book Terbitan"
-                            className="nb-td-mono nb-td-right"
-                            style={{ fontWeight: 700 }}
-                          >
-                            {pub.ebookCount}
-                          </td>
-                          <td data-label="Status">
-                            {pub.isActive ? (
-                              <StatusBadge
-                                status="Aktif"
-                                fill="var(--nb-green)"
-                                icon="check_circle"
-                              />
-                            ) : (
-                              <StatusBadge
-                                status="Nonaktif"
-                                fill="var(--nb-muted)"
-                                icon="do_not_disturb_on"
-                              />
-                            )}
-                          </td>
-                          <td data-label="Aksi">
-                            <div className="nb-action-btn-group">
-                              <button
-                                type="button"
-                                className="nb-btn nb-table-action-btn"
-                                onClick={() => handleOpenEditPublisher(pub)}
-                                aria-label={`Ubah penerbit ${pub.name}`}
-                                title="Ubah data penerbit"
-                              >
-                                <span
-                                  className="material-symbols-outlined"
-                                  style={{ fontSize: 18 }}
-                                  aria-hidden="true"
-                                >
-                                  edit
-                                </span>
-                              </button>
-                              <button
-                                type="button"
-                                className="nb-btn nb-table-action-btn is-danger"
-                                onClick={() => setPublisherToDelete(pub)}
-                                aria-label={`Hapus penerbit ${pub.name}`}
-                                title="Hapus mitra penerbit"
-                              >
-                                <span
-                                  className="material-symbols-outlined"
-                                  style={{ fontSize: 18 }}
-                                  aria-hidden="true"
-                                >
-                                  delete
-                                </span>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-
-                <Pagination
-                  currentPage={publisherFilters.page}
-                  totalPages={totalPublisherPages}
-                  totalItems={filteredPublishers.length}
-                  pageSize={publisherFilters.limit}
-                  onPageChange={(page) => setPublisherFilters((prev) => ({ ...prev, page }))}
-                  labelItemName="penerbit"
-                />
-              </div>
-            )}
-          </div>
+          <PublisherTablePanel
+            publishers={publishers}
+            filteredPublishers={filteredPublishers}
+            paginatedPublishers={paginatedPublishers}
+            publisherFilters={publisherFilters}
+            totalPublisherPages={totalPublisherPages}
+            isLoading={isLoading}
+            setPublisherFilters={setPublisherFilters}
+            onSort={handlePublisherSort}
+            onOpenAdd={handleOpenAddPublisher}
+            onOpenEdit={handleOpenEditPublisher}
+            onDelete={setPublisherToDelete}
+            onRefresh={() => {
+              setIsLoading(true)
+              setTimeout(() => {
+                setIsLoading(false)
+                addToast('info', 'Data mitra penerbit berhasil disegarkan.')
+              }, 400)
+            }}
+          />
         )}
       </div>
 
-      {/* ===================================================================
-          MODAL DIALOG: TAMBAH / UBAH PENULIS (Zona C)
-          =================================================================== */}
-      {isAuthorModalOpen && (
-        <div
-          className="nb-dialog-scrim"
-          role="presentation"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsAuthorModalOpen(false)
-          }}
-        >
-          <div
-            className="nb-dialog-panel"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="author-dialog-title"
-          >
-            <div className="nb-dialog-header">
-              <h2 id="author-dialog-title" className="nb-dialog-title">
-                {editingAuthor ? 'Ubah Profil Penulis' : 'Tambah Penulis Baru'}
-              </h2>
-              <button
-                type="button"
-                className="nb-icon-btn nb-btn"
-                onClick={() => setIsAuthorModalOpen(false)}
-                aria-label="Tutup form penulis"
-              >
-                <span className="material-symbols-outlined" aria-hidden="true">
-                  close
-                </span>
-              </button>
-            </div>
+      {/* Modal Dialog Form Penulis */}
+      <AuthorFormModal
+        isOpen={isAuthorModalOpen}
+        editingAuthor={editingAuthor}
+        formData={authorFormData}
+        errors={authorErrors}
+        setFormData={setAuthorFormData}
+        onClose={() => setIsAuthorModalOpen(false)}
+        onSubmit={handleSaveAuthor}
+      />
 
-            <form onSubmit={handleSaveAuthor}>
-              <div className="nb-dialog-body">
-                <div className="nb-form-field">
-                  <label htmlFor="auth-name-input" className="nb-form-label">
-                    Nama Lengkap & Gelar <span style={{ color: 'var(--nb-pink)' }}>*</span>
-                  </label>
-                  <input
-                    id="auth-name-input"
-                    type="text"
-                    maxLength={120}
-                    className="nb-form-input"
-                    value={authorFormData.name}
-                    onChange={(e) =>
-                      setAuthorFormData((prev) => ({ ...prev, name: e.target.value }))
-                    }
-                    placeholder="Contoh: Dr. Hendra Pratama"
-                    autoFocus
-                  />
-                  {authorErrors.name && (
-                    <div className="nb-form-error-box" role="alert">
-                      <span>{authorErrors.name}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="nb-form-field">
-                  <label htmlFor="auth-email-input" className="nb-form-label">
-                    Email Kontak Resmi <span style={{ color: 'var(--nb-pink)' }}>*</span>
-                  </label>
-                  <input
-                    id="auth-email-input"
-                    type="email"
-                    maxLength={150}
-                    className="nb-form-input font-mono-nb"
-                    value={authorFormData.email}
-                    onChange={(e) =>
-                      setAuthorFormData((prev) => ({ ...prev, email: e.target.value }))
-                    }
-                    placeholder="hendra@instansi.ac.id"
-                  />
-                  {authorErrors.email && (
-                    <div className="nb-form-error-box" role="alert">
-                      <span>{authorErrors.email}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="nb-form-field">
-                  <label htmlFor="auth-affiliation-input" className="nb-form-label">
-                    Afiliasi / Bidang Keahlian <span style={{ color: 'var(--nb-pink)' }}>*</span>
-                  </label>
-                  <input
-                    id="auth-affiliation-input"
-                    type="text"
-                    maxLength={150}
-                    className="nb-form-input"
-                    value={authorFormData.affiliation}
-                    onChange={(e) =>
-                      setAuthorFormData((prev) => ({
-                        ...prev,
-                        affiliation: e.target.value,
-                      }))
-                    }
-                    placeholder="Contoh: Institut Teknologi Rekayasa Sistem"
-                  />
-                  {authorErrors.affiliation && (
-                    <div className="nb-form-error-box" role="alert">
-                      <span>{authorErrors.affiliation}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="nb-form-field">
-                  <label htmlFor="auth-bio-input" className="nb-form-label">
-                    Biografi Singkat (Opsional)
-                  </label>
-                  <textarea
-                    id="auth-bio-input"
-                    className="nb-form-textarea"
-                    rows={3}
-                    value={authorFormData.bio}
-                    onChange={(e) =>
-                      setAuthorFormData((prev) => ({ ...prev, bio: e.target.value }))
-                    }
-                    placeholder="Latar belakang pengalaman kepengarangan dan fokus riset..."
-                  />
-                </div>
-
-                <div className="nb-form-field">
-                  <label className="nb-form-label">Status Penulis</label>
-                  <ToggleSwitch
-                    checked={authorFormData.isActive}
-                    onChange={(checked) =>
-                      setAuthorFormData((prev) => ({ ...prev, isActive: checked }))
-                    }
-                    activeLabel="Penulis Aktif"
-                    inactiveLabel="Penulis Nonaktif"
-                  />
-                </div>
-              </div>
-
-              <div className="nb-dialog-footer">
-                <button
-                  type="button"
-                  className="nb-btn nb-dialog-btn-secondary"
-                  onClick={() => setIsAuthorModalOpen(false)}
-                >
-                  Batal
-                </button>
-                <button type="submit" className="nb-btn nb-dialog-btn-primary">
-                  Simpan Penulis
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ===================================================================
-          MODAL DIALOG: TAMBAH / UBAH PENERBIT (Zona C)
-          =================================================================== */}
-      {isPublisherModalOpen && (
-        <div
-          className="nb-dialog-scrim"
-          role="presentation"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsPublisherModalOpen(false)
-          }}
-        >
-          <div
-            className="nb-dialog-panel"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="publisher-dialog-title"
-          >
-            <div className="nb-dialog-header">
-              <h2 id="publisher-dialog-title" className="nb-dialog-title">
-                {editingPublisher ? 'Ubah Mitra Penerbit' : 'Tambah Penerbit Baru'}
-              </h2>
-              <button
-                type="button"
-                className="nb-icon-btn nb-btn"
-                onClick={() => setIsPublisherModalOpen(false)}
-                aria-label="Tutup form penerbit"
-              >
-                <span className="material-symbols-outlined" aria-hidden="true">
-                  close
-                </span>
-              </button>
-            </div>
-
-            <form onSubmit={handleSavePublisher}>
-              <div className="nb-dialog-body">
-                <div className="nb-form-field">
-                  <label htmlFor="pub-name-input" className="nb-form-label">
-                    Nama Penerbit / Imprint <span style={{ color: 'var(--nb-pink)' }}>*</span>
-                  </label>
-                  <input
-                    id="pub-name-input"
-                    type="text"
-                    maxLength={150}
-                    className="nb-form-input"
-                    value={publisherFormData.name}
-                    onChange={(e) =>
-                      setPublisherFormData((prev) => ({ ...prev, name: e.target.value }))
-                    }
-                    placeholder="Contoh: Pustaka Sains Komputasi"
-                    autoFocus
-                  />
-                  {publisherErrors.name && (
-                    <div className="nb-form-error-box" role="alert">
-                      <span>{publisherErrors.name}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="nb-form-field">
-                  <label htmlFor="pub-city-input" className="nb-form-label">
-                    Kota Domisili / Kantor Pusat <span style={{ color: 'var(--nb-pink)' }}>*</span>
-                  </label>
-                  <input
-                    id="pub-city-input"
-                    type="text"
-                    maxLength={100}
-                    className="nb-form-input"
-                    value={publisherFormData.city}
-                    onChange={(e) =>
-                      setPublisherFormData((prev) => ({ ...prev, city: e.target.value }))
-                    }
-                    placeholder="Contoh: Bandung"
-                  />
-                  {publisherErrors.city && (
-                    <div className="nb-form-error-box" role="alert">
-                      <span>{publisherErrors.city}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="nb-form-grid-2">
-                  <div className="nb-form-field">
-                    <label htmlFor="pub-website-input" className="nb-form-label">
-                      Situs Web Resmi
-                    </label>
-                    <input
-                      id="pub-website-input"
-                      type="url"
-                      className="nb-form-input font-mono-nb"
-                      value={publisherFormData.website}
-                      onChange={(e) =>
-                        setPublisherFormData((prev) => ({
-                          ...prev,
-                          website: e.target.value,
-                        }))
-                      }
-                      placeholder="https://penerbit.id"
-                    />
-                  </div>
-
-                  <div className="nb-form-field">
-                    <label htmlFor="pub-email-input" className="nb-form-label">
-                      Email Layanan Redaksi
-                    </label>
-                    <input
-                      id="pub-email-input"
-                      type="email"
-                      className="nb-form-input font-mono-nb"
-                      value={publisherFormData.contactEmail}
-                      onChange={(e) =>
-                        setPublisherFormData((prev) => ({
-                          ...prev,
-                          contactEmail: e.target.value,
-                        }))
-                      }
-                      placeholder="redaksi@penerbit.id"
-                    />
-                  </div>
-                </div>
-
-                <div className="nb-form-field">
-                  <label htmlFor="pub-desc-input" className="nb-form-label">
-                    Deskripsi Singkat Penerbit
-                  </label>
-                  <textarea
-                    id="pub-desc-input"
-                    className="nb-form-textarea"
-                    rows={3}
-                    value={publisherFormData.description}
-                    onChange={(e) =>
-                      setPublisherFormData((prev) => ({
-                        ...prev,
-                        description: e.target.value,
-                      }))
-                    }
-                    placeholder="Cakupan publikasi, reputasi buku teknis, dan mitra institusi..."
-                  />
-                </div>
-
-                <div className="nb-form-field">
-                  <label className="nb-form-label">Status Kemitraan</label>
-                  <ToggleSwitch
-                    checked={publisherFormData.isActive}
-                    onChange={(checked) =>
-                      setPublisherFormData((prev) => ({ ...prev, isActive: checked }))
-                    }
-                    activeLabel="Penerbit Aktif"
-                    inactiveLabel="Penerbit Nonaktif"
-                  />
-                </div>
-              </div>
-
-              <div className="nb-dialog-footer">
-                <button
-                  type="button"
-                  className="nb-btn nb-dialog-btn-secondary"
-                  onClick={() => setIsPublisherModalOpen(false)}
-                >
-                  Batal
-                </button>
-                <button type="submit" className="nb-btn nb-dialog-btn-primary">
-                  Simpan Penerbit
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Modal Dialog Form Penerbit */}
+      <PublisherFormModal
+        isOpen={isPublisherModalOpen}
+        editingPublisher={editingPublisher}
+        formData={publisherFormData}
+        errors={publisherErrors}
+        setFormData={setPublisherFormData}
+        onClose={() => setIsPublisherModalOpen(false)}
+        onSubmit={handleSavePublisher}
+      />
 
       {/* Dialog Konfirmasi Hapus Penulis */}
       <ConfirmDialog

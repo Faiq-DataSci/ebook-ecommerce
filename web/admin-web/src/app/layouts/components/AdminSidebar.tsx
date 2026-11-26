@@ -1,7 +1,8 @@
-import type { MouseEvent } from 'react'
 import { ADMIN_NAVIGATION_GROUPS } from '../../navigation/adminNavigation'
 import { useAuth } from '../../../features/authentication/hooks/useAuth'
+import { SidebarBrandHeader } from './SidebarBrandHeader'
 import { SidebarDropdown } from './SidebarDropdown'
+import { SidebarFooter } from './SidebarFooter'
 import { SidebarMenuItem } from './SidebarMenuItem'
 
 interface AdminSidebarProps {
@@ -14,6 +15,18 @@ interface AdminSidebarProps {
   onCloseDropdown: (dropdownId: string) => void
   onNavigate: (path: string) => void
   onLogoutClick: () => void
+}
+
+function getInitials(fullName?: string): string {
+  if (!fullName) return 'AD'
+  return fullName
+    .replace('DATA SIMULASI - ', '')
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
 }
 
 export function AdminSidebar({
@@ -29,20 +42,7 @@ export function AdminSidebar({
 }: AdminSidebarProps) {
   const { user } = useAuth()
   const displayName = user?.fullName || 'Administrator Toko'
-  const initials = user?.fullName
-    ? user.fullName
-        .replace('DATA SIMULASI - ', '')
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .slice(0, 2)
-        .toUpperCase()
-    : 'AD'
-
-  const handleLogout = (e: MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault()
-    onLogoutClick()
-  }
+  const initials = getInitials(user?.fullName)
 
   return (
     <aside
@@ -53,136 +53,70 @@ export function AdminSidebar({
       }`}
     >
       <div className="sidebar-scroll-area">
-        {/* Branding Header */}
-        <div className="sidebar-brand-header">
-          <div className="sidebar-brand-top">
-            <div
-              className="sidebar-brand-identity"
-              style={{ cursor: 'pointer' }}
-              onClick={() => onNavigate('/admin/dashboard')}
-              title="Kembali ke Dashboard Utama"
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  onNavigate('/admin/dashboard')
-                }
-              }}
-            >
-              <div className="sidebar-logo-box" aria-hidden="true">
-                <img
-                  src="/logo.png"
-                  alt="BukuKita Logo"
-                  className="sidebar-logo-img"
-                />
-              </div>
-              <div className="sidebar-brand-text sidebar-label">
-                <span className="sidebar-brand-title">BUKU KITA</span>
-                <span className="sidebar-brand-subtitle">ADMIN CONSOLE</span>
-              </div>
-            </div>
+        <SidebarBrandHeader
+          isCollapsed={isCollapsed}
+          onNavigateDashboard={() => onNavigate('/admin/dashboard')}
+          onToggleCollapse={onToggleCollapse}
+        />
 
-            <button
-              id="sidebar-toggle-btn"
-              type="button"
-              className="sidebar-toggle-btn nb-btn"
-              title="Perkecil / Perluas Menu"
-              aria-label={
-                isCollapsed ? 'Perluas sidebar' : 'Perkecil sidebar'
-              }
-              onClick={onToggleCollapse}
-            >
-              <span
-                id="sidebar-toggle-icon"
-                className="material-symbols-outlined sidebar-toggle-icon"
-              >
-                {isCollapsed
-                  ? 'keyboard_double_arrow_right'
-                  : 'keyboard_double_arrow_left'}
-              </span>
-            </button>
-          </div>
-
-        </div>
-
-        {/* Navigation Groups */}
         <div className="sidebar-nav-wrapper">
           <nav className="sidebar-nav" aria-label="Menu Konsol Admin">
-            {ADMIN_NAVIGATION_GROUPS.map((group, groupIndex) => (
-              <div
-                key={group.id}
-                style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}
-              >
+            {ADMIN_NAVIGATION_GROUPS.map((group, groupIndex) => {
+              const headingId = `sidebar-group-heading-${group.id}`
+              return (
                 <div
-                  className={`sidebar-label sidebar-group-heading ${
-                    groupIndex > 0 ? 'mt-group' : ''
-                  }`}
+                  key={group.id}
+                  role="group"
+                  aria-labelledby={headingId}
+                  className="sidebar-nav-group"
                 >
-                  {group.heading}
-                </div>
+                  <p
+                    id={headingId}
+                    className={`sidebar-label sidebar-group-heading ${
+                      groupIndex > 0 ? 'mt-group' : ''
+                    }`}
+                  >
+                    {group.heading}
+                  </p>
 
-                {group.entries.map((entry) => {
-                  if (entry.type === 'single') {
+                  {group.entries.map((entry) => {
+                    if (entry.type === 'single') {
+                      return (
+                        <SidebarMenuItem
+                          key={entry.id}
+                          item={entry}
+                          isActive={activePath === entry.path}
+                          onNavigate={onNavigate}
+                        />
+                      )
+                    }
+
                     return (
-                      <SidebarMenuItem
+                      <SidebarDropdown
                         key={entry.id}
-                        item={entry}
-                        isActive={activePath === entry.path}
+                        dropdown={entry}
+                        isOpen={Boolean(expandedDropdowns[entry.id])}
+                        isSidebarCollapsed={isCollapsed}
+                        activePath={activePath}
+                        onToggle={onToggleDropdown}
+                        onClose={onCloseDropdown}
                         onNavigate={onNavigate}
                       />
                     )
-                  }
-
-                  return (
-                    <SidebarDropdown
-                      key={entry.id}
-                      dropdown={entry}
-                      isOpen={Boolean(expandedDropdowns[entry.id])}
-                      isSidebarCollapsed={isCollapsed}
-                      activePath={activePath}
-                      onToggle={onToggleDropdown}
-                      onClose={onCloseDropdown}
-                      onNavigate={onNavigate}
-                    />
-                  )
-                })}
-              </div>
-            ))}
+                  })}
+                </div>
+              )
+            })}
           </nav>
         </div>
       </div>
 
-      {/* Sidebar Footer */}
-      <div className="sidebar-footer">
-        <div className="sidebar-user-card" title={displayName}>
-          <div className="sidebar-user-left">
-            <div className="sidebar-user-avatar">{initials}</div>
-            <div className="sidebar-label sidebar-user-meta">
-              <span className="sidebar-user-name">{displayName}</span>
-              <span className="sidebar-user-id">
-                {user?.isSimulation ? 'DATA SIMULASI' : 'ADMINISTRATOR'}
-              </span>
-            </div>
-          </div>
-          <span
-            className="sidebar-label sidebar-user-status"
-            aria-hidden="true"
-          />
-        </div>
-
-        <a
-          href="#logout"
-          onClick={handleLogout}
-          className="sidebar-logout-btn nb-btn nb-btn-logout"
-          title="Keluar / Log Out"
-        >
-          <span className="material-symbols-outlined sidebar-logout-icon">
-            logout
-          </span>
-          <span className="sidebar-label">Keluar</span>
-        </a>
-      </div>
+      <SidebarFooter
+        displayName={displayName}
+        initials={initials}
+        isSimulation={Boolean(user?.isSimulation)}
+        onLogoutClick={onLogoutClick}
+      />
     </aside>
   )
 }

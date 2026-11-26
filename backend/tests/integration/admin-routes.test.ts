@@ -248,4 +248,122 @@ describe('Admin Routes Integration Tests (/api/v1/admin)', () => {
       expect(getC1.weight).toBe(0.3)
     })
   })
+
+  describe('Admin E-Books Management Endpoints', () => {
+    it('returns 200 with list of ebooks on GET /api/v1/admin/ebooks', async () => {
+      vi.spyOn(supabaseConfig, 'getSupabaseAdmin').mockReturnValue(mockAdminSupabase as any)
+      vi.spyOn(adminRepository, 'findAdminEbooks').mockResolvedValueOnce({
+        items: [
+          {
+            id: 'ebk-test-uuid',
+            categoryId: 'cat-test-uuid',
+            title: 'Buku Uji Admin',
+            author: 'Penulis Uji',
+            description: 'Deskripsi uji',
+            price: 50000 as any,
+            coverUrl: null,
+            storagePath: 'ebooks-private/test.pdf',
+            pageCount: 200,
+            publishedYear: 2025,
+            ratingAvg: 4.5 as any,
+            salesCount: 10,
+            isActive: true,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            category: { id: 'cat-test-uuid', name: 'Rekayasa', slug: 'rekayasa' },
+          },
+        ],
+        meta: { page: 1, limit: 10, total: 1, totalPages: 1 },
+      } as any)
+
+      const res = await request(app)
+        .get('/api/v1/admin/ebooks?page=1&limit=10&status=ALL')
+        .set('Authorization', 'Bearer admin-token')
+
+      expect(res.status).toBe(200)
+      expect(res.body.success).toBe(true)
+      expect(res.body.data.length).toBe(1)
+      expect(res.body.data[0].title).toBe('Buku Uji Admin')
+    })
+
+    it('returns 201 when creating new ebook on POST /api/v1/admin/ebooks', async () => {
+      vi.spyOn(supabaseConfig, 'getSupabaseAdmin').mockReturnValue(mockAdminSupabase as any)
+      const mockCreated = {
+        id: 'ebk-new-uuid',
+        categoryId: 'a0000000-0000-4000-8000-000000000001',
+        title: 'Buku Baru Sukses',
+        author: 'Penulis Baru',
+        description: 'Deskripsi lengkap buku',
+        price: 75000 as any,
+        coverUrl: 'https://example.com/cover.png',
+        storagePath: 'ebooks-private/buku.pdf',
+        pageCount: 240,
+        publishedYear: 2025,
+        ratingAvg: 0 as any,
+        salesCount: 0,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        category: { id: 'a0000000-0000-4000-8000-000000000001', name: 'Rekayasa', slug: 'rekayasa' },
+      }
+      vi.spyOn(adminRepository, 'createEbook').mockResolvedValueOnce(mockCreated as any)
+
+      const res = await request(app)
+        .post('/api/v1/admin/ebooks')
+        .set('Authorization', 'Bearer admin-token')
+        .send({
+          categoryId: 'a0000000-0000-4000-8000-000000000001',
+          title: 'Buku Baru Sukses',
+          author: 'Penulis Baru',
+          description: 'Deskripsi lengkap buku',
+          price: 75000,
+          coverUrl: 'https://example.com/cover.png',
+          storagePath: 'ebooks-private/buku.pdf',
+          pageCount: 240,
+          publishedYear: 2025,
+          isActive: true,
+        })
+
+      expect(res.status).toBe(201)
+      expect(res.body.success).toBe(true)
+      expect(res.body.data.title).toBe('Buku Baru Sukses')
+      expect(res.body.message).toContain('berhasil disimpan')
+    })
+
+    it('returns 200 when updating ebook on PUT /api/v1/admin/ebooks/:id', async () => {
+      vi.spyOn(supabaseConfig, 'getSupabaseAdmin').mockReturnValue(mockAdminSupabase as any)
+      vi.spyOn(adminRepository, 'updateEbook').mockResolvedValueOnce({
+        id: 'a0000000-0000-4000-8000-000000000002',
+        title: 'Judul Diperbarui',
+        price: 90000 as any,
+      } as any)
+
+      const res = await request(app)
+        .put('/api/v1/admin/ebooks/a0000000-0000-4000-8000-000000000002')
+        .set('Authorization', 'Bearer admin-token')
+        .send({ title: 'Judul Diperbarui', price: 90000 })
+
+      expect(res.status).toBe(200)
+      expect(res.body.success).toBe(true)
+      expect(res.body.data.title).toBe('Judul Diperbarui')
+    })
+
+    it('returns 200 when toggling status on PATCH /api/v1/admin/ebooks/:id/status', async () => {
+      vi.spyOn(supabaseConfig, 'getSupabaseAdmin').mockReturnValue(mockAdminSupabase as any)
+      vi.spyOn(adminRepository, 'toggleEbookStatus').mockResolvedValueOnce({
+        id: 'a0000000-0000-4000-8000-000000000002',
+        isActive: false,
+      } as any)
+
+      const res = await request(app)
+        .patch('/api/v1/admin/ebooks/a0000000-0000-4000-8000-000000000002/status')
+        .set('Authorization', 'Bearer admin-token')
+        .send({ isActive: false })
+
+      expect(res.status).toBe(200)
+      expect(res.body.success).toBe(true)
+      expect(res.body.data.isActive).toBe(false)
+      expect(res.body.message).toContain('diarsipkan')
+    })
+  })
 })

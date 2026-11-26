@@ -58,7 +58,6 @@ export function Badge({ tone = 'white', icon, children }: BadgeProps) {
         color: 'var(--nb-black)',
         border: 'var(--nb-border-thin)',
         boxShadow: 'var(--nb-shadow-sm)',
-        borderRadius: 'var(--nb-radius-sm)',
         fontFamily: 'var(--nb-font-heading)',
         fontWeight: 700,
         fontSize: '0.75rem',

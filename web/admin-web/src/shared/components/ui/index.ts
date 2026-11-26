@@ -1,3 +1,8 @@
+export {
+  CatalogKpiGrid,
+  type CatalogKpiItem,
+  type CatalogKpiTone,
+} from './CatalogKpiGrid'
 export { ConfirmDialog } from './ConfirmDialog'
 export { EmptyState } from './EmptyState'
 export { FilterChipGroup } from './FilterChipGroup'

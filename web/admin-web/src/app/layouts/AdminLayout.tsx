@@ -70,7 +70,6 @@ export function AdminLayout({
           onSearchChange={onSearchChange}
           onToggleMobileMenu={onToggleMobileMenu}
           onNavigate={onNavigate}
-          onLogoutClick={onLogoutClick}
         />
 
         <main className="main-content">{children}</main>

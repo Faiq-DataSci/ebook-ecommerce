@@ -3,12 +3,11 @@ import type {
   SidebarSubmenuItem,
   ResolvedRouteMeta,
 } from '../../shared/types/navigation'
-import { MOCK_EBOOKS } from '../../features/ebooks/data/catalogData'
 
 export const ADMIN_NAVIGATION_GROUPS: SidebarNavGroup[] = [
   {
     id: 'group-utama',
-    heading: 'UTAMA',
+    heading: 'Utama',
     entries: [
       {
         type: 'single',
@@ -23,7 +22,7 @@ export const ADMIN_NAVIGATION_GROUPS: SidebarNavGroup[] = [
   },
   {
     id: 'group-operasional',
-    heading: 'OPERASIONAL & TOKO',
+    heading: 'Operasional & Toko',
     entries: [
       {
         type: 'dropdown',
@@ -37,7 +36,6 @@ export const ADMIN_NAVIGATION_GROUPS: SidebarNavGroup[] = [
             label: 'Koleksi E-Book',
             path: '/admin/katalog/ebook',
             breadcrumb: 'KOLEKSI E-BOOK',
-            badge: { text: String(MOCK_EBOOKS.length), bgColor: '#FFD23F' },
             implemented: true,
           },
           {
@@ -68,7 +66,6 @@ export const ADMIN_NAVIGATION_GROUPS: SidebarNavGroup[] = [
             label: 'Semua Pesanan',
             path: '/admin/transaksi/pesanan',
             breadcrumb: 'SEMUA PESANAN',
-            badge: { text: '8', bgColor: '#74B9FF' },
             implemented: true,
           },
           {
@@ -76,7 +73,6 @@ export const ADMIN_NAVIGATION_GROUPS: SidebarNavGroup[] = [
             label: 'Verifikasi & Webhook',
             path: '/admin/transaksi/verifikasi',
             breadcrumb: 'VERIFIKASI BAYAR',
-            badge: { text: '1', bgColor: '#FF6B6B' },
             implemented: true,
           },
         ],
@@ -93,7 +89,6 @@ export const ADMIN_NAVIGATION_GROUPS: SidebarNavGroup[] = [
             label: 'Laporan Omzet & Pendapatan',
             path: '/admin/keuangan/laporan',
             breadcrumb: 'LAPORAN OMZET',
-            badge: { text: 'IDR', bgColor: '#00B894' },
             implemented: true,
           },
           {
@@ -101,7 +96,6 @@ export const ADMIN_NAVIGATION_GROUPS: SidebarNavGroup[] = [
             label: 'Settlement & Buku Kas',
             path: '/admin/keuangan/settlement',
             breadcrumb: 'SETTLEMENT & KAS',
-            badge: { text: 'Rekap', bgColor: '#FFD23F' },
             implemented: true,
           },
         ],
@@ -110,7 +104,7 @@ export const ADMIN_NAVIGATION_GROUPS: SidebarNavGroup[] = [
   },
   {
     id: 'group-intelijen',
-    heading: 'INTELIJEN & SISTEM',
+    heading: 'Intelijen & Sistem',
     entries: [
       {
         type: 'single',
@@ -140,7 +134,6 @@ export const ADMIN_NAVIGATION_GROUPS: SidebarNavGroup[] = [
             label: 'Matriks SAW',
             path: '/admin/spk/matriks',
             breadcrumb: 'MATRIKS SAW',
-            badge: { text: 'v2.1', bgColor: '#88D498' },
             implemented: false,
           },
         ],
@@ -157,7 +150,6 @@ export const ADMIN_NAVIGATION_GROUPS: SidebarNavGroup[] = [
             label: 'Pelanggan & User',
             path: '/admin/sistem/pelanggan',
             breadcrumb: 'PELANGGAN & USER',
-            badge: { text: '3.8k', bgColor: '#B8A9FA' },
             implemented: false,
           },
           {

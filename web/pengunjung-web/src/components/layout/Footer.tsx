@@ -37,7 +37,6 @@ export function Footer() {
                 color: 'var(--nb-black)',
                 border: 'var(--nb-border)',
                 boxShadow: 'var(--nb-shadow-sm)',
-                borderRadius: 'var(--nb-radius-sm)',
                 padding: '6px 14px',
                 fontFamily: 'var(--nb-font-display)',
                 fontWeight: 800,

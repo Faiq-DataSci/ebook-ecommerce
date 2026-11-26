@@ -11,7 +11,8 @@
   --nb-orange: #FFA552;
   --nb-lavender: #B8A9FA;
   --nb-muted: #E8E4D8;
-  --nb-text-muted: #404040;
+  --nb-text-muted: #3D3D3D;
+  --nb-disabled-text: #5A5A5A;
   --nb-text-subtle: #525252;
   --nb-focus: #1D4ED8;
 
@@ -28,32 +29,36 @@
   --font-mono: 'Space Mono', ui-monospace, Consolas, monospace;
   --font-display: 'Syne', 'Space Grotesk', sans-serif;
 
-  /* Borders */
+  /* Borders (design.md §2.2) */
+  --nb-border-thin: 2px solid #000000;
+  --nb-border: 3px solid #000000;
+  --nb-border-thick: 4px solid #000000;
   --nb-border-1: 1px solid #000000;
   --nb-border-15: 1.5px solid #000000;
   --nb-border-2: 2px solid #000000;
   --nb-border-25: 2.5px solid #000000;
   --nb-border-3: 3px solid #000000;
 
-  /* Hard Offset Shadows (Zero Blur) */
+  /* Hard Offset Shadows - Zero Blur (design.md §2.2) */
   --nb-shadow-1: 1px 1px 0 0 #000000;
   --nb-shadow-15: 1.5px 1.5px 0 0 #000000;
   --nb-shadow-xs: 2px 2px 0 0 #000000;
   --nb-shadow-25: 2.5px 2.5px 0 0 #000000;
   --nb-shadow-sm: 3px 3px 0 0 #000000;
-  --nb-shadow: 4px 4px 0 0 #000000;
+  --nb-shadow: 5px 5px 0 0 #000000;
   --nb-shadow-md: 5px 5px 0 0 #000000;
-  --nb-shadow-lg: 6px 6px 0 0 #000000;
+  --nb-shadow-lg: 8px 8px 0 0 #000000;
+  --nb-shadow-xl: 12px 12px 0 0 #000000;
 
   /* Layout Dimensions */
-  --sidebar-width-expanded: 260px;
+  --sidebar-width-expanded: 264px;
   --sidebar-width-collapsed: 72px;
   --header-height: 64px;
 
-  /* Tactile Neubrutalist Motion */
+  /* Tactile Neubrutalist Motion (design.md §13: 100-150ms) */
   --nb-ease-snap: cubic-bezier(0.2, 0.8, 0.2, 1);
   --nb-duration-fast: 100ms;
-  --nb-duration-normal: 200ms;
+  --nb-duration-normal: 150ms;
 }
 
 *,
@@ -121,29 +126,39 @@ body {
 }
 
 .nb-btn:active:not(:disabled) {
-  transform: translate(2px, 2px);
-  box-shadow: var(--nb-shadow-1) !important;
+  transform: translate(3px, 3px);
+  box-shadow: none !important;
 }
 
-.nb-btn-logout:hover {
+.nb-btn:disabled {
+  background-color: var(--nb-muted);
+  color: var(--nb-disabled-text);
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+.nb-btn-logout:hover:not(:disabled) {
   background-color: var(--nb-red-hover) !important;
-  color: var(--nb-white) !important;
+  color: var(--nb-black) !important;
   transform: translate(-2px, -2px);
   box-shadow: var(--nb-shadow-md) !important;
 }
 
-.nb-btn-logout:active {
-  transform: translate(2px, 2px);
-  box-shadow: var(--nb-shadow-1) !important;
+.nb-btn-logout:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: none !important;
 }
 
-/* Keyboard Focus Visibility (WCAG 2.2 AA) */
+/* Keyboard Focus Visibility (WCAG 2.2 AA — design.md §5 & §12) */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
-select:focus-visible {
+select:focus-visible,
+textarea:focus-visible,
+[tabindex='0']:focus-visible {
   outline: 3px solid var(--nb-focus) !important;
-  outline-offset: 2px !important;
+  outline-offset: 3px !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

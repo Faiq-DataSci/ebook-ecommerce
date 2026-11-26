@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { SYSTEM_NOTIFICATIONS } from '../../../features/dashboard/data/dashboardData'
-import { useAuth } from '../../../features/authentication/hooks/useAuth'
 
 interface AdminHeaderProps {
   isSidebarCollapsed: boolean
@@ -9,7 +8,6 @@ interface AdminHeaderProps {
   onSearchChange: (value: string) => void
   onToggleMobileMenu: () => void
   onNavigate?: (path: string) => void
-  onLogoutClick?: () => void
 }
 
 export function AdminHeader({
@@ -19,12 +17,25 @@ export function AdminHeader({
   onSearchChange,
   onToggleMobileMenu,
   onNavigate,
-  onLogoutClick,
 }: AdminHeaderProps) {
-  const { user } = useAuth()
   const [isNotifOpen, setIsNotifOpen] = useState<boolean>(false)
+  const [notifFilter, setNotifFilter] = useState<'all' | 'admin' | 'system' | 'saw'>('all')
   const notifContainerRef = useRef<HTMLDivElement | null>(null)
   const searchInputRef = useRef<HTMLInputElement | null>(null)
+
+  const sawCount = SYSTEM_NOTIFICATIONS.filter(
+    (n) => n.id.includes('saw') || n.title.includes('SAW'),
+  ).length
+  const adminCount = SYSTEM_NOTIFICATIONS.filter((item) => item.category === 'admin').length
+  const systemCount = SYSTEM_NOTIFICATIONS.filter((item) => item.category === 'system').length
+  const unreadCount = SYSTEM_NOTIFICATIONS.filter((item) => item.unread).length
+
+  const filteredNotifications = SYSTEM_NOTIFICATIONS.filter((item) => {
+    if (notifFilter === 'saw') return item.id.includes('saw') || item.title.includes('SAW')
+    if (notifFilter === 'admin') return item.category === 'admin'
+    if (notifFilter === 'system') return item.category === 'system'
+    return true
+  })
 
   // Support Ctrl+K / Cmd+K shortcut to focus search bar
   useEffect(() => {
@@ -130,18 +141,18 @@ export function AdminHeader({
         >
           <button
             type="button"
-            aria-label="Notifikasi"
+            aria-label="Notifikasi dan Aktivitas"
             aria-expanded={isNotifOpen}
             aria-haspopup="true"
             className="notification-btn nb-btn"
-            title="Notifikasi Sistem"
+            title="Notifikasi & Aktivitas Sistem"
             onClick={() => setIsNotifOpen((prev) => !prev)}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
               notifications
             </span>
             <span className="notification-badge">
-              {SYSTEM_NOTIFICATIONS.length}
+              {unreadCount}
             </span>
           </button>
 
@@ -149,72 +160,128 @@ export function AdminHeader({
             <div
               className="notification-dropdown"
               role="region"
-              aria-label="Notifikasi Sistem"
+              aria-label="Notifikasi dan Aktivitas Sistem"
             >
               <div className="notification-dropdown-header">
                 <div className="notification-dropdown-title">
                   <span
                     className="material-symbols-outlined"
-                    style={{ fontSize: 16 }}
+                    style={{ fontSize: 18 }}
                   >
                     notifications_active
                   </span>
-                  <span>Notifikasi Sistem</span>
+                  <span>Notifikasi Aktivitas</span>
                 </div>
-                <span className="notification-new-tag">
-                  {SYSTEM_NOTIFICATIONS.length} BARU
-                </span>
+                <div className="notification-header-badges">
+                  <span className="badge-simulation-tag">DATA SIMULASI</span>
+                  <span className="notification-new-tag">
+                    {unreadCount} BARU
+                  </span>
+                </div>
+              </div>
+
+              <div className="notification-tabs" role="tablist">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={notifFilter === 'all'}
+                  className={`notification-tab-btn ${notifFilter === 'all' ? 'is-active' : ''}`}
+                  onClick={() => setNotifFilter('all')}
+                >
+                  Semua ({SYSTEM_NOTIFICATIONS.length})
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={notifFilter === 'admin'}
+                  className={`notification-tab-btn ${notifFilter === 'admin' ? 'is-active' : ''}`}
+                  onClick={() => setNotifFilter('admin')}
+                >
+                  Admin ({adminCount})
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={notifFilter === 'system'}
+                  className={`notification-tab-btn ${notifFilter === 'system' ? 'is-active' : ''}`}
+                  onClick={() => setNotifFilter('system')}
+                >
+                  Sistem ({systemCount})
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={notifFilter === 'saw'}
+                  className={`notification-tab-btn ${notifFilter === 'saw' ? 'is-active' : ''}`}
+                  onClick={() => setNotifFilter('saw')}
+                >
+                  SAW ({sawCount})
+                </button>
               </div>
 
               <div className="notification-list">
-                {SYSTEM_NOTIFICATIONS.map((item) => (
-                  <div key={item.id} className="notification-item">
-                    <span className="notification-item-title">
-                      {item.title}
-                    </span>
-                    <span className="notification-item-meta">{item.meta}</span>
+                {filteredNotifications.length === 0 ? (
+                  <div className="notification-empty">
+                    Tidak ada notifikasi pada kategori ini.
                   </div>
-                ))}
+                ) : (
+                  filteredNotifications.map((item) => {
+                    const isSaw =
+                      item.id.includes('saw') || item.title.includes('SAW')
+                    let badgeClass = 'notification-badge-system'
+                    let badgeLabel = 'SISTEM'
+                    if (isSaw) {
+                      badgeClass = 'notification-badge-saw'
+                      badgeLabel = 'SPK SAW'
+                    } else if (item.category === 'admin') {
+                      badgeClass = 'notification-badge-admin'
+                      badgeLabel = 'AKSI ADMIN'
+                    }
+
+                    return (
+                      <div
+                        key={item.id}
+                        className={`notification-item ${item.unread ? 'is-unread' : ''}`}
+                      >
+                        <div className="notification-item-top">
+                          <div className="notification-item-badges">
+                            <span className={badgeClass}>
+                              <span
+                                className="material-symbols-outlined"
+                                style={{ fontSize: 11 }}
+                                aria-hidden="true"
+                              >
+                                {item.icon}
+                              </span>
+                              <span>{badgeLabel}</span>
+                            </span>
+                            {item.unread && (
+                              <span className="notification-unread-chip">
+                                BARU
+                              </span>
+                            )}
+                          </div>
+                          <span className="notification-item-time">
+                            {item.timeAgo}
+                          </span>
+                        </div>
+                        <span className="notification-item-title">
+                          {item.title}
+                        </span>
+                        {item.description && (
+                          <p className="notification-item-desc">
+                            {item.description}
+                          </p>
+                        )}
+                        <span className="notification-item-meta">{item.meta}</span>
+                      </div>
+                    )
+                  })
+                )}
               </div>
             </div>
           )}
         </div>
-
-        <div className="header-profile-card">
-          <div className="header-avatar">
-            {user?.fullName
-              ? user.fullName
-                  .replace('DATA SIMULASI - ', '')
-                  .split(' ')
-                  .map((n) => n[0])
-                  .join('')
-                  .slice(0, 2)
-                  .toUpperCase()
-              : 'AD'}
-          </div>
-          <div className="header-profile-info">
-            <span className="header-profile-name">
-              {user?.fullName || 'Administrator Toko'}
-            </span>
-            <span className="header-profile-role">
-              {user?.isSimulation ? 'ADMIN (SIMULASI)' : 'SUPER ADMIN'}
-            </span>
-          </div>
-        </div>
-
-        {onLogoutClick && (
-          <button
-            type="button"
-            onClick={onLogoutClick}
-            className="header-logout-btn nb-btn"
-            title="Keluar dari sesi administrator"
-            aria-label="Keluar dari sesi administrator"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-              logout
-            </span>
-          </button>
-        )}
       </div>
     </header>
   )

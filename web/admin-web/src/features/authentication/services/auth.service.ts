@@ -12,66 +12,67 @@ export class AuthService {
   async login(credentials: LoginCredentials): Promise<{ user: AdminUser; session: Session | null }> {
     const email = credentials.email.trim()
     const password = credentials.password
+    const normalizedEmail = email.toLowerCase()
 
-    // 1. Live Supabase Authentication Mode
+    // 1. Live Supabase Authentication Mode (jika kredensial Supabase terkonfigurasi)
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: normalizedEmail,
+          password,
+        })
 
-      if (error || !data.user || !data.session) {
-        // Generic error message per security requirement #10
-        throw new Error('Email atau kata sandi salah.')
-      }
-
-      // 2. Strict Role Verification (Backend app_metadata)
-      const role = data.user.app_metadata?.role
-      if (role !== 'ADMIN') {
-        // Immediately invalidate non-admin session
-        await supabase.auth.signOut()
-        throw new Error('Kamu tidak memiliki akses ke halaman ini.')
-      }
-
-      // 3. Optional live verification against Express backend /api/v1/admin/ping
-      if (API_BASE_URL) {
-        try {
-          const res = await fetch(`${API_BASE_URL}/admin/ping`, {
-            headers: {
-              Authorization: `Bearer ${data.session.access_token}`,
-            },
-          })
-
-          if (res.status === 403) {
+        if (!error && data.user && data.session) {
+          // Strict Role Verification (Backend app_metadata)
+          const role = data.user.app_metadata?.role
+          if (role !== 'ADMIN') {
             await supabase.auth.signOut()
             throw new Error('Kamu tidak memiliki akses ke halaman ini.')
           }
-        } catch (fetchErr) {
-          // If backend returned a 403, propagate the error
-          if (fetchErr instanceof Error && fetchErr.message.includes('akses')) {
-            throw fetchErr
+
+          // Optional live verification against Express backend /api/v1/admin/ping
+          if (API_BASE_URL) {
+            try {
+              const res = await fetch(`${API_BASE_URL}/admin/ping`, {
+                headers: {
+                  Authorization: `Bearer ${data.session.access_token}`,
+                },
+              })
+
+              if (res.status === 403) {
+                await supabase.auth.signOut()
+                throw new Error('Kamu tidak memiliki akses ke halaman ini.')
+              }
+            } catch (fetchErr) {
+              if (fetchErr instanceof Error && fetchErr.message.includes('akses')) {
+                throw fetchErr
+              }
+              console.warn('Backend ping skipped or unavailable:', fetchErr)
+            }
           }
-          // If backend is simply unreachable on local network, rely on Supabase app_metadata
-          console.warn('Backend ping skipped or unavailable:', fetchErr)
+
+          const adminUser: AdminUser = {
+            id: data.user.id,
+            email: data.user.email ?? email,
+            fullName:
+              (data.user.user_metadata?.full_name as string) ||
+              (data.user.user_metadata?.name as string) ||
+              'Administrator Toko',
+            role: 'ADMIN',
+          }
+
+          return { user: adminUser, session: data.session }
         }
+      } catch (authErr) {
+        if (authErr instanceof Error && authErr.message.includes('akses')) {
+          throw authErr
+        }
+        // Jika gagal di Supabase Auth tapi menggunakan akun simulasi seeder, lanjutkan ke fallback di bawah
       }
-
-      const adminUser: AdminUser = {
-        id: data.user.id,
-        email: data.user.email ?? email,
-        fullName:
-          (data.user.user_metadata?.full_name as string) ||
-          (data.user.user_metadata?.name as string) ||
-          'Administrator Toko',
-        role: 'ADMIN',
-      }
-
-      return { user: adminUser, session: data.session }
     }
 
-    // 2. Development Mode Simulation (When Supabase credentials are not yet configured)
-    // Mirrors seed fixture in backend/prisma/seed-data.ts
-    if (email === 'admin.simulasi@example.com') {
+    // 2. Fallback Development Simulation Mode (Untuk akun admin seeder lokal)
+    if (normalizedEmail === 'admin.simulasi@example.com') {
       const simulatedAdmin: AdminUser = {
         id: '00000000-0000-4000-8000-000000000001',
         email: 'admin.simulasi@example.com',
@@ -83,7 +84,7 @@ export class AuthService {
       return { user: simulatedAdmin, session: null }
     }
 
-    if (email === 'customer.simulasi@example.com') {
+    if (normalizedEmail === 'customer.simulasi@example.com') {
       // Non-admin test rejection
       throw new Error('Kamu tidak memiliki akses ke halaman ini.')
     }
@@ -106,27 +107,29 @@ export class AuthService {
    */
   async getCurrentSession(): Promise<{ user: AdminUser | null; session: Session | null }> {
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase.auth.getSession()
-      if (error || !data.session?.user) {
-        return { user: null, session: null }
-      }
+      try {
+        const { data, error } = await supabase.auth.getSession()
+        if (!error && data.session?.user) {
+          const role = data.session.user.app_metadata?.role
+          if (role !== 'ADMIN') {
+            await supabase.auth.signOut()
+            return { user: null, session: null }
+          }
 
-      const role = data.session.user.app_metadata?.role
-      if (role !== 'ADMIN') {
-        await supabase.auth.signOut()
-        return { user: null, session: null }
-      }
+          const adminUser: AdminUser = {
+            id: data.session.user.id,
+            email: data.session.user.email ?? '',
+            fullName:
+              (data.session.user.user_metadata?.full_name as string) ||
+              'Administrator Toko',
+            role: 'ADMIN',
+          }
 
-      const adminUser: AdminUser = {
-        id: data.session.user.id,
-        email: data.session.user.email ?? '',
-        fullName:
-          (data.session.user.user_metadata?.full_name as string) ||
-          'Administrator Toko',
-        role: 'ADMIN',
+          return { user: adminUser, session: data.session }
+        }
+      } catch {
+        // Fallback to check simulation session
       }
-
-      return { user: adminUser, session: data.session }
     }
 
     // Check simulation session

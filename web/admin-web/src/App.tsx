@@ -65,9 +65,24 @@ function AdminAppContent() {
     case '/admin/katalog/ebook':
       pageContent = (
         <EbookCatalogPage
+          initialView="LIST"
+          currentPath={sidebar.activePath}
           onBreadcrumbChange={(text) =>
             setCustomBreadcrumb({ path: sidebar.activePath, text })
           }
+          onNavigate={sidebar.navigateTo}
+        />
+      )
+      break
+    case '/admin/katalog/tambah':
+      pageContent = (
+        <EbookCatalogPage
+          initialView="FORM"
+          currentPath={sidebar.activePath}
+          onBreadcrumbChange={(text) =>
+            setCustomBreadcrumb({ path: sidebar.activePath, text })
+          }
+          onNavigate={sidebar.navigateTo}
         />
       )
       break

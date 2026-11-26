@@ -26,7 +26,7 @@
   --nb-radius: 0px;
   --nb-radius-lg: 0px;
   --nb-radius-xl: 0px;
-  --nb-radius-full: 9999px;
+  --nb-radius-full: 0px; /* Neubrutalism: sudut siku 0; pengecualian avatar bundar/status dot */
 
   --nb-font-display: 'Syne', system-ui, sans-serif;
   --nb-font-heading: 'Space Grotesk', 'Inter', system-ui, sans-serif;

@@ -4,7 +4,7 @@ export interface KpiStatItem {
   id: string
   title: string
   headerBg: string
-  icon: string
+  icon?: string
   value: string
   deltaBadgeText: string
   deltaBadgeBg: string
@@ -20,7 +20,9 @@ export interface KpiStatItem {
 
 export interface DailySalesPoint {
   day: string
+  date?: string
   totalLabel: string
+  totalNumeric?: number
   heightPercent: number
   regulerPercent: number
   bundlingPercent: number
@@ -72,4 +74,8 @@ export interface SystemNotificationItem {
   title: string
   meta: string
   unread?: boolean
+  category: 'admin' | 'system'
+  icon: string
+  timeAgo: string
+  description?: string
 }
