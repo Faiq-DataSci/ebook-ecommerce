@@ -30,7 +30,6 @@ export function CategorySummaryCards({
         metrics.emptyCategories > 0
           ? `${metrics.emptyCategories} kategori belum memiliki e-book`
           : 'Semua kategori sudah memiliki e-book',
-      icon: 'category',
       tone: 'yellow',
       isSelected: activeStatus === 'ALL',
       onClick: () => onSelectStatus('ALL'),
@@ -41,7 +40,6 @@ export function CategorySummaryCards({
       value: metrics.activeCategories,
       unit: 'aktif',
       subtext: `${metrics.activePercentage}% tampil di katalog e-book`,
-      icon: 'check_circle',
       tone: 'green',
       isSelected: activeStatus === 'AKTIF',
       onClick: () => onSelectStatus('AKTIF'),
@@ -52,7 +50,6 @@ export function CategorySummaryCards({
       value: metrics.inactiveCategories,
       unit: 'nonaktif',
       subtext: 'Disembunyikan dari pilihan form e-book',
-      icon: 'do_not_disturb_on',
       tone: 'muted',
       isSelected: activeStatus === 'NONAKTIF',
       onClick: () => onSelectStatus('NONAKTIF'),
@@ -63,7 +60,6 @@ export function CategorySummaryCards({
       value: metrics.totalLinkedEbooks,
       unit: 'e-book',
       subtext: `Rata-rata ${metrics.avgEbooksPerCategory} e-book per kategori`,
-      icon: 'menu_book',
       tone: 'blue',
     },
   ]

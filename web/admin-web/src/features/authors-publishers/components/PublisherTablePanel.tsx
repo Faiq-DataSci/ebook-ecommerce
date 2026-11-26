@@ -65,7 +65,6 @@ export function PublisherTablePanel({
 
           <FilterChipGroup
             label="Status:"
-            icon="tune"
             value={publisherFilters.status}
             onChange={(val) =>
               setPublisherFilters((prev) => ({
@@ -79,21 +78,18 @@ export function PublisherTablePanel({
                 value: 'ALL',
                 label: 'Semua Status',
                 count: publishers.length,
-                icon: 'apps',
                 activeBg: 'var(--nb-yellow)',
               },
               {
                 value: 'AKTIF',
                 label: 'Aktif',
                 count: publishers.filter((p) => p.isActive).length,
-                icon: 'check_circle',
                 activeBg: 'var(--nb-green)',
               },
               {
                 value: 'NONAKTIF',
                 label: 'Nonaktif',
                 count: publishers.filter((p) => !p.isActive).length,
-                icon: 'do_not_disturb_on',
                 activeBg: 'var(--nb-muted)',
               },
             ]}
@@ -104,12 +100,11 @@ export function PublisherTablePanel({
           <button
             type="button"
             className="nb-btn nb-page-btn"
+            style={{ width: 'auto', padding: '0 14px', fontSize: 13 }}
             onClick={onRefresh}
             title="Segarkan data tabel penerbit"
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              refresh
-            </span>
+            Segarkan
           </button>
         </div>
       </div>
@@ -170,9 +165,6 @@ export function PublisherTablePanel({
               }))
             }
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
-              close
-            </span>
             <span>Reset Filter</span>
           </button>
         </div>
@@ -189,8 +181,7 @@ export function PublisherTablePanel({
               ? 'Tidak ada mitra penerbit yang cocok dengan kriteria pencarian.'
               : 'Belum ada mitra penerbit terdaftar. Tambahkan penerbit pertama sekarang.'
           }
-          icon="domain"
-          actionLabel="+ Tambah Penerbit Pertama"
+          actionLabel="Tambah Penerbit Pertama"
           onAction={onOpenAdd}
         />
       ) : (
@@ -216,13 +207,6 @@ export function PublisherTablePanel({
                 >
                   <div className="nb-th-inner">
                     <span>Nama Penerbit</span>
-                    <span className="material-symbols-outlined nb-sort-icon">
-                      {publisherFilters.sortBy === 'name'
-                        ? publisherFilters.sortOrder === 'asc'
-                          ? 'arrow_upward'
-                          : 'arrow_downward'
-                        : 'unfold_more'}
-                    </span>
                   </div>
                 </th>
                 <th
@@ -239,13 +223,6 @@ export function PublisherTablePanel({
                 >
                   <div className="nb-th-inner">
                     <span>Kota Asal</span>
-                    <span className="material-symbols-outlined nb-sort-icon">
-                      {publisherFilters.sortBy === 'city'
-                        ? publisherFilters.sortOrder === 'asc'
-                          ? 'arrow_upward'
-                          : 'arrow_downward'
-                        : 'unfold_more'}
-                    </span>
                   </div>
                 </th>
                 <th scope="col">Website & Kontak</th>
@@ -264,13 +241,6 @@ export function PublisherTablePanel({
                 >
                   <div className="nb-th-inner" style={{ justifyContent: 'flex-end' }}>
                     <span>E-Book Terbitan</span>
-                    <span className="material-symbols-outlined nb-sort-icon">
-                      {publisherFilters.sortBy === 'ebookCount'
-                        ? publisherFilters.sortOrder === 'asc'
-                          ? 'arrow_upward'
-                          : 'arrow_downward'
-                        : 'unfold_more'}
-                    </span>
                   </div>
                 </th>
                 <th scope="col" style={{ width: 110 }}>
@@ -337,17 +307,9 @@ export function PublisherTablePanel({
                     </td>
                     <td data-label="Status">
                       {pub.isActive ? (
-                        <StatusBadge
-                          status="Aktif"
-                          fill="var(--nb-green)"
-                          icon="check_circle"
-                        />
+                        <StatusBadge status="Aktif" fill="var(--nb-green)" />
                       ) : (
-                        <StatusBadge
-                          status="Nonaktif"
-                          fill="var(--nb-muted)"
-                          icon="do_not_disturb_on"
-                        />
+                        <StatusBadge status="Nonaktif" fill="var(--nb-muted)" />
                       )}
                     </td>
                     <td data-label="Aksi">
@@ -356,16 +318,10 @@ export function PublisherTablePanel({
                           type="button"
                           className="nb-btn nb-table-action-btn"
                           onClick={() => onOpenEdit(pub)}
-                          aria-label={`Ubah penerbit ${pub.name}`}
-                          title="Ubah data penerbit"
+                          aria-label={`Edit penerbit ${pub.name}`}
+                          title="Edit data penerbit"
                         >
-                          <span
-                            className="material-symbols-outlined"
-                            style={{ fontSize: 18 }}
-                            aria-hidden="true"
-                          >
-                            edit
-                          </span>
+                          Edit
                         </button>
                         <button
                           type="button"
@@ -374,13 +330,7 @@ export function PublisherTablePanel({
                           aria-label={`Hapus penerbit ${pub.name}`}
                           title="Hapus mitra penerbit"
                         >
-                          <span
-                            className="material-symbols-outlined"
-                            style={{ fontSize: 18 }}
-                            aria-hidden="true"
-                          >
-                            delete
-                          </span>
+                          Hapus
                         </button>
                       </div>
                     </td>

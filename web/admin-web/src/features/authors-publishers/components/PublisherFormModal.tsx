@@ -46,9 +46,7 @@ export function PublisherFormModal({
             onClick={onClose}
             aria-label="Tutup form penerbit"
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              close
-            </span>
+            Tutup
           </button>
         </div>
 

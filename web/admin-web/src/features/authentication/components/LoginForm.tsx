@@ -83,9 +83,6 @@ export const LoginForm: FC<LoginFormProps> = ({
 
       {errorMessage && (
         <div className="login-alert-danger" role="alert">
-          <span className="material-symbols-outlined login-alert-icon" aria-hidden="true">
-            warning
-          </span>
           <span>{errorMessage}</span>
         </div>
       )}
@@ -118,12 +115,7 @@ export const LoginForm: FC<LoginFormProps> = ({
               <span>Memproses...</span>
             </>
           ) : (
-            <>
-              <span>Masuk ke Dashboard</span>
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">
-                arrow_forward
-              </span>
-            </>
+            <span>Masuk ke Dashboard</span>
           )}
         </button>
       </form>

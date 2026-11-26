@@ -47,9 +47,6 @@ export const EmailField: FC<EmailFieldProps> = ({
       </div>
       {error && (
         <div id="admin-email-error" className="login-field-error" role="alert">
-          <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden="true">
-            error
-          </span>
           <span>{error}</span>
         </div>
       )}

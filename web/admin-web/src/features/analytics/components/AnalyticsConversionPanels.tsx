@@ -16,12 +16,7 @@ export function AnalyticsConversionPanels({
         {/* Kolom 1: Corong Konversi Pembayaran (Purchase Funnel) */}
         <div className="analytics-panel-card">
           <div className="analytics-panel-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span className="material-symbols-outlined" aria-hidden="true">
-                filter_alt
-              </span>
-              <h2 className="analytics-panel-title">Corong Konversi Pembayaran</h2>
-            </div>
+            <h2 className="analytics-panel-title">Corong Konversi Pembayaran</h2>
             <span
               className="analytics-drop-pill"
               style={{
@@ -43,12 +38,6 @@ export function AnalyticsConversionPanels({
               <div key={stage.id} className="analytics-funnel-step">
                 <div className="analytics-funnel-step-head">
                   <div className="analytics-funnel-step-label">
-                    <span
-                      className="material-symbols-outlined"
-                      style={{ fontSize: 18, color: stage.color }}
-                    >
-                      {stage.icon}
-                    </span>
                     <span>
                       {idx + 1}. {stage.label}
                     </span>
@@ -131,12 +120,7 @@ export function AnalyticsConversionPanels({
         {/* Kolom 2: Kontribusi Kategori E-Book */}
         <div className="analytics-panel-card">
           <div className="analytics-panel-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span className="material-symbols-outlined" aria-hidden="true">
-                pie_chart
-              </span>
-              <h2 className="analytics-panel-title">Kontribusi Kategori E-Book</h2>
-            </div>
+            <h2 className="analytics-panel-title">Kontribusi Kategori E-Book</h2>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700 }}>
               5 Kategori Aktif
             </span>
@@ -249,16 +233,6 @@ export function AnalyticsConversionPanels({
         aria-label="Wawasan Algoritma SPK SAW"
       >
         <div className="analytics-saw-banner-left">
-          <div className="analytics-saw-icon-badge">
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 28, color: '#4338CA' }}
-              aria-hidden="true"
-            >
-              auto_awesome
-            </span>
-          </div>
-
           <div>
             <h3 className="analytics-saw-title">
               Inteligensi Rekomendasi SAW Berkontribusi Signifikan Terhadap Konversi
@@ -285,13 +259,6 @@ export function AnalyticsConversionPanels({
             }}
             onClick={() => onNavigate?.('/admin/spk/matriks')}
           >
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 18 }}
-              aria-hidden="true"
-            >
-              calculate
-            </span>
             <span>Audit Matriks SPK SAW</span>
           </button>
         </div>

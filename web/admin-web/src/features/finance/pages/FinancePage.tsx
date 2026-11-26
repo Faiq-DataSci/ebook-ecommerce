@@ -113,9 +113,7 @@ export function FinancePage({
             onClick={() => onNavigate?.('/admin/transaksi/pesanan')}
             title="Beralih ke Operasional Transaksi"
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#0984E3' }}>receipt_long</span>
             <span>Buka Transaksi Pesanan</span>
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
           </button>
 
           <button
@@ -125,7 +123,6 @@ export function FinancePage({
             onClick={handleExportFinanceCSV}
             title="Unduh Buku Besar Keuangan CSV"
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>file_download</span>
             <span>Unduh Buku Kas (CSV)</span>
           </button>
         </div>
@@ -140,7 +137,6 @@ export function FinancePage({
           className={`tf-tab-btn ${activeTab === 'omzet' ? 'is-active' : ''}`}
           onClick={() => handleTabChange('omzet')}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>query_stats</span>
           <span>Laporan Omzet &amp; Beban Gateway</span>
           <span className="tf-tab-badge" style={{ backgroundColor: '#00B894' }}>IDR</span>
         </button>
@@ -152,7 +148,6 @@ export function FinancePage({
           className={`tf-tab-btn ${activeTab === 'settlement' ? 'is-active' : ''}`}
           onClick={() => handleTabChange('settlement')}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>account_balance</span>
           <span>Settlement &amp; Buku Kas</span>
           <span className="tf-tab-badge" style={{ backgroundColor: '#74B9FF' }}>
             {settlements.filter((s) => s.status === 'PROCESSING').length} Proses

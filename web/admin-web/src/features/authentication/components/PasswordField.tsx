@@ -61,9 +61,6 @@ export const PasswordField: FC<PasswordFieldProps> = ({
       </div>
       {error && (
         <div id="admin-password-error" className="login-field-error" role="alert">
-          <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden="true">
-            error
-          </span>
           <span>{error}</span>
         </div>
       )}

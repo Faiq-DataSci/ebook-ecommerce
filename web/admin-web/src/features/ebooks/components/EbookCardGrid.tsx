@@ -42,7 +42,6 @@ export function EbookCardGrid({
                   <StatusBadge
                     status={book.isActive ? 'Aktif' : 'Arsip'}
                     fill={book.isActive ? 'var(--nb-green)' : 'var(--nb-muted)'}
-                    icon={book.isActive ? 'check_circle' : 'archive'}
                   />
                 </div>
                 {book.pageCount && (
@@ -50,12 +49,6 @@ export function EbookCardGrid({
                     {book.pageCount} Hal
                   </div>
                 )}
-                <span
-                  className="material-symbols-outlined catalog-card-icon-art"
-                  aria-hidden="true"
-                >
-                  {meta.icon || 'menu_book'}
-                </span>
               </div>
 
               <div className="catalog-card-body">
@@ -64,13 +57,6 @@ export function EbookCardGrid({
                     className="catalog-card-category-chip"
                     style={{ backgroundColor: meta.activeBg }}
                   >
-                    <span
-                      className="material-symbols-outlined"
-                      style={{ fontSize: 13 }}
-                      aria-hidden="true"
-                    >
-                      {meta.icon}
-                    </span>
                     <span>{book.categoryName}</span>
                   </span>
                   <span className="catalog-card-sales-chip">
@@ -108,16 +94,10 @@ export function EbookCardGrid({
                       type="button"
                       className="nb-btn nb-table-action-btn"
                       onClick={() => onEdit(book)}
-                      aria-label={`Ubah e-book ${book.title}`}
-                      title="Ubah data e-book"
+                      aria-label={`Edit e-book ${book.title}`}
+                      title="Edit data e-book"
                     >
-                      <span
-                        className="material-symbols-outlined"
-                        style={{ fontSize: 18 }}
-                        aria-hidden="true"
-                      >
-                        edit
-                      </span>
+                      Edit
                     </button>
                     <button
                       type="button"
@@ -136,13 +116,7 @@ export function EbookCardGrid({
                           : 'Aktifkan kembali e-book'
                       }
                     >
-                      <span
-                        className="material-symbols-outlined"
-                        style={{ fontSize: 18 }}
-                        aria-hidden="true"
-                      >
-                        {book.isActive ? 'archive' : 'unarchive'}
-                      </span>
+                      {book.isActive ? 'Arsipkan' : 'Aktifkan'}
                     </button>
                   </div>
                 </div>

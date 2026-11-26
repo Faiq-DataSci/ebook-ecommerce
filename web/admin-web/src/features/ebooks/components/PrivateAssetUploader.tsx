@@ -18,7 +18,6 @@ export function PrivateAssetUploader({
   accept,
   maxSizeMB,
   isPrivate = false,
-  icon = 'upload_file',
   hint,
   fileName,
   previewUrl,
@@ -116,35 +115,15 @@ export function PrivateAssetUploader({
       {/* Card Header Slot */}
       <div className="nb-uploader-header">
         <div className="nb-uploader-title-wrap">
-          <span
-            className="material-symbols-outlined nb-uploader-type-icon"
-            aria-hidden="true"
-          >
-            {isPrivate ? 'lock' : 'image'}
-          </span>
           <span className="nb-uploader-title">{label}</span>
         </div>
 
         {isPrivate ? (
           <span className="nb-private-bucket-badge" title="Disimpan pada bucket privat Supabase Storage">
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 13 }}
-              aria-hidden="true"
-            >
-              security
-            </span>
             <span>BUCKET PRIVAT</span>
           </span>
         ) : (
           <span className="nb-public-bucket-badge" title="Disimpan pada bucket publik Supabase Storage">
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 13 }}
-              aria-hidden="true"
-            >
-              public
-            </span>
             <span>PUBLIK</span>
           </span>
         )}
@@ -156,19 +135,13 @@ export function PrivateAssetUploader({
           /* State 1: File is Attached / Selected */
           <div className="nb-file-attached-card">
             <div className="nb-file-attached-info">
-              {activePreview ? (
+              {activePreview && (
                 <div className="nb-file-thumbnail-frame">
                   <img
                     src={activePreview}
                     alt="Pratinjau sampul e-book"
                     className="nb-file-thumbnail-img"
                   />
-                </div>
-              ) : (
-                <div className={`nb-file-attached-icon ${isPrivate ? 'is-pdf' : ''}`} aria-hidden="true">
-                  <span className="material-symbols-outlined" style={{ fontSize: 26 }}>
-                    {isPrivate ? 'picture_as_pdf' : 'description'}
-                  </span>
                 </div>
               )}
 
@@ -195,9 +168,6 @@ export function PrivateAssetUploader({
                 onClick={() => fileInputRef.current?.click()}
                 title="Ganti berkas dengan dokumen lain"
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden="true">
-                  swap_horiz
-                </span>
                 <span>Ganti</span>
               </button>
 
@@ -212,9 +182,6 @@ export function PrivateAssetUploader({
                   title="Hapus berkas ini"
                   aria-label="Hapus file terpilih"
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: 15 }} aria-hidden="true">
-                    delete
-                  </span>
                   <span>Hapus</span>
                 </button>
               )}
@@ -243,12 +210,6 @@ export function PrivateAssetUploader({
               }
             }}
           >
-            <div className="nb-uploader-icon-box" aria-hidden="true">
-              <span className="material-symbols-outlined" style={{ fontSize: 30 }}>
-                {icon}
-              </span>
-            </div>
-
             <div className="nb-uploader-text-box">
               <div className="nb-uploader-prompt">
                 <strong>Tarik file ke sini</strong> atau{' '}
@@ -280,13 +241,6 @@ export function PrivateAssetUploader({
         {/* Error Validation Notification */}
         {errorMessage && (
           <div className="nb-form-error-box" role="alert">
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 16 }}
-              aria-hidden="true"
-            >
-              error
-            </span>
             <span>{errorMessage}</span>
           </div>
         )}

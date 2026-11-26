@@ -205,9 +205,6 @@ export function AnalyticsTrendChart({
       {/* Ringkasan Strip di Bawah Grafik */}
       <div className="analytics-chart-summary-strip">
         <div className="analytics-summary-chip">
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#16A34A' }}>
-            arrow_circle_up
-          </span>
           <span>
             Penjualan Tertinggi:{' '}
             <strong>
@@ -223,9 +220,6 @@ export function AnalyticsTrendChart({
         </div>
 
         <div className="analytics-summary-chip">
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#DC2626' }}>
-            arrow_circle_down
-          </span>
           <span>
             Penjualan Terendah:{' '}
             <strong>
@@ -241,9 +235,6 @@ export function AnalyticsTrendChart({
         </div>
 
         <div className="analytics-summary-chip">
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#2563EB' }}>
-            functions
-          </span>
           <span>
             Rata-rata Harian:{' '}
             <strong>

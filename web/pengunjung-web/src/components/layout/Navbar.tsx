@@ -9,6 +9,7 @@ import {
   LogOut,
   Menu,
   Search,
+  Sparkles,
   UserCheck,
   UserPlus,
   X,
@@ -165,6 +166,21 @@ export function Navbar() {
             >
               <Compass size={16} strokeWidth={2.25} aria-hidden="true" />
               <span>Katalog E-Book</span>
+            </NavLink>
+
+            {/* Rekomendasi SPK SAW */}
+            <NavLink
+              to={ROUTES.RECOMMENDATIONS}
+              className={({ isActive }) =>
+                `nb-nav-item ${isActive ? 'nb-nav-item--catalog-active' : ''}`.trim()
+              }
+              style={({ isActive }) => ({
+                backgroundColor: isActive ? 'var(--nb-lavender)' : undefined,
+                color: 'var(--nb-black)',
+              })}
+            >
+              <Sparkles size={16} strokeWidth={2.25} aria-hidden="true" />
+              <span>Rekomendasi SPK</span>
             </NavLink>
 
             {isAuthenticated ? (

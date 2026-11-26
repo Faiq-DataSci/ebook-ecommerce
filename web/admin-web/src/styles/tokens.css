@@ -109,6 +109,417 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Neubrutalism Skeleton Animation (design.md §5.8: blok nb-muted berborder 2px, kedip 1s) */
+@keyframes nb-skeleton-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes nb-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.nb-skeleton-block {
+  background-color: var(--nb-muted);
+  border: var(--nb-border-thin);
+  animation: nb-skeleton-blink 1s ease-in-out infinite;
+}
+
+.nb-skeleton-block.is-delay-1 {
+  animation-delay: 140ms;
+}
+
+.nb-skeleton-block.is-delay-2 {
+  animation-delay: 280ms;
+}
+
+.nb-skeleton-block.is-delay-3 {
+  animation-delay: 420ms;
+}
+
+/* Top Neubrutalism Progress Strip */
+@keyframes nb-top-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.nb-top-loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background-color: var(--nb-paper);
+  border-bottom: 2px solid var(--nb-black);
+  z-index: 1200;
+  overflow: hidden;
+}
+
+.nb-top-loading-bar-fill {
+  width: 55%;
+  height: 100%;
+  background-color: var(--nb-yellow);
+  border-right: 2px solid var(--nb-black);
+  animation: nb-top-progress 0.9s linear infinite;
+}
+
+/* Modern Floating Neubrutalism Loader Card (design.md §5.8 & §8.1) */
+@keyframes nb-square-step {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-2px, -4px);
+  }
+}
+
+.nb-loader-floating-wrap {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  pointer-events: none;
+  z-index: 1100;
+}
+
+.nb-loader-floating-wrap.has-scrim {
+  background-color: rgba(0, 0, 0, 0.55);
+  pointer-events: auto;
+}
+
+.nb-loader-card {
+  width: 100%;
+  max-width: 380px;
+  background-color: var(--nb-white);
+  border: var(--nb-border-thick);
+  box-shadow: var(--nb-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+}
+
+.nb-loader-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background-color: var(--nb-yellow);
+  border-bottom: var(--nb-border);
+}
+
+.nb-loader-brand {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--nb-black);
+}
+
+.nb-loader-percent {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--nb-black);
+  background-color: var(--nb-white);
+  border: 2px solid var(--nb-black);
+  padding: 1px 6px;
+}
+
+.nb-loader-card-body {
+  padding: 18px 18px 14px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nb-loader-squares {
+  display: grid;
+  grid-template-columns: repeat(2, 16px);
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.nb-loader-sq {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--nb-black);
+  box-shadow: 2px 2px 0 0 var(--nb-black);
+  animation: nb-square-step 0.8s var(--nb-ease-snap) infinite;
+}
+
+.nb-loader-sq.is-1 {
+  background-color: var(--nb-yellow);
+  animation-delay: 0ms;
+}
+
+.nb-loader-sq.is-2 {
+  background-color: var(--nb-blue);
+  animation-delay: 140ms;
+}
+
+.nb-loader-sq.is-3 {
+  background-color: var(--nb-green);
+  animation-delay: 280ms;
+}
+
+.nb-loader-sq.is-4 {
+  background-color: var(--nb-lavender);
+  animation-delay: 420ms;
+}
+
+.nb-loader-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.nb-loader-title {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--nb-black);
+  line-height: 1.2;
+}
+
+.nb-loader-subtitle {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--nb-text-muted);
+  line-height: 1.35;
+}
+
+.nb-loader-progress-track {
+  margin: 0 18px 18px;
+  height: 14px;
+  background-color: var(--nb-paper);
+  border: var(--nb-border-thin);
+  overflow: hidden;
+}
+
+.nb-loader-progress-fill {
+  height: 100%;
+  background-color: var(--nb-yellow);
+  border-right: var(--nb-border-thin);
+  transition: width 180ms ease-out;
+}
+
+.nb-shell-skeleton {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--nb-paper);
+  background-image: radial-gradient(#000000 0.95px, transparent 0.95px);
+  background-size: 20px 20px;
+}
+
+.nb-shell-skeleton-sidebar {
+  width: var(--sidebar-width-expanded);
+  flex-shrink: 0;
+  background-color: var(--nb-white);
+  border-right: var(--nb-border-thick);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.nb-shell-skeleton-sidebar-top {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nb-shell-skeleton-brand {
+  height: 46px;
+  background-color: var(--nb-yellow);
+  border: var(--nb-border-thin);
+  box-shadow: var(--nb-shadow-sm);
+}
+
+.nb-shell-skeleton-nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.nb-shell-skeleton-nav-item {
+  height: 38px;
+}
+
+.nb-shell-skeleton-nav-item.is-active {
+  background-color: var(--nb-yellow);
+  box-shadow: var(--nb-shadow-xs);
+}
+
+.nb-shell-skeleton-footer {
+  height: 54px;
+}
+
+.nb-shell-skeleton-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.nb-shell-skeleton-header {
+  height: var(--header-height);
+  background-color: var(--nb-white);
+  border-bottom: var(--nb-border);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.nb-shell-skeleton-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1360px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.nb-shell-skeleton-banner {
+  background-color: var(--nb-white);
+  border: var(--nb-border-thin);
+  box-shadow: var(--nb-shadow);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.nb-shell-skeleton-banner-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 280px;
+}
+
+.nb-shell-skeleton-banner-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.nb-shell-skeleton-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.nb-shell-skeleton-kpi-card {
+  background-color: var(--nb-white);
+  border: var(--nb-border-thin);
+  box-shadow: var(--nb-shadow-sm);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nb-shell-skeleton-panels {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.nb-shell-skeleton-card {
+  background-color: var(--nb-white);
+  border: var(--nb-border-thin);
+  box-shadow: var(--nb-shadow);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.nb-shell-skeleton-table {
+  background-color: var(--nb-white);
+  border: var(--nb-border-thin);
+  box-shadow: var(--nb-shadow);
+  overflow: hidden;
+}
+
+.nb-shell-skeleton-table-head {
+  height: 44px;
+  background-color: var(--nb-yellow);
+  border-bottom: var(--nb-border);
+}
+
+.nb-shell-skeleton-table-row {
+  display: grid;
+  grid-template-columns: 1.1fr 2fr 1.2fr 1fr 0.8fr;
+  gap: 14px;
+  padding: 14px 18px;
+  border-bottom: var(--nb-border-thin);
+}
+
+.nb-shell-skeleton-table-row:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 1024px) {
+  .nb-shell-skeleton-sidebar {
+    display: none;
+  }
+
+  .nb-shell-skeleton-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .nb-shell-skeleton-panels {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .nb-shell-skeleton-body {
+    padding: 16px;
+  }
+
+  .nb-shell-skeleton-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nb-shell-skeleton-table-row {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 /* Tactile Neubrutalism Press & Hover Physics */

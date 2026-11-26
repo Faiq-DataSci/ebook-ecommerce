@@ -17,6 +17,7 @@ import { formatRupiah } from '../../../shared/utils/formatters'
 import { DashboardActivityLog } from './DashboardActivityLog'
 import { DashboardKpiCards } from './DashboardKpiCards'
 import { DashboardRecentOrders } from './DashboardRecentOrders'
+import { DashboardQuickShortcuts } from './DashboardQuickShortcuts'
 import { DashboardSalesChart } from './DashboardSalesChart'
 import { DashboardTopEbooks } from './DashboardTopEbooks'
 import { DashboardWelcomeBanner } from './DashboardWelcomeBanner'
@@ -256,7 +257,6 @@ export function DashboardContent({
         selectedPeriod={selectedPeriod}
         periodOptions={PERIOD_OPTIONS}
         onSelectPeriod={setSelectedPeriod}
-        onAddEbook={() => onNavigate('/admin/katalog/ebook')}
         onDownloadCsv={handleDownloadCsv}
       />
 
@@ -289,9 +289,10 @@ export function DashboardContent({
           />
         </div>
 
-        {/* RIGHT COLUMN (4 COLS): Top Bestseller + Quick Action + Activity Feed */}
+        {/* RIGHT COLUMN (4 COLS): Quick Shortcuts + Top Bestseller + Activity Feed */}
         <div className="dashboard-col-right">
-          <DashboardTopEbooks onNavigate={onNavigate} />
+          <DashboardQuickShortcuts onNavigate={onNavigate} />
+          <DashboardTopEbooks />
           <DashboardActivityLog />
         </div>
       </section>

@@ -34,13 +34,6 @@ export function DashboardRecentOrders({
     <div className="transactions-card">
       <div className="transactions-header">
         <div className="transactions-title-group">
-          <span
-            className="material-symbols-outlined"
-            style={{ fontSize: 24 }}
-            aria-hidden="true"
-          >
-            receipt
-          </span>
           <h2 className="transactions-heading">
             Live Stream Transaksi Terbaru
           </h2>

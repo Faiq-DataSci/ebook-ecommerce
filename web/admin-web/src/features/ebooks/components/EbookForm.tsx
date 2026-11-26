@@ -86,12 +86,6 @@ export function EbookForm({
                 }}
                 title="Terhubung langsung dengan backend API PostgreSQL"
               >
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: 15 }}
-                >
-                  cloud_done
-                </span>
                 <span>API LIVE</span>
               </span>
             )}
@@ -162,9 +156,6 @@ export function EbookForm({
               />
               {formErrors.title && (
                 <div className="nb-form-error-box" role="alert">
-                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                    error
-                  </span>
                   <span>{formErrors.title}</span>
                 </div>
               )}
@@ -193,9 +184,6 @@ export function EbookForm({
                 </span>
                 {formErrors.author && (
                   <div className="nb-form-error-box" role="alert">
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                      error
-                    </span>
                     <span>{formErrors.author}</span>
                   </div>
                 )}
@@ -226,9 +214,6 @@ export function EbookForm({
                 </span>
                 {formErrors.categoryId && (
                   <div className="nb-form-error-box" role="alert">
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                      error
-                    </span>
                     <span>{formErrors.categoryId}</span>
                   </div>
                 )}
@@ -277,9 +262,6 @@ export function EbookForm({
               />
               {formErrors.description && (
                 <div className="nb-form-error-box" role="alert">
-                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                    error
-                  </span>
                   <span>{formErrors.description}</span>
                 </div>
               )}
@@ -355,9 +337,6 @@ export function EbookForm({
 
                 {formErrors.price && (
                   <div className="nb-form-error-box" role="alert">
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                      error
-                    </span>
                     <span>{formErrors.price}</span>
                   </div>
                 )}
@@ -462,7 +441,6 @@ export function EbookForm({
                 accept="image/jpeg,image/png,image/webp"
                 maxSizeMB={2}
                 isPrivate={false}
-                icon="image"
                 hint="Format JPG, PNG, atau WebP (maks. 2 MB • rasio 2:3)."
                 fileName={formData.coverFileName}
                 previewUrl={editingEbook?.coverUrl}
@@ -476,7 +454,6 @@ export function EbookForm({
                 accept=".pdf"
                 maxSizeMB={50}
                 isPrivate={true}
-                icon="picture_as_pdf"
                 hint="Format .PDF dokumen resmi saja (maks. 50 MB)."
                 fileName={formData.pdfFileName}
                 onFileSelect={onPdfSelect}
@@ -499,19 +476,10 @@ export function EbookForm({
         <div>
           {isFormDirty ? (
             <span className="catalog-bottom-status-text is-dirty">
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                warning
-              </span>
               Ada perubahan yang belum disimpan
             </span>
           ) : (
             <span className="catalog-bottom-status-text">
-              <span
-                className="material-symbols-outlined"
-                style={{ fontSize: 16, color: 'var(--nb-green)' }}
-              >
-                check_circle
-              </span>
               Formulir siap disimpan
             </span>
           )}
@@ -532,32 +500,7 @@ export function EbookForm({
             className="nb-btn nb-dialog-btn-primary"
             disabled={isSubmitting}
           >
-            {isSubmitting ? (
-              <>
-                <span
-                  className="material-symbols-outlined"
-                  style={{
-                    fontSize: 18,
-                    animation: 'nb-pulse 0.5s infinite alternate',
-                  }}
-                  aria-hidden="true"
-                >
-                  hourglass_top
-                </span>
-                <span>Menyimpan...</span>
-              </>
-            ) : (
-              <>
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: 18 }}
-                  aria-hidden="true"
-                >
-                  save
-                </span>
-                <span>Simpan E-Book</span>
-              </>
-            )}
+            <span>{isSubmitting ? 'Menyimpan...' : 'Simpan E-Book'}</span>
           </button>
         </div>
       </div>

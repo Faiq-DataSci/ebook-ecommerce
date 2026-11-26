@@ -11,11 +11,11 @@ interface SettlementReportPanelProps {
 function renderSettlementStatusBadge(status: SettlementRecord['status']) {
   switch (status) {
     case 'SETTLED':
-      return <StatusBadge status="DITRANSFER (CAIR)" fill="#00B894" icon="check_circle" textColor="#FFFFFF" />
+      return <StatusBadge status="Ditransfer (Cair)" fill="var(--nb-green)" textColor="var(--nb-black)" />
     case 'PROCESSING':
-      return <StatusBadge status="PROSES BATCH" fill="#FFD23F" icon="pending" textColor="#000000" />
+      return <StatusBadge status="Proses Batch" fill="var(--nb-orange)" textColor="var(--nb-black)" />
     case 'SCHEDULED':
-      return <StatusBadge status="TERJADWAL" fill="#74B9FF" icon="schedule" textColor="#000000" />
+      return <StatusBadge status="Terjadwal" fill="var(--nb-blue)" textColor="var(--nb-black)" />
   }
 }
 
@@ -31,64 +31,37 @@ export function SettlementReportPanel({
   })
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Escrow Bank Account Banner */}
-      <div
-        style={{
-          padding: '16px 20px',
-          border: '2.5px solid #000000',
-          boxShadow: '4px 4px 0px #000000',
-          backgroundColor: '#FFFFFF',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 16,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              backgroundColor: '#74B9FF',
-              border: '2px solid #000000',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 22,
-            }}
-          >
-            🏦
-          </div>
-          <div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--nb-text-muted)' }}>
-              REKENING PENAMPUNG SETTLEMENT RESMI
-            </div>
-            <div style={{ fontSize: 16, fontWeight: 800 }}>
-              Bank Central Asia (BCA) — 8820-192-331 (PT Buku Kita Digital)
-            </div>
+      <section className="tf-escrow-banner" aria-label="Rekening Penampung Settlement Resmi">
+        <div className="tf-escrow-info">
+          <span className="tf-escrow-label">Rekening Penampung Settlement Resmi</span>
+          <div className="tf-escrow-account">
+            Bank Central Asia (BCA)
+            <span className="tf-escrow-account-no">8820-192-331</span>
+            <span>(PT Buku Kita Digital)</span>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span className="material-symbols-outlined" style={{ color: '#00B894', fontSize: 20 }}>verified</span>
-          <span style={{ fontSize: 12, fontWeight: 700 }}>Auto-Disbursement Midtrans Terhubung (H+1)</span>
-        </div>
-      </div>
+        <span className="tf-escrow-status-badge">
+          Auto-Disbursement Midtrans Terhubung (H+1)
+        </span>
+      </section>
 
       {/* Table Card */}
-      <div className="tf-table-card">
+      <section className="tf-table-card" aria-label="Buku Besar Kas dan Batch Pencairan Dana">
         <div className="tf-table-header">
           <div className="tf-table-title-row">
-            <span className="material-symbols-outlined" style={{ fontSize: 22 }}>receipt</span>
-            <span className="tf-table-title">Buku Besar Kas &amp; Batch Pencairan Dana</span>
+            <h3 className="tf-table-title">Buku Besar Kas &amp; Batch Pencairan Dana</h3>
           </div>
 
           {/* Status Filter */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 12, fontWeight: 700 }}>Status:</span>
+          <div className="tf-table-filter-group">
+            <label htmlFor="settlement-status-filter" className="tf-table-filter-label">
+              Status:
+            </label>
             <select
+              id="settlement-status-filter"
               value={settlementFilter}
               onChange={(e) => setSettlementFilter(e.target.value as 'ALL' | 'SETTLED' | 'PROCESSING')}
               className="tf-filter-select"
@@ -104,46 +77,36 @@ export function SettlementReportPanel({
           <table className="tf-data-table">
             <thead>
               <tr>
-                <th>Ref Batch</th>
-                <th>Waktu Settlement</th>
-                <th>Trx</th>
-                <th>Gross Masuk</th>
-                <th>Potongan MDR</th>
-                <th>Net Ditransfer</th>
-                <th>Rekening Tujuan</th>
-                <th>Status</th>
-                <th>Aksi</th>
+                <th scope="col">Ref Batch</th>
+                <th scope="col">Waktu Settlement</th>
+                <th scope="col" className="is-right">Trx</th>
+                <th scope="col" className="is-right">Gross Masuk</th>
+                <th scope="col" className="is-right">Potongan MDR</th>
+                <th scope="col" className="is-right">Net Ditransfer</th>
+                <th scope="col">Rekening Tujuan</th>
+                <th scope="col">Status</th>
+                <th scope="col" className="is-center">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {filteredSettlements.map((batch) => (
                 <tr key={batch.id}>
-                  <td className="tf-mono" style={{ fontWeight: 700 }}>
-                    {batch.batchReference}
-                  </td>
-                  <td style={{ fontSize: 12 }}>{batch.date}</td>
-                  <td style={{ fontWeight: 700 }}>{batch.orderCount} pesanan</td>
+                  <td className="tf-mono">{batch.batchReference}</td>
+                  <td className="tf-td-muted">{batch.date}</td>
+                  <td className="tf-money">{batch.orderCount} pesanan</td>
                   <td className="tf-money">{batch.totalGrossFormatted}</td>
-                  <td className="tf-money" style={{ color: '#D63031' }}>
-                    - {batch.gatewayMdrFeeFormatted}
-                  </td>
-                  <td className="tf-money" style={{ color: '#00B894', fontWeight: 800 }}>
-                    {batch.netPayoutFormatted}
-                  </td>
-                  <td style={{ fontSize: 12 }}>
-                    {batch.destinationBank}
-                  </td>
+                  <td className="tf-money">- {batch.gatewayMdrFeeFormatted}</td>
+                  <td className="tf-money">{batch.netPayoutFormatted}</td>
+                  <td>{batch.destinationBank}</td>
                   <td>{renderSettlementStatusBadge(batch.status)}</td>
-                  <td>
+                  <td className="tf-td-center">
                     <button
                       type="button"
                       className="tf-action-btn"
-                      style={{ padding: '4px 10px', fontSize: 12 }}
                       onClick={() => onSelectSettlement(batch)}
                       title="Lihat Rincian Batch"
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>info</span>
-                      <span>Rincian</span>
+                      Rincian
                     </button>
                   </td>
                 </tr>
@@ -151,7 +114,7 @@ export function SettlementReportPanel({
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
     </div>
   )
 }

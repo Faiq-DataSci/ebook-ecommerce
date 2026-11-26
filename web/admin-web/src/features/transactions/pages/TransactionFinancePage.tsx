@@ -94,12 +94,6 @@ export function TransactionFinancePage({
     return matchesSearch && matchesStatus
   })
 
-  const totalOrderPages = Math.ceil(filteredOrders.length / orderPageSize) || 1
-  const paginatedOrders = filteredOrders.slice(
-    (orderPage - 1) * orderPageSize,
-    orderPage * orderPageSize,
-  )
-
   // Filtered Payments
   const filteredPayments = payments.filter((pay) => {
     const matchesSearch =
@@ -165,12 +159,18 @@ export function TransactionFinancePage({
   }
 
   // Action: Simulate Webhook Payment
-  const handleSimulateWebhook = () => {
-    const pendingOrder = orders.find((o) => o.status === 'PENDING')
-    if (!pendingOrder) {
+  const handleSimulateWebhook = (
+    targetOrderNumber?: string,
+    eventType: 'settlement' | 'expire' | 'cancel' = 'settlement',
+  ) => {
+    const targetOrder = targetOrderNumber
+      ? orders.find((o) => o.orderNumber === targetOrderNumber)
+      : orders.find((o) => o.status === 'PENDING')
+
+    if (!targetOrder) {
       showToast(
         'info',
-        'Seluruh pesanan simulasi saat ini telah lunas atau selesai diproses.',
+        'Pesanan yang dipilih tidak ditemukan.',
       )
       return
     }
@@ -179,56 +179,90 @@ export function TransactionFinancePage({
     
     // Update order
     setOrders((prev) =>
-      prev.map((o) =>
-        o.id === pendingOrder.id
-          ? {
-              ...o,
-              status: 'PAID',
-              paidAt: nowFormatted,
-              ebookAccessGranted: true,
-              ebookAccessRevoked: false,
-              timeline: [
-                ...o.timeline,
-                {
-                  stage: 'Webhook Settlement Diterima',
-                  timestamp: nowFormatted,
-                  description: 'Notifikasi pembayaran lunas (settlement) terverifikasi dengan signature HMAC SHA512.',
-                  status: 'completed',
-                  meta: 'Simulator Gateway: HTTP 200 OK',
-                },
-                {
-                  stage: 'Hak Akses E-Book Diaktifkan',
-                  timestamp: nowFormatted,
-                  description: 'EbookAccess aktif di database. Signed URL baca PDF tersedia.',
-                  status: 'completed',
-                },
-              ],
-            }
-          : o,
-      ),
+      prev.map((o) => {
+        if (o.id !== targetOrder.id) return o
+
+        if (eventType === 'settlement') {
+          return {
+            ...o,
+            status: 'PAID',
+            paidAt: nowFormatted,
+            ebookAccessGranted: true,
+            ebookAccessRevoked: false,
+            timeline: [
+              ...o.timeline,
+              {
+                stage: 'Webhook Settlement Diterima',
+                timestamp: nowFormatted,
+                description: 'Notifikasi pembayaran lunas (settlement) terverifikasi dengan signature HMAC SHA512.',
+                status: 'completed',
+                meta: 'Simulator Gateway: HTTP 200 OK',
+              },
+              {
+                stage: 'Hak Akses E-Book Diaktifkan',
+                timestamp: nowFormatted,
+                description: 'EbookAccess aktif di database. Signed URL baca PDF tersedia.',
+                status: 'completed',
+              },
+            ],
+          }
+        } else if (eventType === 'expire') {
+          return {
+            ...o,
+            status: 'EXPIRED',
+            ebookAccessGranted: false,
+            timeline: [
+              ...o.timeline,
+              {
+                stage: 'Webhook Expire Diterima',
+                timestamp: nowFormatted,
+                description: 'Batas waktu pembayaran habis. Tagihan dibatalkan oleh gateway.',
+                status: 'failed',
+                meta: 'Simulator Gateway: HTTP 200 OK',
+              },
+            ],
+          }
+        } else {
+          return {
+            ...o,
+            status: 'CANCELLED',
+            ebookAccessGranted: false,
+            ebookAccessRevoked: true,
+            timeline: [
+              ...o.timeline,
+              {
+                stage: 'Webhook Cancel Diterima',
+                timestamp: nowFormatted,
+                description: 'Pesanan dibatalkan/void oleh payment gateway.',
+                status: 'failed',
+                meta: 'Simulator Gateway: HTTP 200 OK',
+              },
+            ],
+          }
+        }
+      }),
     )
 
     // Update payment audit
     setPayments((prev) =>
-      prev.map((p) =>
-        p.orderNumber === pendingOrder.orderNumber
-          ? {
-              ...p,
-              status: 'VERIFIED',
-              receivedAt: nowFormatted,
-              rawWebhookPayload: {
-                ...p.rawWebhookPayload,
-                transaction_status: 'settlement',
-                status_code: '200',
-              },
-            }
-          : p,
-      ),
+      prev.map((p) => {
+        if (p.orderNumber !== targetOrder.orderNumber) return p
+        return {
+          ...p,
+          status: eventType === 'settlement' ? 'VERIFIED' : eventType === 'expire' ? 'EXPIRED' : 'FAILED',
+          receivedAt: nowFormatted,
+          rawWebhookPayload: {
+            ...p.rawWebhookPayload,
+            transaction_status: eventType,
+            status_code: eventType === 'settlement' ? '200' : '407',
+          },
+        }
+      }),
     )
 
     showToast(
       'success',
-      `Pesanan ${pendingOrder.orderNumber} berhasil dilunasi & EbookAccess diaktifkan.`,
+      `Webhook callback (${eventType.toUpperCase()}) untuk pesanan ${targetOrder.orderNumber} berhasil diproses.`,
     )
   }
 
@@ -259,25 +293,27 @@ export function TransactionFinancePage({
     )
   }
 
+  const pendingPaymentsCount = payments.filter((p) => p.status === 'PENDING').length
+  const pendingOrdersCount = orders.filter((o) => o.status === 'PENDING').length
+
   return (
     <div className="tf-page-container">
-      {/* Page Header */}
+      {/* Page Header (Neubrutalism Zona C) */}
       <div className="tf-page-header">
         <div className="tf-title-group">
           <div className="tf-header-title-row">
             <span
               className="tf-badge"
-              style={{ backgroundColor: '#74B9FF', color: '#000000' }}
+              style={{ backgroundColor: 'var(--nb-blue)', color: 'var(--nb-white)' }}
             >
               OPERASIONAL TRANSAKSI
             </span>
-            <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--nb-text-muted)' }}>
-              DATA SIMULASI
-            </span>
+            <span className="tf-badge-zone">ZONA C: PADAT DATA</span>
+            <span className="tf-badge-simulation">DATA SIMULASI</span>
           </div>
           <h1 className="tf-page-title">Transaksi &amp; Pemenuhan Pesanan</h1>
           <p className="tf-page-subtitle">
-            Pelacakan Pesanan Pelanggan, Hak Akses E-Book Digital (EbookAccess), &amp; Audit Webhook Gateway
+            Pelacakan Pesanan B2C, Hak Akses E-Book Digital (<code>EbookAccess</code>), &amp; Audit Webhook Payment Gateway
           </p>
         </div>
 
@@ -285,29 +321,26 @@ export function TransactionFinancePage({
           <button
             type="button"
             className="tf-action-btn"
-            style={{ height: '40px', padding: '0 16px', backgroundColor: 'var(--nb-white)' }}
+            style={{ minHeight: '40px', padding: '0 16px', backgroundColor: 'var(--nb-white)' }}
             onClick={() => onNavigate?.('/admin/keuangan/laporan')}
             title="Buka Modul Keuangan & Pembukuan Kas"
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#00B894' }}>payments</span>
             <span>Buka Keuangan &amp; Kas</span>
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
           </button>
 
           <button
             type="button"
             className="tf-action-btn"
-            style={{ height: '40px', padding: '0 16px', backgroundColor: 'var(--nb-yellow)' }}
+            style={{ minHeight: '40px', padding: '0 16px', backgroundColor: 'var(--nb-yellow)' }}
             onClick={handleExportCSV}
             title="Ekspor CSV Pesanan"
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>file_download</span>
             <span>Unduh Rekap CSV</span>
           </button>
         </div>
       </div>
 
-      {/* Tab Navigation Strip */}
+      {/* Sub-Navigation Tabs Strip */}
       <div className="tf-nav-tabs" role="tablist" aria-label="Navigasi Submenu Transaksi">
         <button
           type="button"
@@ -316,9 +349,13 @@ export function TransactionFinancePage({
           className={`tf-tab-btn ${activeTab === 'pesanan' ? 'is-active' : ''}`}
           onClick={() => handleTabChange('pesanan')}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>shopping_bag</span>
           <span>Semua Pesanan</span>
-          <span className="tf-tab-badge">{orders.length}</span>
+          <span className="tf-tab-badge">{orders.length} Pesanan</span>
+          {pendingOrdersCount > 0 && (
+            <span className="tf-tab-badge tf-tab-badge-pending">
+              {pendingOrdersCount} Menunggu
+            </span>
+          )}
         </button>
 
         <button
@@ -328,14 +365,20 @@ export function TransactionFinancePage({
           className={`tf-tab-btn ${activeTab === 'verifikasi' ? 'is-active' : ''}`}
           onClick={() => handleTabChange('verifikasi')}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>fact_check</span>
-          <span>Verifikasi Bayar &amp; Webhook</span>
-          <span
-            className="tf-tab-badge"
-            style={{ backgroundColor: payments.some((p) => p.status === 'PENDING') ? '#FF6B6B' : '#000000' }}
-          >
-            {payments.filter((p) => p.status === 'PENDING').length} Pending
-          </span>
+          <span>Verifikasi &amp; Webhook</span>
+          <span className="tf-tab-badge">{payments.length} Callback</span>
+          {pendingPaymentsCount > 0 ? (
+            <span className="tf-tab-badge tf-tab-badge-pending">
+              {pendingPaymentsCount} Pending
+            </span>
+          ) : (
+            <span
+              className="tf-tab-badge"
+              style={{ backgroundColor: 'var(--nb-green)', color: 'var(--nb-white)' }}
+            >
+              100% Valid
+            </span>
+          )}
         </button>
       </div>
 
@@ -344,11 +387,9 @@ export function TransactionFinancePage({
         <OrdersTablePanel
           orders={orders}
           filteredOrders={filteredOrders}
-          paginatedOrders={paginatedOrders}
           orderSearch={orderSearch}
           orderStatusFilter={orderStatusFilter}
           orderPage={orderPage}
-          totalOrderPages={totalOrderPages}
           orderPageSize={orderPageSize}
           setOrderSearch={setOrderSearch}
           setOrderStatusFilter={setOrderStatusFilter}
@@ -357,9 +398,10 @@ export function TransactionFinancePage({
         />
       )}
 
-      {/* TAB 2: VERIFIKASI BAYAR */}
+      {/* TAB 2: VERIFIKASI BAYAR & WEBHOOK */}
       {activeTab === 'verifikasi' && (
         <PaymentsTablePanel
+          orders={orders}
           payments={payments}
           filteredPayments={filteredPayments}
           paymentSearch={paymentSearch}
@@ -403,10 +445,12 @@ export function TransactionFinancePage({
         onConfirm={confirmDialog.onConfirm}
         onCancel={() => setConfirmDialog((prev) => ({ ...prev, open: false }))}
       >
-        <p style={{ margin: 0 }}>{confirmDialog.description}</p>
+        <p style={{ margin: 0, fontSize: '13.5px', lineHeight: 1.5 }}>
+          {confirmDialog.description}
+        </p>
       </ConfirmDialog>
 
-      {/* Toast Notification */}
+      {/* Toasts */}
       <Toast toasts={toasts} onDismiss={dismissToast} />
     </div>
   )

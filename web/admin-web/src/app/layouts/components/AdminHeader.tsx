@@ -99,12 +99,6 @@ export function AdminHeader({
             onClick={() => onNavigate && onNavigate('/admin/dashboard')}
             title="Ke Dashboard Utama"
           >
-            <span
-              className="material-symbols-outlined breadcrumb-folder-icon"
-              aria-hidden="true"
-            >
-              folder_open
-            </span>
             <span>ADMIN</span>
           </button>
           <span className="breadcrumb-sep">/</span>
@@ -122,12 +116,6 @@ export function AdminHeader({
           placeholder="Cari e-book, invoice, pelanggan..."
           aria-label="Cari e-book, invoice, pelanggan"
         />
-        <span
-          className="material-symbols-outlined header-search-icon"
-          aria-hidden="true"
-        >
-          search
-        </span>
         <span className="header-search-kbd" aria-hidden="true">
           ⌘K
         </span>
@@ -145,13 +133,12 @@ export function AdminHeader({
             aria-expanded={isNotifOpen}
             aria-haspopup="true"
             className="notification-btn nb-btn"
+            style={{ width: 'auto', padding: '0 12px', gap: 6, fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-heading)' }}
             title="Notifikasi & Aktivitas Sistem"
             onClick={() => setIsNotifOpen((prev) => !prev)}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-              notifications
-            </span>
-            <span className="notification-badge">
+            <span>Notifikasi</span>
+            <span className="notification-badge" style={{ position: 'static' }}>
               {unreadCount}
             </span>
           </button>
@@ -164,12 +151,6 @@ export function AdminHeader({
             >
               <div className="notification-dropdown-header">
                 <div className="notification-dropdown-title">
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: 18 }}
-                  >
-                    notifications_active
-                  </span>
                   <span>Notifikasi Aktivitas</span>
                 </div>
                 <div className="notification-header-badges">
@@ -246,13 +227,6 @@ export function AdminHeader({
                         <div className="notification-item-top">
                           <div className="notification-item-badges">
                             <span className={badgeClass}>
-                              <span
-                                className="material-symbols-outlined"
-                                style={{ fontSize: 11 }}
-                                aria-hidden="true"
-                              >
-                                {item.icon}
-                              </span>
                               <span>{badgeLabel}</span>
                             </span>
                             {item.unread && (

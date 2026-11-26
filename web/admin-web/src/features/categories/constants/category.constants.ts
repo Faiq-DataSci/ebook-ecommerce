@@ -18,7 +18,6 @@ export const DEFAULT_CATEGORY_FILTERS: CategoryTableFilters = {
 export interface CategoryStatusOptionConfig {
   value: 'ALL' | CategoryStatus
   label: string
-  icon: string
   activeBg: string
 }
 
@@ -26,19 +25,16 @@ export const CATEGORY_STATUS_OPTIONS: CategoryStatusOptionConfig[] = [
   {
     value: 'ALL',
     label: 'Semua Status',
-    icon: 'apps',
     activeBg: 'var(--nb-yellow)',
   },
   {
     value: 'AKTIF',
     label: 'Aktif',
-    icon: 'check_circle',
     activeBg: 'var(--nb-green)',
   },
   {
     value: 'NONAKTIF',
     label: 'Nonaktif',
-    icon: 'do_not_disturb_on',
     activeBg: 'var(--nb-muted)',
   },
 ]

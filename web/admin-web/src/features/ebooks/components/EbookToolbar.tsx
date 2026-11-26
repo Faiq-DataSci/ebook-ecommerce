@@ -49,7 +49,6 @@ export function EbookToolbar({
 
           <FilterChipGroup
             label="Status:"
-            icon="tune"
             value={filters.status}
             onChange={(val) =>
               setFilters((prev) => ({
@@ -63,21 +62,18 @@ export function EbookToolbar({
                 value: 'ALL',
                 label: 'Semua Status',
                 count: totalCount,
-                icon: 'apps',
                 activeBg: 'var(--nb-yellow)',
               },
               {
                 value: 'AKTIF',
                 label: 'Aktif',
                 count: activeCount,
-                icon: 'check_circle',
                 activeBg: 'var(--nb-green)',
               },
               {
                 value: 'ARSIP',
                 label: 'Arsip',
                 count: archiveCount,
-                icon: 'archive',
                 activeBg: 'var(--nb-muted)',
               },
             ]}
@@ -98,9 +94,6 @@ export function EbookToolbar({
               onClick={() => setDisplayMode('TABLE')}
               title="Tampilan Tabel Detail"
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                table_rows
-              </span>
               <span>Tabel</span>
             </button>
             <button
@@ -111,9 +104,6 @@ export function EbookToolbar({
               onClick={() => setDisplayMode('GRID')}
               title="Tampilan Grid Kartu"
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                grid_view
-              </span>
               <span>Kartu</span>
             </button>
           </div>
@@ -121,12 +111,11 @@ export function EbookToolbar({
           <button
             type="button"
             className="nb-btn nb-page-btn"
+            style={{ width: 'auto', padding: '0 14px', fontSize: 13 }}
             onClick={onRefresh}
             title="Segarkan data koleksi"
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              refresh
-            </span>
+            Segarkan
           </button>
         </div>
       </div>
@@ -135,7 +124,6 @@ export function EbookToolbar({
       <div className="catalog-category-shelf">
         <FilterChipGroup
           label="Kategori:"
-          icon="category"
           value={filters.categoryId}
           onChange={(categoryId) =>
             setFilters((prev) => ({ ...prev, categoryId, page: 1 }))
@@ -145,7 +133,6 @@ export function EbookToolbar({
               value: '',
               label: 'Semua Kategori',
               count: totalCount,
-              icon: 'auto_awesome',
               activeBg: 'var(--nb-yellow)',
             },
             ...categories.map((c) => {
@@ -154,7 +141,6 @@ export function EbookToolbar({
                 value: c.id,
                 label: c.name.replace('DATA SIMULASI — ', ''),
                 count: categoryCounts[c.id] || c.ebookCount || 0,
-                icon: meta.icon,
                 activeBg: meta.activeBg,
               }
             }),
@@ -232,9 +218,6 @@ export function EbookToolbar({
               }))
             }
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
-              close
-            </span>
             <span>Reset Filter</span>
           </button>
         </div>

@@ -34,15 +34,6 @@ function getAriaSort(
   return sortOrder === 'asc' ? 'ascending' : 'descending'
 }
 
-function getSortIcon(
-  column: CategorySortColumn,
-  sortBy: CategorySortColumn,
-  sortOrder: 'asc' | 'desc',
-): string {
-  if (sortBy !== column) return 'unfold_more'
-  return sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'
-}
-
 export function CategoryTable({
   categories,
   isLoading,
@@ -70,8 +61,7 @@ export function CategoryTable({
             ? 'Tidak ada kategori yang cocok dengan filter pencarian saat ini. Ubah kata kunci atau hapus filter.'
             : 'Belum ada kategori e-book yang tersimpan. Tambahkan kategori baru sekarang.'
         }
-        icon="category"
-        actionLabel="+ Tambah Kategori Pertama"
+        actionLabel="Tambah Kategori Pertama"
         onAction={onAddFirst}
       />
     )
@@ -94,12 +84,6 @@ export function CategoryTable({
                 onClick={() => onSort('name')}
               >
                 <span>Nama Kategori</span>
-                <span
-                  className="material-symbols-outlined nb-sort-icon"
-                  aria-hidden="true"
-                >
-                  {getSortIcon('name', filters.sortBy, filters.sortOrder)}
-                </span>
               </button>
             </th>
             <th
@@ -113,12 +97,6 @@ export function CategoryTable({
                 onClick={() => onSort('slug')}
               >
                 <span>Slug</span>
-                <span
-                  className="material-symbols-outlined nb-sort-icon"
-                  aria-hidden="true"
-                >
-                  {getSortIcon('slug', filters.sortBy, filters.sortOrder)}
-                </span>
               </button>
             </th>
             <th scope="col">Deskripsi</th>
@@ -137,12 +115,6 @@ export function CategoryTable({
                 onClick={() => onSort('ebookCount')}
               >
                 <span>Jumlah E-Book</span>
-                <span
-                  className="material-symbols-outlined nb-sort-icon"
-                  aria-hidden="true"
-                >
-                  {getSortIcon('ebookCount', filters.sortBy, filters.sortOrder)}
-                </span>
               </button>
             </th>
             <th scope="col">Status</th>
@@ -177,17 +149,9 @@ export function CategoryTable({
               </td>
               <td data-label="Status">
                 {category.isActive ? (
-                  <StatusBadge
-                    status="Aktif"
-                    fill="var(--nb-green)"
-                    icon="check_circle"
-                  />
+                  <StatusBadge status="Aktif" fill="var(--nb-green)" />
                 ) : (
-                  <StatusBadge
-                    status="Nonaktif"
-                    fill="var(--nb-muted)"
-                    icon="do_not_disturb_on"
-                  />
+                  <StatusBadge status="Nonaktif" fill="var(--nb-muted)" />
                 )}
               </td>
               <td data-label="Aksi">
@@ -196,15 +160,10 @@ export function CategoryTable({
                     type="button"
                     className="nb-btn nb-table-action-btn"
                     onClick={() => onEdit(category)}
-                    aria-label={`Ubah kategori ${category.name}`}
-                    title="Ubah kategori"
+                    aria-label={`Edit kategori ${category.name}`}
+                    title="Edit kategori"
                   >
-                    <span
-                      className="material-symbols-outlined nb-action-icon"
-                      aria-hidden="true"
-                    >
-                      edit
-                    </span>
+                    Edit
                   </button>
                   <button
                     type="button"
@@ -213,12 +172,7 @@ export function CategoryTable({
                     aria-label={`Hapus kategori ${category.name}`}
                     title="Hapus kategori"
                   >
-                    <span
-                      className="material-symbols-outlined nb-action-icon"
-                      aria-hidden="true"
-                    >
-                      delete
-                    </span>
+                    Hapus
                   </button>
                 </div>
               </td>

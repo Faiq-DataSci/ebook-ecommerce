@@ -18,7 +18,6 @@ export function FilterSelect({
   options,
   label,
   id,
-  icon,
 }: FilterSelectProps) {
   const selectId = id || (label ? `select-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined)
 
@@ -30,14 +29,6 @@ export function FilterSelect({
         </label>
       )}
       <div className="nb-filter-select-inner">
-        {icon && (
-          <span
-            className="material-symbols-outlined nb-filter-icon"
-            aria-hidden="true"
-          >
-            {icon}
-          </span>
-        )}
         <select
           id={selectId}
           className="nb-filter-select"
@@ -50,12 +41,6 @@ export function FilterSelect({
             </option>
           ))}
         </select>
-        <span
-          className="material-symbols-outlined nb-filter-arrow"
-          aria-hidden="true"
-        >
-          expand_more
-        </span>
       </div>
     </div>
   )

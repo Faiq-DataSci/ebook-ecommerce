@@ -486,7 +486,7 @@
 .nb-search-input {
   width: 100%;
   height: 44px;
-  padding: 0 36px 0 38px;
+  padding: 0 60px 0 14px;
   background-color: var(--nb-white);
   border: var(--nb-border-2);
   font-family: var(--font-body);
@@ -501,11 +501,14 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 2px 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--nb-text-muted);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--nb-black);
 }
 
 /* Filter Select Component */
@@ -538,7 +541,7 @@
 
 .nb-filter-select {
   height: 42px;
-  padding: 0 32px 0 12px;
+  padding: 0 12px;
   background-color: var(--nb-white);
   border: var(--nb-border-2);
   font-family: var(--font-heading);
@@ -547,7 +550,6 @@
   color: var(--nb-black);
   box-shadow: var(--nb-shadow-xs);
   cursor: pointer;
-  appearance: none;
 }
 
 .nb-filter-arrow {
@@ -827,14 +829,18 @@
   justify-content: center;
   min-width: 44px;
   min-height: 44px;
-  width: 44px;
+  width: auto;
   height: 44px;
   background-color: var(--nb-white);
   border: var(--nb-border-2);
   box-shadow: var(--nb-shadow-xs);
   cursor: pointer;
   color: var(--nb-black);
-  padding: 0;
+  padding: 0 12px;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .nb-table-action-btn.is-danger {
@@ -1319,10 +1325,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
+  min-width: 32px;
   height: 32px;
+  padding: 0 10px;
   background: none;
   border: var(--nb-border-2);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--nb-black);
   cursor: pointer;
 }
 

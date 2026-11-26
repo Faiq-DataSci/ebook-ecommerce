@@ -15,12 +15,136 @@
       rel="stylesheet"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"
       rel="stylesheet"
     />
+    <style>
+      @keyframes boot-nb-blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.48; }
+      }
+      @keyframes boot-nb-progress {
+        0% { transform: translateX(-100%); }
+        50% { transform: translateX(0%); }
+        100% { transform: translateX(100%); }
+      }
+      body {
+        margin: 0;
+        background-color: #FFFDF5;
+        background-image: radial-gradient(#000000 0.95px, transparent 0.95px);
+        background-size: 20px 20px;
+      }
+      .boot-top-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: #FFFDF5;
+        border-bottom: 2px solid #000000;
+        z-index: 1200;
+        overflow: hidden;
+      }
+      .boot-top-bar-fill {
+        width: 55%;
+        height: 100%;
+        background: #FFD23F;
+        border-right: 2px solid #000000;
+        animation: boot-nb-progress 0.9s linear infinite;
+      }
+      .boot-skeleton-shell {
+        display: flex;
+        min-height: 100vh;
+        width: 100%;
+      }
+      .boot-skeleton-sidebar {
+        width: 264px;
+        flex-shrink: 0;
+        background: #FFFFFF;
+        border-right: 4px solid #000000;
+        padding: 16px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .boot-skeleton-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .boot-skeleton-header {
+        height: 64px;
+        background: #FFFFFF;
+        border-bottom: 3px solid #000000;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .boot-skeleton-content {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .boot-skeleton-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .boot-skeleton-block {
+        background: #E8E4D8;
+        border: 2px solid #000000;
+        animation: boot-nb-blink 1s ease-in-out infinite;
+      }
+      @media (max-width: 1024px) {
+        .boot-skeleton-sidebar { display: none; }
+        .boot-skeleton-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      @media (max-width: 640px) {
+        .boot-skeleton-kpi-grid { grid-template-columns: 1fr; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .boot-skeleton-block { animation: none; }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="boot-top-bar" aria-hidden="true">
+        <div class="boot-top-bar-fill"></div>
+      </div>
+      <div class="boot-skeleton-shell" aria-busy="true" aria-label="Memuat konsol admin">
+        <div class="boot-skeleton-sidebar">
+          <div class="boot-skeleton-block" style="height: 44px; background: #FFD23F;"></div>
+          <div class="boot-skeleton-block" style="height: 36px; margin-top: 8px;"></div>
+          <div class="boot-skeleton-block" style="height: 36px;"></div>
+          <div class="boot-skeleton-block" style="height: 36px;"></div>
+          <div class="boot-skeleton-block" style="height: 36px;"></div>
+          <div class="boot-skeleton-block" style="height: 36px;"></div>
+        </div>
+        <div class="boot-skeleton-main">
+          <div class="boot-skeleton-header">
+            <div class="boot-skeleton-block" style="height: 24px; width: 180px;"></div>
+            <div class="boot-skeleton-block" style="height: 34px; width: 280px; max-width: 40%;"></div>
+            <div class="boot-skeleton-block" style="height: 34px; width: 110px;"></div>
+          </div>
+          <div class="boot-skeleton-content">
+            <div class="boot-skeleton-block" style="height: 92px; background: #FFFFFF; box-shadow: 5px 5px 0 0 #000000;"></div>
+            <div class="boot-skeleton-kpi-grid">
+              <div class="boot-skeleton-block" style="height: 116px; box-shadow: 4px 4px 0 0 #000000;"></div>
+              <div class="boot-skeleton-block" style="height: 116px; box-shadow: 4px 4px 0 0 #000000;"></div>
+              <div class="boot-skeleton-block" style="height: 116px; box-shadow: 4px 4px 0 0 #000000;"></div>
+              <div class="boot-skeleton-block" style="height: 116px; box-shadow: 4px 4px 0 0 #000000;"></div>
+            </div>
+            <div class="boot-skeleton-block" style="height: 260px; box-shadow: 5px 5px 0 0 #000000;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

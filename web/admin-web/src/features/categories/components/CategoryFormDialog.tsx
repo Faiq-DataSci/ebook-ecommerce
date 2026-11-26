@@ -178,13 +178,12 @@ function CategoryFormDialogContent({
           <button
             type="button"
             className="nb-dialog-close-btn nb-btn"
+            style={{ width: 'auto', padding: '0 12px', fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-heading)' }}
             onClick={onClose}
             disabled={isSubmitting}
             aria-label="Tutup dialog kategori"
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              close
-            </span>
+            Tutup
           </button>
         </div>
 
@@ -192,12 +191,6 @@ function CategoryFormDialogContent({
           <div className="nb-dialog-body nb-category-dialog-body">
             {submitError && (
               <div className="nb-form-error-box" role="alert">
-                <span
-                  className="material-symbols-outlined nb-form-error-icon"
-                  aria-hidden="true"
-                >
-                  cancel
-                </span>
                 <span>{submitError}</span>
               </div>
             )}
@@ -240,12 +233,6 @@ function CategoryFormDialogContent({
                     className="nb-form-error-box"
                     role="alert"
                   >
-                    <span
-                      className="material-symbols-outlined nb-form-error-icon"
-                      aria-hidden="true"
-                    >
-                      cancel
-                    </span>
                     <span>{errors.name}</span>
                   </div>
                 )}
@@ -295,12 +282,6 @@ function CategoryFormDialogContent({
                     className="nb-form-error-box"
                     role="alert"
                   >
-                    <span
-                      className="material-symbols-outlined nb-form-error-icon"
-                      aria-hidden="true"
-                    >
-                      cancel
-                    </span>
                     <span>{errors.slug}</span>
                   </div>
                 )}
@@ -339,12 +320,6 @@ function CategoryFormDialogContent({
                   className="nb-form-error-box"
                   role="alert"
                 >
-                  <span
-                    className="material-symbols-outlined nb-form-error-icon"
-                    aria-hidden="true"
-                  >
-                    cancel
-                  </span>
                   <span>{errors.description}</span>
                 </div>
               )}

@@ -15,12 +15,6 @@ export function SearchInput({
 }: SearchInputProps) {
   return (
     <div className="nb-search-wrap">
-      <span
-        className="material-symbols-outlined nb-search-icon"
-        aria-hidden="true"
-      >
-        search
-      </span>
       <input
         type="text"
         className="nb-search-input"
@@ -36,9 +30,7 @@ export function SearchInput({
           onClick={onClear}
           aria-label="Hapus kata kunci pencarian"
         >
-          <span className="material-symbols-outlined" aria-hidden="true">
-            close
-          </span>
+          Hapus
         </button>
       )}
     </div>

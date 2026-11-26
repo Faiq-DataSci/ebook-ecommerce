@@ -64,8 +64,10 @@ export interface CustomerActivityItem {
 export interface QuickActionItem {
   id: string
   label: string
+  description?: string
   icon: string
   bgColor: string
+  badgeText?: string
   targetPath: string
 }
 

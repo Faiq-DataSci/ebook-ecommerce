@@ -139,17 +139,12 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
           <button
             type="button"
             className="nb-btn nb-page-btn"
+            style={{ width: 'auto', padding: '0 14px' }}
             onClick={handleRefresh}
             title="Segarkan data analitik dari backend"
             disabled={isLoading}
           >
-            <span
-              className={`material-symbols-outlined ${isLoading ? 'nb-spin' : ''}`}
-              aria-hidden="true"
-            >
-              refresh
-            </span>
-            <span>Segarkan</span>
+            <span>{isLoading ? 'Menyegarkan...' : 'Segarkan'}</span>
           </button>
 
           <button
@@ -158,9 +153,6 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
             onClick={handleExportCsv}
             title="Unduh laporan lengkap dalam format CSV"
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              download
-            </span>
             <span>Ekspor Laporan (CSV)</span>
           </button>
         </div>
@@ -216,9 +208,6 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
           </div>
         ) : (
           <span className="analytics-period-label-tag">
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
-              date_range
-            </span>
             <span>{dataset.periodLabel}</span>
           </span>
         )}

@@ -15,11 +15,11 @@ export function SettlementBatchModal({
   const renderSettlementStatusBadge = (status: SettlementRecord['status']) => {
     switch (status) {
       case 'SETTLED':
-        return <StatusBadge status="DITRANSFER (CAIR)" fill="#00B894" icon="check_circle" textColor="#FFFFFF" />
+        return <StatusBadge status="Ditransfer (Cair)" fill="var(--nb-green)" textColor="var(--nb-black)" />
       case 'PROCESSING':
-        return <StatusBadge status="PROSES BATCH" fill="#FFD23F" icon="pending" textColor="#000000" />
+        return <StatusBadge status="Proses Batch" fill="var(--nb-orange)" textColor="var(--nb-black)" />
       case 'SCHEDULED':
-        return <StatusBadge status="TERJADWAL" fill="#74B9FF" icon="schedule" textColor="#000000" />
+        return <StatusBadge status="Terjadwal" fill="var(--nb-blue)" textColor="var(--nb-black)" />
     }
   }
 
@@ -27,18 +27,15 @@ export function SettlementBatchModal({
     <div className="tf-modal-overlay" onClick={onClose}>
       <div className="tf-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="tf-modal-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 24 }}>account_balance</span>
-            <span className="tf-modal-title">Rincian Settlement {settlement.batchReference}</span>
-          </div>
+          <span className="tf-modal-title">Rincian Settlement {settlement.batchReference}</span>
           <button
             type="button"
             className="tf-action-btn"
-            style={{ width: 32, height: 32, padding: 0, justifyContent: 'center' }}
+            style={{ height: 32, padding: '0 10px', fontSize: 12 }}
             onClick={onClose}
             aria-label="Tutup Dialog"
           >
-            ✕
+            Tutup
           </button>
         </div>
 
@@ -93,7 +90,6 @@ export function SettlementBatchModal({
             style={{ backgroundColor: 'var(--nb-yellow)' }}
             onClick={onDownloadProof}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>receipt</span>
             <span>Unduh Bukti Transfer</span>
           </button>
           <button

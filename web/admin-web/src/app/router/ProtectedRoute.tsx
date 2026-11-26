@@ -1,6 +1,7 @@
-import type { FC, ReactNode } from 'react'
+import { useEffect, useState, type FC, type ReactNode } from 'react'
 import { useAuth } from '../../features/authentication/hooks/useAuth'
 import { LoginPage } from '../../features/authentication/pages/LoginPage'
+import { AdminShellSkeleton } from '../../shared/components/ui'
 
 interface ProtectedRouteProps {
   children: ReactNode
@@ -14,56 +15,61 @@ export const ProtectedRoute: FC<ProtectedRouteProps> = ({
   onNavigateToDashboard,
 }) => {
   const { user, isAuthenticated, isLoading, logout } = useAuth()
+  const [isInitialHydrating, setIsInitialHydrating] = useState<boolean>(true)
+  const [loadProgress, setLoadProgress] = useState<number>(35)
 
-  // 1. Initial Session Verification State
-  if (isLoading) {
+  // Wait for web fonts (Inter, Space Grotesk, Space Mono, Material Symbols) + smooth modern Neubrutalism loading
+  useEffect(() => {
+    let active = true
+
+    const step1 = window.setTimeout(() => {
+      if (active) setLoadProgress(68)
+    }, 150)
+
+    const step2 = window.setTimeout(() => {
+      if (active) setLoadProgress(92)
+    }, 340)
+
+    const minSkeletonDelay = new Promise<void>((resolve) => {
+      window.setTimeout(resolve, 480)
+    })
+
+    const fontsReadyWithTimeout = Promise.race<void>([
+      'fonts' in document
+        ? document.fonts.ready.then(() => undefined)
+        : Promise.resolve(),
+      new Promise<void>((resolve) => {
+        window.setTimeout(resolve, 900)
+      }),
+    ])
+
+    Promise.all([minSkeletonDelay, fontsReadyWithTimeout]).then(() => {
+      if (active) {
+        setLoadProgress(100)
+        setIsInitialHydrating(false)
+      }
+    })
+
+    return () => {
+      active = false
+      window.clearTimeout(step1)
+      window.clearTimeout(step2)
+    }
+  }, [])
+
+  // 1. Initial Session Verification & Font Hydration Skeleton State
+  if (isLoading || isInitialHydrating) {
+    const statusText = isLoading
+      ? 'Memverifikasi sesi administrator...'
+      : loadProgress < 80
+        ? 'Memuat tipografi & tata letak...'
+        : 'Menyiapkan ruang kerja admin...'
+
     return (
-      <div
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'var(--nb-paper)',
-          backgroundImage: 'radial-gradient(#000000 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
-          padding: 24,
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: 'var(--nb-white)',
-            border: '3px solid #000000',
-            boxShadow: '6px 6px 0 0 #000000',
-            padding: '32px 40px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 16,
-          }}
-        >
-          <div
-            style={{
-              width: 24,
-              height: 24,
-              border: '3px solid #000000',
-              borderTopColor: 'transparent',
-              animation: 'spin 0.6s linear infinite',
-            }}
-          />
-          <span
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontWeight: 700,
-              fontSize: 15,
-              textTransform: 'uppercase',
-              letterSpacing: 0.5,
-            }}
-          >
-            Memeriksa Sesi Administrator...
-          </span>
-        </div>
-      </div>
+      <AdminShellSkeleton
+        statusText={statusText}
+        progressPercent={isLoading ? 40 : loadProgress}
+      />
     )
   }
 

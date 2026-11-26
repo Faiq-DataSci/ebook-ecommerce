@@ -10,13 +10,6 @@ export function SimulationBadge({ compact = false }: SimulationBadgeProps) {
       aria-label="Penanda Data Simulasi"
       title="Data ini merupakan data simulasi untuk keperluan demo/testing"
     >
-      <span
-        className="material-symbols-outlined"
-        style={{ fontSize: compact ? 13 : 15 }}
-        aria-hidden="true"
-      >
-        info
-      </span>
       <span>DATA SIMULASI</span>
     </span>
   )

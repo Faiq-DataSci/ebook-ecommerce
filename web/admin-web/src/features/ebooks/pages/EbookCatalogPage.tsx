@@ -380,9 +380,6 @@ export function EbookCatalogPage({
                     style={{ backgroundColor: '#D1FAE5', color: '#065F46', borderColor: '#065F46' }}
                     title="Terhubung langsung dengan backend API PostgreSQL"
                   >
-                    <span className="material-symbols-outlined" style={{ fontSize: 15 }}>
-                      cloud_done
-                    </span>
                     <span>API LIVE</span>
                   </span>
                 )}
@@ -397,10 +394,7 @@ export function EbookCatalogPage({
               className="nb-btn catalog-primary-btn"
               onClick={handleOpenAdd}
             >
-              <span className="material-symbols-outlined" aria-hidden="true">
-                add_circle
-              </span>
-              <span>+ Tambah E-Book</span>
+              <span>Tambah E-Book</span>
             </button>
           </div>
 
@@ -415,7 +409,6 @@ export function EbookCatalogPage({
                 value: totalCount,
                 unit: 'e-book',
                 subtext: 'Judul buku terdaftar di katalog',
-                icon: 'menu_book',
                 tone: 'yellow',
                 isSelected: filters.status === 'ALL',
                 onClick: () =>
@@ -427,7 +420,6 @@ export function EbookCatalogPage({
                 value: activeCount,
                 unit: 'aktif',
                 subtext: 'Aktif di etalase pembeli',
-                icon: 'storefront',
                 tone: 'green',
                 isSelected: filters.status === 'AKTIF',
                 onClick: () =>
@@ -439,7 +431,6 @@ export function EbookCatalogPage({
                 value: archiveCount,
                 unit: 'arsip',
                 subtext: 'Nonaktif / simpanan draf',
-                icon: 'archive',
                 tone: 'muted',
                 isSelected: filters.status === 'ARSIP',
                 onClick: () =>
@@ -450,7 +441,6 @@ export function EbookCatalogPage({
                 label: 'Storage Privat',
                 value: '100% Aman',
                 subtext: 'Akses PDF via Signed URL berumur pendek',
-                icon: 'lock',
                 tone: 'blue',
               },
             ]}
@@ -486,8 +476,7 @@ export function EbookCatalogPage({
                   ? 'Tidak ada e-book yang cocok dengan kombinasi filter dan pencarian saat ini.'
                   : 'Belum ada data e-book pada katalog. Tambahkan e-book pertama Anda sekarang.'
               }
-              icon="menu_book"
-              actionLabel="+ Tambah E-Book Pertama"
+              actionLabel="Tambah E-Book Pertama"
               onAction={handleOpenAdd}
             />
           ) : displayMode === 'GRID' ? (

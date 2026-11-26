@@ -138,12 +138,6 @@ export function CategoryCatalogPage() {
       >
         {(categoryToDelete?.ebookCount || 0) > 0 ? (
           <div className="nb-form-error-box nb-confirm-guard-box" role="alert">
-            <span
-              className="material-symbols-outlined nb-confirm-guard-icon"
-              aria-hidden="true"
-            >
-              block
-            </span>
             <div>
               <strong>Kategori tidak dapat dihapus:</strong> Kategori ini masih
               dipakai oleh{' '}

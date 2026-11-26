@@ -104,7 +104,7 @@
   font-family: var(--font-heading);
   font-size: 12px;
   font-weight: 500;
-  padding: 7px 64px 7px 32px;
+  padding: 7px 64px 7px 12px;
   background-color: var(--nb-white);
   border: var(--nb-border-2);
   box-shadow: var(--nb-shadow-xs);

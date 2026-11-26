@@ -341,7 +341,31 @@ export function NavbarFlyoutDrawer({
                 <div>
                   <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Katalog E-Book</h4>
                   <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
-                    Filter kategori & rekomendasi SAW
+                    Koleksi lengkap dan genre buku digital
+                  </p>
+                </div>
+              </Link>
+
+              {/* Rekomendasi SPK SAW */}
+              <Link
+                to={ROUTES.RECOMMENDATIONS}
+                onClick={onClose}
+                className="nb-menu-tile"
+                style={{
+                  backgroundColor: 'var(--nb-white)',
+                  border: 'var(--nb-border)',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Sparkles size={18} strokeWidth={2.5} />
+                  <span className="nb-nav-badge-pill" style={{ backgroundColor: 'var(--nb-lavender)', color: 'var(--nb-black)' }}>
+                    SPK SAW
+                  </span>
+                </div>
+                <div>
+                  <h4 className="nb-h4" style={{ fontSize: '0.9375rem' }}>Rekomendasi SPK</h4>
+                  <p className="nb-body-sm" style={{ fontSize: '0.75rem', color: 'var(--nb-text-muted)' }}>
+                    Peringkat objektif berbasis metode SAW
                   </p>
                 </div>
               </Link>

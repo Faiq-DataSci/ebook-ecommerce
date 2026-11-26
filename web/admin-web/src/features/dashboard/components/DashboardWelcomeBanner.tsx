@@ -4,7 +4,6 @@ interface DashboardWelcomeBannerProps {
   selectedPeriod: DashboardPeriod
   periodOptions: DashboardPeriod[]
   onSelectPeriod: (period: DashboardPeriod) => void
-  onAddEbook: () => void
   onDownloadCsv: () => void
 }
 
@@ -12,7 +11,6 @@ export function DashboardWelcomeBanner({
   selectedPeriod,
   periodOptions,
   onSelectPeriod,
-  onAddEbook,
   onDownloadCsv,
 }: DashboardWelcomeBannerProps) {
   return (
@@ -59,30 +57,14 @@ export function DashboardWelcomeBanner({
           <button
             type="button"
             className="btn-primary-add nb-btn"
-            onClick={onAddEbook}
-          >
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 18, fontWeight: 700 }}
-              aria-hidden="true"
-            >
-              add_circle
-            </span>
-            <span>+ Tambah E-Book</span>
-          </button>
-          <button
-            type="button"
-            className="btn-secondary-csv nb-btn"
+            style={{ backgroundColor: 'var(--nb-yellow)' }}
             onClick={onDownloadCsv}
+            title="Unduh rekap transaksi periode ini dalam format CSV"
           >
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 18 }}
-              aria-hidden="true"
-            >
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
               download
             </span>
-            <span>Unduh CSV</span>
+            <span>Unduh Rekap CSV</span>
           </button>
         </div>
       </div>

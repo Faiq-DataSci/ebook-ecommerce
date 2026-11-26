@@ -40,9 +40,7 @@ export function Pagination({
           onClick={() => onPageChange(currentPage - 1)}
           aria-label="Halaman sebelumnya"
         >
-          <span className="material-symbols-outlined" aria-hidden="true">
-            chevron_left
-          </span>
+          Sebelumnya
         </button>
 
         {pages.map((p) => {
@@ -67,9 +65,7 @@ export function Pagination({
           onClick={() => onPageChange(currentPage + 1)}
           aria-label="Halaman berikutnya"
         >
-          <span className="material-symbols-outlined" aria-hidden="true">
-            chevron_right
-          </span>
+          Berikutnya
         </button>
       </nav>
     </div>

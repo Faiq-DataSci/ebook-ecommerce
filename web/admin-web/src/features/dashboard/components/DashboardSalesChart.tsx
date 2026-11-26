@@ -29,13 +29,6 @@ export function DashboardSalesChart({
       <div className="chart-card-header">
         <div className="chart-title-group">
           <div className="chart-title-row">
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 24 }}
-              aria-hidden="true"
-            >
-              monitoring
-            </span>
             <h2 className="chart-heading">
               MONITORING PENJUALAN MINGGUAN
             </h2>
@@ -53,13 +46,6 @@ export function DashboardSalesChart({
               disabled={isSyncing}
               title="Muat ulang data penjualan terkini dari database"
             >
-              <span
-                className={`material-symbols-outlined ${isSyncing ? 'spin-anim' : ''}`}
-                style={{ fontSize: 16 }}
-                aria-hidden="true"
-              >
-                sync
-              </span>
               <span>{isSyncing ? 'SINKRON...' : 'SINKRONKAN'}</span>
             </button>
           </div>
@@ -201,13 +187,6 @@ export function DashboardSalesChart({
       <div className="chart-insights-grid">
         <div className="chart-insight-box">
           <div className="insight-left">
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 16 }}
-              aria-hidden="true"
-            >
-              event_available
-            </span>
             <span style={{ fontWeight: 700 }}>Puncak Transaksi:</span>
           </div>
           <span className="insight-badge-green">
@@ -217,13 +196,6 @@ export function DashboardSalesChart({
 
         <div className="chart-insight-box">
           <div className="insight-left">
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 16 }}
-              aria-hidden="true"
-            >
-              query_stats
-            </span>
             <span style={{ fontWeight: 700, color: '#404040' }}>
               Rata-rata:
             </span>

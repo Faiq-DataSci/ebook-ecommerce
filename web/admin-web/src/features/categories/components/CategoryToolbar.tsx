@@ -40,7 +40,6 @@ export function CategoryToolbar({
 
           <FilterChipGroup
             label="Status:"
-            icon="tune"
             value={filters.status}
             onChange={(val) => onStatusChange(val as 'ALL' | CategoryStatus)}
             options={CATEGORY_STATUS_OPTIONS.map((option) => ({
@@ -54,13 +53,12 @@ export function CategoryToolbar({
           <button
             type="button"
             className="nb-btn catalog-toolbar-icon-btn"
+            style={{ width: 'auto', padding: '0 14px', fontSize: 13, fontWeight: 700, fontFamily: 'var(--font-heading)' }}
             onClick={onRefresh}
             title="Segarkan data tabel"
             aria-label="Segarkan data kategori"
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              refresh
-            </span>
+            Segarkan
           </button>
         </div>
       </div>
@@ -107,12 +105,6 @@ export function CategoryToolbar({
             className="nb-btn nb-reset-filters-btn"
             onClick={onResetFilters}
           >
-            <span
-              className="material-symbols-outlined nb-reset-filters-icon"
-              aria-hidden="true"
-            >
-              close
-            </span>
             <span>Reset Filter</span>
           </button>
         </div>

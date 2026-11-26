@@ -11,7 +11,7 @@ export interface CatalogKpiItem {
   value: string | number
   unit?: string
   subtext: string
-  icon: string
+  icon?: string
   tone: CatalogKpiTone
   isSelected?: boolean
   onClick?: () => void
@@ -53,14 +53,6 @@ export function CatalogKpiGrid({
           <>
             <div className="catalog-kpi-top">
               <span className="catalog-kpi-label">{item.label}</span>
-              <span
-                className={`catalog-kpi-icon-badge is-${item.tone}`}
-                aria-hidden="true"
-              >
-                <span className="material-symbols-outlined catalog-kpi-icon">
-                  {item.icon}
-                </span>
-              </span>
             </div>
 
             <div className="catalog-kpi-value-row">

@@ -65,7 +65,6 @@ export function AuthorTablePanel({
 
           <FilterChipGroup
             label="Status:"
-            icon="tune"
             value={authorFilters.status}
             onChange={(val) =>
               setAuthorFilters((prev) => ({
@@ -79,21 +78,18 @@ export function AuthorTablePanel({
                 value: 'ALL',
                 label: 'Semua Status',
                 count: authors.length,
-                icon: 'apps',
                 activeBg: 'var(--nb-yellow)',
               },
               {
                 value: 'AKTIF',
                 label: 'Aktif',
                 count: authors.filter((a) => a.isActive).length,
-                icon: 'check_circle',
                 activeBg: 'var(--nb-green)',
               },
               {
                 value: 'NONAKTIF',
                 label: 'Nonaktif',
                 count: authors.filter((a) => !a.isActive).length,
-                icon: 'do_not_disturb_on',
                 activeBg: 'var(--nb-muted)',
               },
             ]}
@@ -104,12 +100,11 @@ export function AuthorTablePanel({
           <button
             type="button"
             className="nb-btn nb-page-btn"
+            style={{ width: 'auto', padding: '0 14px', fontSize: 13 }}
             onClick={onRefresh}
             title="Segarkan data tabel penulis"
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              refresh
-            </span>
+            Segarkan
           </button>
         </div>
       </div>
@@ -170,9 +165,6 @@ export function AuthorTablePanel({
               }))
             }
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
-              close
-            </span>
             <span>Reset Filter</span>
           </button>
         </div>
@@ -189,8 +181,7 @@ export function AuthorTablePanel({
               ? 'Tidak ada profil penulis yang cocok dengan kriteria pencarian.'
               : 'Belum ada profil penulis terdaftar. Tambahkan penulis pertama sekarang.'
           }
-          icon="person"
-          actionLabel="+ Tambah Penulis Pertama"
+          actionLabel="Tambah Penulis Pertama"
           onAction={onOpenAdd}
         />
       ) : (
@@ -216,13 +207,6 @@ export function AuthorTablePanel({
                 >
                   <div className="nb-th-inner">
                     <span>Nama Penulis</span>
-                    <span className="material-symbols-outlined nb-sort-icon">
-                      {authorFilters.sortBy === 'name'
-                        ? authorFilters.sortOrder === 'asc'
-                          ? 'arrow_upward'
-                          : 'arrow_downward'
-                        : 'unfold_more'}
-                    </span>
                   </div>
                 </th>
                 <th scope="col">Afiliasi & Keahlian</th>
@@ -242,13 +226,6 @@ export function AuthorTablePanel({
                 >
                   <div className="nb-th-inner" style={{ justifyContent: 'flex-end' }}>
                     <span>E-Book Ditulis</span>
-                    <span className="material-symbols-outlined nb-sort-icon">
-                      {authorFilters.sortBy === 'ebookCount'
-                        ? authorFilters.sortOrder === 'asc'
-                          ? 'arrow_upward'
-                          : 'arrow_downward'
-                        : 'unfold_more'}
-                    </span>
                   </div>
                 </th>
                 <th scope="col" style={{ width: 110 }}>
@@ -302,17 +279,9 @@ export function AuthorTablePanel({
                     </td>
                     <td data-label="Status">
                       {author.isActive ? (
-                        <StatusBadge
-                          status="Aktif"
-                          fill="var(--nb-green)"
-                          icon="check_circle"
-                        />
+                        <StatusBadge status="Aktif" fill="var(--nb-green)" />
                       ) : (
-                        <StatusBadge
-                          status="Nonaktif"
-                          fill="var(--nb-muted)"
-                          icon="do_not_disturb_on"
-                        />
+                        <StatusBadge status="Nonaktif" fill="var(--nb-muted)" />
                       )}
                     </td>
                     <td data-label="Aksi">
@@ -321,16 +290,10 @@ export function AuthorTablePanel({
                           type="button"
                           className="nb-btn nb-table-action-btn"
                           onClick={() => onOpenEdit(author)}
-                          aria-label={`Ubah profil ${author.name}`}
-                          title="Ubah profil penulis"
+                          aria-label={`Edit profil ${author.name}`}
+                          title="Edit profil penulis"
                         >
-                          <span
-                            className="material-symbols-outlined"
-                            style={{ fontSize: 18 }}
-                            aria-hidden="true"
-                          >
-                            edit
-                          </span>
+                          Edit
                         </button>
                         <button
                           type="button"
@@ -339,13 +302,7 @@ export function AuthorTablePanel({
                           aria-label={`Hapus profil ${author.name}`}
                           title="Hapus profil penulis"
                         >
-                          <span
-                            className="material-symbols-outlined"
-                            style={{ fontSize: 18 }}
-                            aria-hidden="true"
-                          >
-                            delete
-                          </span>
+                          Hapus
                         </button>
                       </div>
                     </td>

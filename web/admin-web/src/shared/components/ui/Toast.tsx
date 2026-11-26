@@ -35,43 +35,24 @@ export function Toast({ toasts, onDismiss }: ToastProps) {
       role="region"
       aria-label="Pemberitahuan Sistem"
     >
-      {toasts.map((toast) => {
-        const icon =
-          toast.type === 'success'
-            ? 'check_circle'
-            : toast.type === 'error'
-              ? 'error'
-              : toast.type === 'warning'
-                ? 'warning'
-                : 'info'
-
-        return (
-          <div
-            key={toast.id}
-            className={`nb-toast-item nb-toast-${toast.type}`}
-            role="status"
-            aria-live="polite"
+      {toasts.map((toast) => (
+        <div
+          key={toast.id}
+          className={`nb-toast-item nb-toast-${toast.type}`}
+          role="status"
+          aria-live="polite"
+        >
+          <div className="nb-toast-message">{toast.text}</div>
+          <button
+            type="button"
+            className="nb-toast-close-btn"
+            onClick={() => onDismiss(toast.id)}
+            aria-label="Tutup pemberitahuan"
           >
-            <span
-              className="material-symbols-outlined nb-toast-icon"
-              aria-hidden="true"
-            >
-              {icon}
-            </span>
-            <div className="nb-toast-message">{toast.text}</div>
-            <button
-              type="button"
-              className="nb-toast-close-btn"
-              onClick={() => onDismiss(toast.id)}
-              aria-label="Tutup pemberitahuan"
-            >
-              <span className="material-symbols-outlined" aria-hidden="true">
-                close
-              </span>
-            </button>
-          </div>
-        )
-      })}
+            Tutup
+          </button>
+        </div>
+      ))}
     </div>
   )
 }

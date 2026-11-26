@@ -84,7 +84,6 @@ export function AnalyticsTopBooksTable({
         <TableSkeleton rows={pageSize} cols={8} />
       ) : filteredBooksCount === 0 ? (
         <EmptyState
-          icon="menu_book"
           title="Tidak ada e-book yang cocok"
           description={`Tidak ditemukan data performa e-book untuk kriteria pencarian "${searchQuery}".`}
           actionLabel="Reset Pencarian"
@@ -149,19 +148,13 @@ export function AnalyticsTopBooksTable({
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
                       <span
-                        className="material-symbols-outlined"
-                        style={{ fontSize: 14, color: '#F59E0B' }}
-                      >
-                        star
-                      </span>
-                      <span
                         style={{
                           fontFamily: 'var(--font-mono)',
                           fontSize: 11,
                           fontWeight: 700,
                         }}
                       >
-                        {book.rating}
+                        Rating: {book.rating}
                       </span>
                       <span style={{ fontSize: 11, color: 'var(--nb-text-muted)' }}>
                         • Konversi: {book.conversionRate}
@@ -192,9 +185,6 @@ export function AnalyticsTopBooksTable({
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     <span className="analytics-kpi-pill is-positive">
-                      <span className="material-symbols-outlined" style={{ fontSize: 12 }}>
-                        trending_up
-                      </span>
                       <span>+{book.growthRate}%</span>
                     </span>
                   </td>
@@ -203,12 +193,6 @@ export function AnalyticsTopBooksTable({
                       className="analytics-saw-score-chip"
                       title={`Skor SPK Simple Additive Weighting: ${book.sawScore}`}
                     >
-                      <span
-                        className="material-symbols-outlined"
-                        style={{ fontSize: 13, color: '#4338CA' }}
-                      >
-                        stars
-                      </span>
                       <span>{book.sawScore.toFixed(3)}</span>
                     </span>
                   </td>

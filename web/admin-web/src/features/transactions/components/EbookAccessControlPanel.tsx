@@ -14,28 +14,25 @@ export function EbookAccessControlPanel({
     <div className="tf-access-panel">
       <div className="tf-access-header">
         <span className="tf-access-title">
-          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-            lock_open
-          </span>
-          Kontrol Hak Akses Digital (`EbookAccess`)
+          <span>Kontrol Hak Akses Digital Pelanggan (<code>EbookAccess</code>)</span>
         </span>
         {order.ebookAccessGranted ? (
           order.ebookAccessRevoked ? (
-            <StatusBadge status="DICABUT" fill="#FF6B6B" icon="block" textColor="#FFFFFF" />
+            <StatusBadge status="DICABUT" fill="var(--nb-pink)" textColor="var(--nb-white)" />
           ) : (
-            <StatusBadge status="AKTIF" fill="#00B894" icon="verified_user" textColor="#FFFFFF" />
+            <StatusBadge status="AKTIF" fill="var(--nb-green)" textColor="var(--nb-white)" />
           )
         ) : (
-          <StatusBadge status="BELUM AKTIF" fill="#DFE6E9" icon="lock" textColor="#000000" />
+          <StatusBadge status="BELUM AKTIF" fill="var(--nb-muted)" textColor="var(--nb-black)" />
         )}
       </div>
 
-      <p style={{ margin: 0, fontSize: 13 }}>
+      <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5 }}>
         {order.ebookAccessGranted
           ? order.ebookAccessRevoked
-            ? 'Hak akses digital sedang dicabut sementara oleh Admin. Pelanggan tidak dapat meminta signed URL baca PDF.'
-            : 'Pelanggan memiliki hak akses aktif membaca e-book ini via in-app PDF reader menggunakan Signed URL.'
-          : 'Hak akses membaca e-book belum diaktifkan karena pesanan belum lunas.'}
+            ? 'Hak akses membaca e-book sedang dicabut sementara oleh Admin. Pelanggan tidak dapat meminta Signed URL untuk membaca PDF.'
+            : 'Pelanggan memiliki hak akses aktif membaca e-book ini di perpustakaan digital via in-app PDF reader menggunakan Signed URL privat.'
+          : 'Hak akses membaca e-book belum diaktifkan karena status pembayaran pesanan belum lunas.'}
       </p>
 
       {order.ebookAccessGranted && (
@@ -44,14 +41,13 @@ export function EbookAccessControlPanel({
             type="button"
             className="tf-action-btn"
             style={{
-              backgroundColor: order.ebookAccessRevoked ? '#00B894' : '#FF6B6B',
-              color: '#FFFFFF',
+              backgroundColor: order.ebookAccessRevoked ? 'var(--nb-green)' : 'var(--nb-pink)',
+              color: 'var(--nb-white)',
+              minHeight: '36px',
+              padding: '0 16px',
             }}
             onClick={() => onToggleAccess(order)}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-              {order.ebookAccessRevoked ? 'lock_open' : 'block'}
-            </span>
             <span>{order.ebookAccessRevoked ? 'Pulihkan Hak Akses' : 'Cabut Hak Akses'}</span>
           </button>
         </div>

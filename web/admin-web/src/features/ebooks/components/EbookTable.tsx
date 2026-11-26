@@ -49,13 +49,6 @@ export function EbookTable({
             >
               <div className="nb-th-inner">
                 <span>Judul & Penulis</span>
-                <span className="material-symbols-outlined nb-sort-icon">
-                  {filters.sortBy === 'title'
-                    ? filters.sortOrder === 'asc'
-                      ? 'arrow_upward'
-                      : 'arrow_downward'
-                    : 'unfold_more'}
-                </span>
               </div>
             </th>
             <th scope="col">Kategori</th>
@@ -74,13 +67,6 @@ export function EbookTable({
             >
               <div className="nb-th-inner" style={{ justifyContent: 'flex-end' }}>
                 <span>Harga</span>
-                <span className="material-symbols-outlined nb-sort-icon">
-                  {filters.sortBy === 'price'
-                    ? filters.sortOrder === 'asc'
-                      ? 'arrow_upward'
-                      : 'arrow_downward'
-                    : 'unfold_more'}
-                </span>
               </div>
             </th>
             <th scope="col" style={{ width: 110, textAlign: 'center' }}>
@@ -101,13 +87,6 @@ export function EbookTable({
             >
               <div className="nb-th-inner" style={{ justifyContent: 'flex-end' }}>
                 <span>Terjual</span>
-                <span className="material-symbols-outlined nb-sort-icon">
-                  {filters.sortBy === 'salesCount'
-                    ? filters.sortOrder === 'asc'
-                      ? 'arrow_upward'
-                      : 'arrow_downward'
-                    : 'unfold_more'}
-                </span>
               </div>
             </th>
             <th scope="col" style={{ width: 110 }}>
@@ -165,17 +144,9 @@ export function EbookTable({
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: 5,
                           backgroundColor: meta.activeBg,
                         }}
                       >
-                        <span
-                          className="material-symbols-outlined"
-                          style={{ fontSize: 14 }}
-                          aria-hidden="true"
-                        >
-                          {meta.icon}
-                        </span>
                         <span>{book.categoryName}</span>
                       </span>
                     )
@@ -196,27 +167,7 @@ export function EbookTable({
                   {book.ratingAvg === 'Belum ada rating' ? (
                     <span className="nb-td-muted-italic">Belum ada rating</span>
                   ) : (
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 3,
-                        fontWeight: 700,
-                      }}
-                    >
-                      <span
-                        className="material-symbols-outlined"
-                        style={{
-                          fontSize: 16,
-                          color: 'var(--nb-black)',
-                          fontVariationSettings: "'FILL' 1",
-                        }}
-                        aria-hidden="true"
-                      >
-                        star
-                      </span>
-                      <span>{book.ratingAvg}</span>
-                    </span>
+                    <span style={{ fontWeight: 700 }}>{book.ratingAvg}</span>
                   )}
                 </td>
                 <td
@@ -228,17 +179,9 @@ export function EbookTable({
                 </td>
                 <td data-label="Status">
                   {book.isActive ? (
-                    <StatusBadge
-                      status="Aktif"
-                      fill="var(--nb-green)"
-                      icon="check_circle"
-                    />
+                    <StatusBadge status="Aktif" fill="var(--nb-green)" />
                   ) : (
-                    <StatusBadge
-                      status="Arsip"
-                      fill="var(--nb-muted)"
-                      icon="archive"
-                    />
+                    <StatusBadge status="Arsip" fill="var(--nb-muted)" />
                   )}
                 </td>
                 <td data-label="Aksi">
@@ -247,16 +190,10 @@ export function EbookTable({
                       type="button"
                       className="nb-btn nb-table-action-btn"
                       onClick={() => onEdit(book)}
-                      aria-label={`Ubah e-book ${book.title}`}
-                      title="Ubah data e-book"
+                      aria-label={`Edit e-book ${book.title}`}
+                      title="Edit data e-book"
                     >
-                      <span
-                        className="material-symbols-outlined"
-                        style={{ fontSize: 18 }}
-                        aria-hidden="true"
-                      >
-                        edit
-                      </span>
+                      Edit
                     </button>
 
                     <button
@@ -276,13 +213,7 @@ export function EbookTable({
                           : 'Aktifkan kembali e-book'
                       }
                     >
-                      <span
-                        className="material-symbols-outlined"
-                        style={{ fontSize: 18 }}
-                        aria-hidden="true"
-                      >
-                        {book.isActive ? 'archive' : 'unarchive'}
-                      </span>
+                      {book.isActive ? 'Arsipkan' : 'Aktifkan'}
                     </button>
                   </div>
                 </td>

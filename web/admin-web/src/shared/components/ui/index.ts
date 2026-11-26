@@ -1,4 +1,9 @@
 export {
+  AdminShellSkeleton,
+  NeubrutalismLoaderCard,
+  type NeubrutalismLoaderCardProps,
+} from './AdminShellSkeleton'
+export {
   CatalogKpiGrid,
   type CatalogKpiItem,
   type CatalogKpiTone,

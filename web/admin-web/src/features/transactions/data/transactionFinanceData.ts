@@ -51,7 +51,7 @@ export const INITIAL_ORDERS_DATA: OrderRecord[] = [
         timestamp: '23 Nov 2026, 14:12:04 WIB',
         description: 'Status settlement diterima dengan signature HMAC SHA512 valid.',
         status: 'completed',
-        meta: 'HTTP 200 OK — Idempoten terekam',
+        meta: 'HTTP 200 OK: Idempoten terekam',
       },
       {
         stage: 'Hak Akses E-Book Diaktifkan',

@@ -86,9 +86,7 @@ export function ConfirmDialog({
             onClick={onCancel}
             aria-label="Tutup dialog konfirmasi"
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              close
-            </span>
+            Tutup
           </button>
         </div>
 

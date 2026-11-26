@@ -25,13 +25,6 @@ export function DashboardPage({
         <div className="route-section-banner" role="status">
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 20 }}
-              aria-hidden="true"
-            >
-              info
-            </span>
-            <span
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: 12,

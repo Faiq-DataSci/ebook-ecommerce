@@ -418,11 +418,8 @@ export function AuthorPublisherPage() {
             className="nb-btn catalog-primary-btn"
             onClick={activeTab === 'AUTHORS' ? handleOpenAddAuthor : handleOpenAddPublisher}
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              add_circle
-            </span>
             <span>
-              {activeTab === 'AUTHORS' ? '+ Tambah Penulis' : '+ Tambah Penerbit'}
+              {activeTab === 'AUTHORS' ? 'Tambah Penulis' : 'Tambah Penerbit'}
             </span>
           </button>
         </div>
@@ -438,7 +435,6 @@ export function AuthorPublisherPage() {
               value: summaryMetrics.totalAuthors,
               unit: 'penulis',
               subtext: `${summaryMetrics.activeAuthors} aktif · ${summaryMetrics.inactiveAuthors} nonaktif`,
-              icon: 'person',
               tone: 'yellow',
               isSelected: activeTab === 'AUTHORS' && authorFilters.status === 'ALL',
               onClick: () => {
@@ -452,7 +448,6 @@ export function AuthorPublisherPage() {
               value: summaryMetrics.totalPublishers,
               unit: 'penerbit',
               subtext: `${summaryMetrics.activePublishers} aktif · ${summaryMetrics.inactivePublishers} nonaktif`,
-              icon: 'domain',
               tone: 'blue',
               isSelected: activeTab === 'PUBLISHERS' && publisherFilters.status === 'ALL',
               onClick: () => {
@@ -470,7 +465,6 @@ export function AuthorPublisherPage() {
               value: summaryMetrics.totalActiveContributors,
               unit: 'entitas',
               subtext: `${summaryMetrics.activeAuthors} penulis & ${summaryMetrics.activePublishers} penerbit aktif`,
-              icon: 'verified',
               tone: 'green',
               isSelected:
                 (activeTab === 'AUTHORS' && authorFilters.status === 'AKTIF') ||
@@ -497,7 +491,6 @@ export function AuthorPublisherPage() {
               value: summaryMetrics.totalAuthorEbooks,
               unit: 'judul',
               subtext: `${summaryMetrics.totalPublisherEbooks} judul terbitan mitra`,
-              icon: 'menu_book',
               tone: 'muted',
             },
           ]}
@@ -514,9 +507,6 @@ export function AuthorPublisherPage() {
             className={`nb-page-tab-btn ${activeTab === 'AUTHORS' ? 'is-active' : ''}`}
             onClick={() => setActiveTab('AUTHORS')}
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              person
-            </span>
             <span>Direktori Penulis</span>
             <span className="nb-page-tab-badge">{authors.length}</span>
           </button>
@@ -530,9 +520,6 @@ export function AuthorPublisherPage() {
             className={`nb-page-tab-btn ${activeTab === 'PUBLISHERS' ? 'is-active' : ''}`}
             onClick={() => setActiveTab('PUBLISHERS')}
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              domain
-            </span>
             <span>Mitra Penerbit</span>
             <span className="nb-page-tab-badge">{publishers.length}</span>
           </button>
@@ -621,13 +608,6 @@ export function AuthorPublisherPage() {
       >
         {(authorToDelete?.ebookCount || 0) > 0 ? (
           <div className="nb-form-error-box" style={{ padding: 12 }}>
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 20 }}
-              aria-hidden="true"
-            >
-              block
-            </span>
             <div>
               <strong>Penulis tidak dapat dihapus:</strong> Penulis ini masih
               terkait dengan <strong>{authorToDelete?.ebookCount} e-book</strong> dalam
@@ -654,13 +634,6 @@ export function AuthorPublisherPage() {
       >
         {(publisherToDelete?.ebookCount || 0) > 0 ? (
           <div className="nb-form-error-box" style={{ padding: 12 }}>
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 20 }}
-              aria-hidden="true"
-            >
-              block
-            </span>
             <div>
               <strong>Penerbit tidak dapat dihapus:</strong> Mitra penerbit ini masih
               menerbitkan <strong>{publisherToDelete?.ebookCount} e-book</strong> aktif.

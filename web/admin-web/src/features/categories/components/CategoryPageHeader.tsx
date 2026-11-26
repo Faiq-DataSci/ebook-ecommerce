@@ -29,10 +29,7 @@ export function CategoryPageHeader({
         className="nb-btn catalog-primary-btn"
         onClick={onAddClick}
       >
-        <span className="material-symbols-outlined" aria-hidden="true">
-          add_circle
-        </span>
-        <span>+ Tambah Kategori</span>
+        <span>Tambah Kategori</span>
       </button>
     </header>
   )

@@ -46,9 +46,7 @@ export function AuthorFormModal({
             onClick={onClose}
             aria-label="Tutup form penulis"
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              close
-            </span>
+            Tutup
           </button>
         </div>
 

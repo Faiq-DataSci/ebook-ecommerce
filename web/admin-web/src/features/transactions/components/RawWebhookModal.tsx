@@ -12,36 +12,41 @@ export function RawWebhookModal({
   onCopyJson,
 }: RawWebhookModalProps) {
   return (
-    <div className="tf-modal-overlay" onClick={onClose}>
+    <div className="tf-modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
       <div className="tf-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="tf-modal-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 24 }}>code</span>
-            <span className="tf-modal-title">Raw Callback JSON — {payment.paymentCode}</span>
-          </div>
+          <span className="tf-modal-title">Raw Callback JSON: {payment.paymentCode}</span>
           <button
             type="button"
             className="tf-action-btn"
-            style={{ width: 32, height: 32, padding: 0, justifyContent: 'center' }}
+            style={{ height: 34, padding: '0 12px', fontSize: 12 }}
             onClick={onClose}
             aria-label="Tutup Dialog"
           >
-            ✕
+            Tutup
           </button>
         </div>
 
         <div className="tf-modal-body">
-          <div style={{ fontSize: 13 }}>
-            Notifikasi callback resmi dari payment gateway <strong>{payment.provider}</strong> yang diterima dan divalidasi oleh backend:
+          <div style={{ fontSize: 13, lineHeight: 1.5 }}>
+            Notifikasi payload callback resmi dari payment gateway <strong>{payment.provider}</strong> yang diterima dan divalidasi oleh backend Express:
           </div>
 
           <pre className="tf-json-box">
             {JSON.stringify(payment.rawWebhookPayload, null, 2)}
           </pre>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
-            <span className="material-symbols-outlined" style={{ color: '#00B894', fontSize: 18 }}>verified</span>
-            <span>Signature HMAC SHA512 cocok dengan `PAYMENT_GATEWAY_SERVER_KEY`</span>
+          <div
+            style={{
+              fontSize: 12.5,
+              padding: '10px 14px',
+              backgroundColor: 'var(--nb-paper)',
+              border: '1.5px solid var(--nb-black)',
+            }}
+          >
+            <span>
+              Signature <strong>HMAC SHA512</strong> cocok dengan <code>MIDTRANS_SERVER_KEY</code> backend. Payload terotentikasi dan anti-tampering.
+            </span>
           </div>
         </div>
 
@@ -49,15 +54,15 @@ export function RawWebhookModal({
           <button
             type="button"
             className="tf-action-btn"
-            style={{ backgroundColor: 'var(--nb-yellow)' }}
+            style={{ backgroundColor: 'var(--nb-yellow)', minHeight: '38px', padding: '0 18px' }}
             onClick={onCopyJson}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>content_copy</span>
-            <span>Salin JSON</span>
+            <span>Salin JSON Payload</span>
           </button>
           <button
             type="button"
             className="tf-action-btn"
+            style={{ minHeight: '38px', padding: '0 18px' }}
             onClick={onClose}
           >
             Tutup

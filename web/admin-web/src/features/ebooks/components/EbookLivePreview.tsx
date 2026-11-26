@@ -36,23 +36,9 @@ export function EbookLivePreview({
                 className="catalog-card-category-chip"
                 style={{ backgroundColor: 'var(--nb-white)' }}
               >
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: 12 }}
-                  aria-hidden="true"
-                >
-                  {categoryMeta.icon}
-                </span>
                 <span>{categoryName}</span>
               </span>
             </div>
-
-            <span
-              className="material-symbols-outlined catalog-preview-icon-symbol"
-              aria-hidden="true"
-            >
-              {categoryMeta.icon || 'menu_book'}
-            </span>
 
             <div className="catalog-preview-cover-watermark">
               {formData.coverFileName ? formData.coverFileName : 'SAMPUL DIGITAL'}

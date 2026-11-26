@@ -9,6 +9,7 @@ import { AuthorPublisherPage } from './features/authors-publishers/pages/AuthorP
 import { TransactionFinancePage } from './features/transactions/pages/TransactionFinancePage'
 import { FinancePage } from './features/finance/pages/FinancePage'
 import { AnalyticsPage } from './features/analytics/pages/AnalyticsPage'
+import { SpkRecommendationPage } from './features/spk-recommendations/pages/SpkRecommendationPage'
 import { LoginPage } from './features/authentication/pages/LoginPage'
 import { AuthProvider } from './app/providers/AuthProvider'
 import { ProtectedRoute } from './app/router/ProtectedRoute'
@@ -113,6 +114,15 @@ function AdminAppContent() {
       break
     case '/admin/analitik':
       pageContent = <AnalyticsPage onNavigate={sidebar.navigateTo} />
+      break
+    case '/admin/spk/kriteria':
+    case '/admin/spk/matriks':
+      pageContent = (
+        <SpkRecommendationPage
+          currentPath={sidebar.activePath}
+          onNavigate={sidebar.navigateTo}
+        />
+      )
       break
     default:
       pageContent = (

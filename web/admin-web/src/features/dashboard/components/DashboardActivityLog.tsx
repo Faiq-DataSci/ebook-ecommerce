@@ -35,13 +35,6 @@ export function DashboardActivityLog() {
     <div className="activity-feed-card">
       <div className="widget-header">
         <div className="widget-title-row">
-          <span
-            className="material-symbols-outlined"
-            style={{ fontSize: 20 }}
-            aria-hidden="true"
-          >
-            notifications_active
-          </span>
           <h2 className="widget-heading">Aktivitas &amp; Notifikasi</h2>
         </div>
         <div className="activity-header-badges">
@@ -112,13 +105,6 @@ export function DashboardActivityLog() {
                 <div className="activity-item-top">
                   <div className="activity-item-badges">
                     <span className={badgeClass}>
-                      <span
-                        className="material-symbols-outlined"
-                        style={{ fontSize: 11 }}
-                        aria-hidden="true"
-                      >
-                        {item.icon}
-                      </span>
                       <span>{badgeLabel}</span>
                     </span>
                     {item.unread && (

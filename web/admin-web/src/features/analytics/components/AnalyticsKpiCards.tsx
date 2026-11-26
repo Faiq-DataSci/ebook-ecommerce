@@ -8,18 +8,9 @@ export function AnalyticsKpiCards({ kpis }: AnalyticsKpiCardsProps) {
   return (
     <div className="analytics-kpi-grid">
       {kpis.map((kpi) => (
-        <div key={kpi.id} className="analytics-kpi-card">
+        <div key={kpi.id} className="analytics-kpi-card" title={kpi.helpTooltip}>
           <div className="analytics-kpi-top">
             <span className="analytics-kpi-title">{kpi.title}</span>
-            <div
-              className="analytics-kpi-icon-box"
-              style={{ backgroundColor: kpi.accentColor }}
-              title={kpi.helpTooltip}
-            >
-              <span className="material-symbols-outlined" aria-hidden="true">
-                {kpi.icon}
-              </span>
-            </div>
           </div>
 
           <div className="analytics-kpi-val-row">
@@ -37,13 +28,6 @@ export function AnalyticsKpiCards({ kpis }: AnalyticsKpiCardsProps) {
                     : 'is-negative'
               }`}
             >
-              <span
-                className="material-symbols-outlined"
-                style={{ fontSize: 13 }}
-                aria-hidden="true"
-              >
-                {kpi.isPositive ? 'trending_up' : 'trending_down'}
-              </span>
               <span>+{kpi.growthPercentage}%</span>
             </span>
             <span style={{ color: 'var(--nb-text-muted)' }}>{kpi.comparisonText}</span>

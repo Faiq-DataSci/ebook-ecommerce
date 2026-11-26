@@ -10,4 +10,5 @@ export const API_ENDPOINTS = {
   ORDERS: '/orders',
   ORDER_BY_ID: (id: string) => `/orders/${id}`,
   LIBRARY: '/library',
+  SAW_RECOMMENDATIONS: '/recommendations/saw',
 } as const;

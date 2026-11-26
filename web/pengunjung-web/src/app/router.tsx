@@ -17,6 +17,7 @@ import { Card } from '../components/ui/Card';
 import { EmptyState } from '../components/shared/EmptyState';
 import { HomePage } from '../features/home/pages/HomePage';
 import { CatalogPage } from '../features/catalog/pages/CatalogPage';
+import { RecommendationsPage } from '../features/recommendations/pages/RecommendationsPage';
 import { BookDetailPage } from '../features/book-detail/pages/BookDetailPage';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { RegisterPage } from '../features/auth/pages/RegisterPage';
@@ -213,6 +214,7 @@ export function AppRouter() {
         <Route element={<MainLayout />}>
           <Route path={ROUTES.HOME} element={<HomePage />} />
           <Route path={ROUTES.CATALOG} element={<CatalogPage />} />
+          <Route path={ROUTES.RECOMMENDATIONS} element={<RecommendationsPage />} />
           <Route path={ROUTES.BOOK_DETAIL()} element={<BookDetailPage />} />
 
           <Route

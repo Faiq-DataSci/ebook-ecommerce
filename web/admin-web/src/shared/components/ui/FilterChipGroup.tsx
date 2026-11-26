@@ -19,7 +19,6 @@ interface FilterChipGroupProps<T extends string = string> {
 
 export function FilterChipGroup<T extends string = string>({
   label,
-  icon,
   options,
   value,
   onChange,
@@ -34,15 +33,6 @@ export function FilterChipGroup<T extends string = string>({
     >
       {label && (
         <div className="nb-filter-group-label">
-          {icon && (
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 16 }}
-              aria-hidden="true"
-            >
-              {icon}
-            </span>
-          )}
           <span>{label}</span>
         </div>
       )}
@@ -65,14 +55,6 @@ export function FilterChipGroup<T extends string = string>({
               onClick={() => onChange(opt.value)}
               aria-pressed={isSelected}
             >
-              {opt.icon && (
-                <span
-                  className="material-symbols-outlined nb-chip-icon"
-                  aria-hidden="true"
-                >
-                  {opt.icon}
-                </span>
-              )}
               <span className="nb-chip-text">{opt.label}</span>
               {typeof opt.count === 'number' && (
                 <span
