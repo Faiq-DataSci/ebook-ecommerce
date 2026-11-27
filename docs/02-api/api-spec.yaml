@@ -4,7 +4,7 @@ info:
   version: 0.2.0
   description: |
     Spesifikasi REST API untuk Sistem Informasi E-Commerce E-Book dan Sistem Pendukung Keputusan (SPK) metode Simple Additive Weighting (SAW).
-    Status aktual backend: hanya `GET /api/v1/health` dan `GET /api/v1/admin/ping` yang berstatus `[ADA]` di `backend/src/app.ts`; seluruh endpoint bisnis berstatus `[RENCANA]`.
+    Status aktual backend (27 Nov 2026): seluruh endpoint inti bisnis dan Admin CRUD (`/health`, `/auth/sync`, `/users/me`, `/categories`, `/ebooks`, `/recommendations/saw`, `/orders`, `/payments`, `/transactions`, `/ebooks/{id}/access-url`, serta `/admin/*`) berstatus `[ADA]` di `backend/src/` dan teruji oleh 146 test Vitest.
     Autentikasi pengguna (registrasi/login) dikelola oleh Supabase Auth, sedangkan backend Express memverifikasi Bearer JWT dan menegakkan otorisasi peran (`CUSTOMER` / `ADMIN`).
 servers:
   - url: https://api.example.com/api/v1
@@ -13,43 +13,43 @@ tags:
   - name: Health
     description: Pemeriksaan kesehatan layanan backend [ADA]
   - name: Auth
-    description: Sinkronisasi sesi Supabase Auth & profil pengguna [RENCANA]
+    description: Sinkronisasi sesi Supabase Auth & profil pengguna [ADA]
   - name: Profile
-    description: Pengelolaan profil pengguna aktif [RENCANA]
+    description: Pengelolaan profil pengguna aktif [ADA]
   - name: Categories
-    description: Katalog kategori e-book publik [RENCANA]
+    description: Katalog kategori e-book publik [ADA]
   - name: Ebooks
-    description: Katalog dan detail e-book publik [RENCANA]
+    description: Katalog dan detail e-book publik [ADA]
   - name: Recommendations
-    description: Rekomendasi e-book berbasis SPK SAW (backend-only) [RENCANA]
+    description: Rekomendasi e-book berbasis SPK SAW (backend-only) [ADA]
   - name: Orders
-    description: Pembuatan dan pemantauan pesanan pelanggan [RENCANA]
+    description: Pembuatan dan pemantauan pesanan pelanggan [ADA]
   - name: Payments
-    description: Inisiasi dan status pembayaran pelanggan [RENCANA]
+    description: Inisiasi dan status pembayaran pelanggan [ADA]
   - name: Webhooks
-    description: Callback terverifikasi signature dari Payment Gateway [RENCANA]
+    description: Callback terverifikasi signature dari Payment Gateway [ADA]
   - name: Ebook Access
-    description: Penerbitan signed URL sementara untuk pembacaan PDF privat [RENCANA]
+    description: Penerbitan signed URL sementara untuk pembacaan PDF privat [ADA]
   - name: Admin Dashboard
-    description: Ringkasan metrik operasional admin [ADA sebagian ping / RENCANA dashboard]
+    description: Ringkasan metrik operasional admin [ADA]
   - name: Admin Categories
-    description: CRUD kategori e-book oleh Admin [RENCANA]
+    description: CRUD kategori e-book oleh Admin [ADA]
   - name: Admin Ebooks
-    description: CRUD e-book dan unggah PDF ke bucket privat oleh Admin [RENCANA]
+    description: CRUD e-book dan unggah PDF ke bucket privat oleh Admin [ADA]
   - name: Admin Customers
-    description: Pemantauan dan pengelolaan status pelanggan oleh Admin [RENCANA]
+    description: Pemantauan dan pengelolaan status pelanggan oleh Admin [ADA]
   - name: Admin Orders
-    description: Pemantauan daftar dan detail pesanan oleh Admin [RENCANA]
+    description: Pemantauan daftar dan detail pesanan oleh Admin [ADA]
   - name: Admin Payments
-    description: Pemantauan daftar pembayaran oleh Admin [RENCANA]
+    description: Pemantauan daftar pembayaran oleh Admin [ADA]
   - name: Admin Transactions
-    description: Audit daftar transaksi resmi oleh Admin [RENCANA]
+    description: Audit daftar transaksi resmi oleh Admin [ADA]
   - name: Admin Reports
-    description: Laporan penjualan periodik oleh Admin [RENCANA]
+    description: Laporan penjualan periodik oleh Admin [ADA]
   - name: Admin SAW
-    description: Konfigurasi dan audit bobot SPK SAW oleh Admin [RENCANA - Keputusan #5, #9]
+    description: Konfigurasi dan audit bobot SPK SAW oleh Admin [ADA]
   - name: Admin Access
-    description: Pencabutan dan pemulihan EbookAccess oleh Admin [RENCANA]
+    description: Pencabutan dan pemulihan EbookAccess oleh Admin [ADA]
 
 paths:
   /health:
@@ -839,7 +839,7 @@ paths:
     get:
       tags: [Admin Orders]
       summary: Detail pesanan lengkap (Admin)
-      x-implementation-status: "[RENCANA]"
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []
@@ -857,7 +857,7 @@ paths:
     get:
       tags: [Admin Payments]
       summary: Daftar pembayaran (Admin)
-      x-implementation-status: "[RENCANA]"
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []
@@ -876,7 +876,7 @@ paths:
     get:
       tags: [Admin Transactions]
       summary: Daftar transaksi resmi (Admin)
-      x-implementation-status: "[RENCANA]"
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []
@@ -897,7 +897,7 @@ paths:
     get:
       tags: [Admin Reports]
       summary: Laporan penjualan periodik (Admin)
-      x-implementation-status: "[RENCANA]"
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []
@@ -955,8 +955,8 @@ paths:
     patch:
       tags: [Admin Access]
       summary: Cabut atau pulihkan EbookAccess pelanggan
-      description: "[RENCANA] Mengubah flag isRevoked pada tabel ebook_accesses."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Mengubah flag isRevoked pada tabel ebook_accesses dan mencatat AuditLog."
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []

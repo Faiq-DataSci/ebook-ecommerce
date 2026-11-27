@@ -1,6 +1,6 @@
 # Gambaran Umum API (`API Overview`)
 
-**Status:** `[ADA]` (seluruh endpoint inti bisnis: autentikasi, profil, katalog, pesanan, pembayaran/webhook, signed URL PDF privat, SPK SAW, serta dashboard & bobot admin terverifikasi di Vitest) | `[RENCANA]` (rute admin CRUD katalog lanjutan & audit live payment gateway)
+**Status:** `[ADA]` (seluruh endpoint inti bisnis & Admin CRUD lengkap: autentikasi, profil, katalog, pesanan, pembayaran/webhook, transaksi, laporan penjualan, signed URL PDF privat, manajemen akses, SPK SAW, serta dashboard & bobot admin terverifikasi di 146 test Vitest) | `[RENCANA]` (verifikasi live Midtrans sandbox aktif & deployment cloud)
 
 Dokumen ini menjelaskan arsitektur REST API **E-Book Store** pada `backend/` (*Node.js + Express + TypeScript + Zod + Prisma 7 ESM*), batas tanggung jawab antar komponen, serta daftar status implementasi endpoint.
 
@@ -65,7 +65,7 @@ flowchart LR
 | `/api/v1/orders*`, `/api/v1/payments*`, `/api/v1/ebooks/{id}/access-url` | `POST`, `GET` | `CUSTOMER` | **`[ADA]`** (`order.routes.ts`, `payment.routes.ts`, `ebook-access.routes`, teruji di Vitest) |
 | `/api/v1/payments/webhook` | `POST` | Payment Gateway | **`[ADA]`** (`payment.routes.ts`, verifikasi HMAC SHA512 & idempoten, teruji di Vitest) |
 | `/api/v1/admin/dashboard`, `/api/v1/admin/saw/weights` | `GET`, `PUT` | `ADMIN` | **`[ADA]`** (`admin.routes.ts`, teruji di Vitest) |
-| `/api/v1/admin/categories*`, `/admin/ebooks*`, `/admin/customers*`, `/admin/reports/sales`, `/admin/accesses/{id}` | `POST`, `PATCH`, `DELETE` | `ADMIN` | `[RENCANA]` (rute operasional CRUD admin lanjutan) |
+| `/api/v1/admin/categories*`, `/admin/ebooks*`, `/admin/customers*`, `/admin/orders*`, `/admin/payments`, `/admin/transactions`, `/admin/reports/sales`, `/admin/accesses/{id}` | `GET`, `POST`, `PATCH`, `PUT`, `DELETE` | `ADMIN` | **`[ADA]`** (`admin.routes.ts`, 51 test integrasi lulus di `admin-routes.test.ts`) |
 
 > **Catatan Sinkronisasi:** Dokumen lama pada `docs/05-api/api-endpoints.md` masih mencantumkan endpoint register/login kredensial lokal serta variasi path `/ebooks/:id/access` dan `/ebooks/recommendations`. Acuan spesifikasi API terbaru adalah [`api-spec.yaml`](./api-spec.yaml).
 

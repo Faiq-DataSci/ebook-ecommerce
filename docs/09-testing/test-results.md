@@ -1,6 +1,6 @@
 # Hasil Pengujian (`Test Results`)
 
-**Status:** `[ADA]` — diperbarui pada 24 November 2026 (verifikasi ulang suite backend & mobile di mesin ini).
+**Status:** `[ADA]` — diperbarui pada 27 November 2026 (verifikasi ulang suite backend, admin-web, pengunjung-web, mobile Flutter, dan audit keamanan di mesin ini).
 
 **Lingkungan eksekusi:** Windows PowerShell 5.1, Node.js `v24.15.0`, npm `11.12.1`, Flutter `3.44.0` / Dart `3.12.0`.  
 Validasi Prisma memuat skema dan konfigurasi; file migrasi awal `20261116000000_init/` telah terverifikasi.
@@ -12,16 +12,15 @@ Validasi Prisma memuat skema dan konfigurasi; file migrasi awal `20261116000000_
 | Komponen | Perintah | Hasil | Catatan |
 |---|---|---|---|
 | Backend typecheck | `npm run typecheck` | **PASS** | `tsc --noEmit`, tanpa error |
-| Backend test | `npm run test` | **PASS** | 16 file suite tes (Vitest): 104 skenario pengujian unit & integrasi lulus 100% |
+| Backend test | `npm run test` | **PASS** | 17 file suite tes (Vitest): **146 skenario** pengujian unit & integrasi lulus 100% |
 | Backend cloud integration | `npm run test:cloud` | **PASS (Sebagian)** | Database Supabase live terhubung & ter-seed; Supabase Auth Admin valid; Supabase Storage privat bucket `ebooks-private` valid (Signed URL 200, Public blocked 400); Midtrans sandbox API merespons 401 Unauthorized (memerlukan server key aktif). |
 | Backend build | `npm run build` | **PASS** | `tsc` menghasilkan `dist/` |
 | Backend Prisma schema | `npm run prisma:validate` | **PASS** | `"The schema at prisma\schema.prisma is valid 🚀"` |
-| Admin Web lint | `npm run lint` | **PASS** | ESLint tanpa temuan |
-| Admin Web test | `npm test` | **PASS** | 10 skenario unit test validasi email/password, proteksi RBAC admin, dan pesan generik (Node test runner) |
-| Admin Web typecheck & build | `npm run build` | **PASS** | `tsc` + Vite build sukses tanpa error |
-| Pengunjung Web lint | `npm run lint` | **PASS** | ESLint tanpa temuan |
-| Pengunjung Web typecheck & build | `npm run build` | **PASS** | `tsc` + Vite build sukses tanpa error |
-| Mobile test suite | `flutter test` | **PASS (Sebagian)** | 151 skenario unit, widget, dan flow di 23 file `mobile/ebook_store/test/`: 150 lulus, 1 gagal (`splash_screen_test.dart` — `StitchEbookIcon` tidak ditemukan) |
+| Admin Web typecheck & lint | `npx tsc --noEmit` & `npm run lint` | **PASS** | TypeScript 0 error & ESLint 0 temuan |
+| Pengunjung Web typecheck & lint | `npx tsc --noEmit` & `npm run lint` | **PASS** | TypeScript 0 error & ESLint 0 temuan |
+| Mobile static analysis | `flutter analyze` | **PASS** | `No issues found!` |
+| Mobile test suite | `flutter test` | **PASS** | **152/152 skenario** unit, widget, dan flow di 23 file `mobile/ebook_store/test/` lulus 100% |
+| Repository security audit | `node scripts/security-check.mjs` | **PASS** | 1.001 file tracked diperiksa, 0 kebocoran terdeteksi |
 
 ---
 
@@ -44,7 +43,8 @@ Validasi Prisma memuat skema dan konfigurasi; file migrasi awal `20261116000000_
 | 13 | `backend/tests/integration/order-payment-routes.test.ts` | Endpoint `/api/v1/orders`, `/api/v1/orders/me`, `/api/v1/orders/:id`, `/api/v1/payments/webhook`, dan `/api/v1/ebooks/:id/access-url` | Integration (Supertest) | **PASS** |
 | 14 | `backend/tests/integration/saw-routes.test.ts` | Endpoint `GET /api/v1/recommendations/saw`, validasi query, dan otorisasi rute bobot admin | Integration (Supertest) | **PASS** |
 | 15 | `backend/tests/integration/transaction-routes.test.ts` | Endpoint `GET /api/v1/transactions/my` (autentikasi & filter role `CUSTOMER`) | Integration (Supertest) | **PASS** |
-| 16 | `backend/tests/integration/admin-routes.test.ts` | Endpoint `GET /api/v1/admin/ping`, `GET /api/v1/admin/dashboard`, `GET/PUT /api/v1/admin/saw/weights`, dan guard role `ADMIN` | Integration (Supertest) | **PASS** |
+| 16 | `backend/tests/integration/admin-routes.test.ts` | 51 skenario: `/admin/ping`, `/admin/dashboard`, `/admin/saw/weights`, CRUD `/admin/ebooks*`, `/admin/categories*`, `/admin/customers*`, `/admin/orders*`, `/admin/payments`, `/admin/transactions`, `/admin/reports/sales`, `/admin/accesses/:id`, dan guard `ADMIN` | Integration (Supertest) | **PASS** |
+| 17 | `backend/tests/unit/security-hardening.test.ts` | Sanitasi input, header keamanan, dan proteksi rate-limit / hardening API | Unit | **PASS** |
 
 ---
 
@@ -52,7 +52,7 @@ Validasi Prisma memuat skema dan konfigurasi; file migrasi awal `20261116000000_
 
 | No | File Sumber | Cakupan Pengujian | Tipe Test |
 |---|---|---|---|
-| 1 | `test/splash_screen_test.dart` | Tampilan awal & transisi loading aplikasi (**1 skenario gagal**: `StitchEbookIcon` tidak ditemukan) | Widget Test |
+| 1 | `test/splash_screen_test.dart` | Tampilan awal & transisi loading aplikasi (**3/3 skenario lulus**, termasuk verifikasi `Image` logo) | Widget Test |
 | 2 | `test/splash_auto_login_test.dart` | Auto-login / pemulihan sesi saat boot | Widget Test |
 | 3 | `test/login_screen_test.dart` | Formulir login, interaksi field, & tombol masuk | Widget Test |
 | 4 | `test/register_screen_test.dart` | Validasi pendaftaran akun baru & konfirmasi password | Widget Test |
