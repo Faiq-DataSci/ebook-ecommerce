@@ -175,6 +175,34 @@ export const toggleOrderAccessSchema = z.object({
   isRevoked: z.boolean(),
 })
 
+const optionalDateString = z
+  .string()
+  .trim()
+  .refine((val) => !Number.isNaN(Date.parse(val)), 'Format tanggal tidak valid (gunakan ISO YYYY-MM-DD)')
+  .optional()
+
+export const getAdminTransactionsQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  search: z.string().trim().optional(),
+  startDate: optionalDateString,
+  endDate: optionalDateString,
+})
+
+export const getAdminSalesReportQuerySchema = z.object({
+  startDate: optionalDateString,
+  endDate: optionalDateString,
+  groupBy: z.enum(['day', 'month']).default('day'),
+})
+
+export const adminAccessIdParamSchema = z.object({
+  id: z.string().uuid('ID hak akses e-book harus berupa UUID valid'),
+})
+
+export const toggleAccessByIdSchema = z.object({
+  isRevoked: z.boolean(),
+})
+
 export type GetAdminEbooksQuery = z.infer<typeof getAdminEbooksQuerySchema>
 export type CreateEbookInput = z.infer<typeof createEbookSchema>
 export type UpdateEbookInput = z.infer<typeof updateEbookSchema>
@@ -195,4 +223,9 @@ export type GetAdminOrdersQuery = z.infer<typeof getAdminOrdersQuerySchema>
 export type GetAdminPaymentsQuery = z.infer<typeof getAdminPaymentsQuerySchema>
 export type AdminOrderIdParam = z.infer<typeof adminOrderIdParamSchema>
 export type ToggleOrderAccessInput = z.infer<typeof toggleOrderAccessSchema>
+
+export type GetAdminTransactionsQuery = z.infer<typeof getAdminTransactionsQuerySchema>
+export type GetAdminSalesReportQuery = z.infer<typeof getAdminSalesReportQuerySchema>
+export type AdminAccessIdParam = z.infer<typeof adminAccessIdParamSchema>
+export type ToggleAccessByIdInput = z.infer<typeof toggleAccessByIdSchema>
 

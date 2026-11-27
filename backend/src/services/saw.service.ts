@@ -260,11 +260,3 @@ export function calculateSawScores(
     rawValues: item.rawValues,
   }))
 }
-
-export class SawService {
-  validateWeights = validateSawWeights
-  normalizeMatrix = normalizeSawMatrix
-  calculate = calculateSawScores
-}
-
-export const sawService = new SawService()

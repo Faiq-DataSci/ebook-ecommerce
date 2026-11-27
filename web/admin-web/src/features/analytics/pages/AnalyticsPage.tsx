@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   SimulationBadge,
   Toast,
@@ -12,7 +12,9 @@ import {
   generateAnalyticsCsv,
   getAnalyticsDataset,
 } from '../data/analyticsData'
+import { fetchAnalyticsDataset } from '../services/analytics.service'
 import type {
+  AnalyticsDataset,
   AnalyticsPeriod,
   MetricType,
   TopPerformingEbook,
@@ -37,31 +39,60 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
   const [currentPage, setCurrentPage] = useState<number>(1)
   const pageSize = 5
 
-  // 4. Loading & Toasts
+  // 4. Loading, Live State & Toasts
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isSimulated, setIsSimulated] = useState<boolean>(true)
+  const [dataset, setDataset] = useState<AnalyticsDataset>(() =>
+    getAnalyticsDataset('30D', '2026-11-01', '2026-11-23'),
+  )
   const [toasts, setToasts] = useState<ToastMessage[]>([])
 
-  const addToast = (type: 'success' | 'error' | 'info' | 'warning', text: string) => {
-    const id = `toast-${Date.now()}-${Math.random()}`
-    setToasts((prev) => [...prev, { id, type, text }])
-  }
+  const addToast = useCallback(
+    (type: 'success' | 'error' | 'info' | 'warning', text: string) => {
+      const id = `toast-${Date.now()}-${Math.random()}`
+      setToasts((prev) => [...prev, { id, type, text }])
+    },
+    [],
+  )
 
   const dismissToast = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id))
   }
 
-  // Dapatkan dataset sesuai periode
-  const dataset = useMemo(() => {
-    return getAnalyticsDataset(selectedPeriod, customStart, customEnd)
+  const loadAnalytics = useCallback(
+    async (notify = false) => {
+      setIsLoading(true)
+      const result = await fetchAnalyticsDataset(selectedPeriod, customStart, customEnd)
+      setDataset(result.dataset)
+      setIsSimulated(result.isSimulated)
+      setIsLoading(false)
+      if (notify) {
+        addToast(
+          result.isSimulated ? 'info' : 'success',
+          result.isSimulated
+            ? 'Menampilkan data simulasi analitik (belum ada transaksi live pada periode ini).'
+            : 'Data analitik bisnis berhasil dimuat dari backend.',
+        )
+      }
+    },
+    [selectedPeriod, customStart, customEnd, addToast],
+  )
+
+  useEffect(() => {
+    let cancelled = false
+    fetchAnalyticsDataset(selectedPeriod, customStart, customEnd).then((result) => {
+      if (cancelled) return
+      setDataset(result.dataset)
+      setIsSimulated(result.isSimulated)
+    })
+    return () => {
+      cancelled = true
+    }
   }, [selectedPeriod, customStart, customEnd])
 
   // Aksi Segarkan Data
   const handleRefresh = () => {
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      addToast('info', 'Data analitik bisnis dan agregasi penjualan berhasil disegarkan.')
-    }, 450)
+    void loadAnalytics(true)
   }
 
   // Aksi Ekspor CSV
@@ -128,7 +159,7 @@ export function AnalyticsPage({ onNavigate }: AnalyticsPageProps) {
         <div className="analytics-title-group">
           <div className="analytics-title-row">
             <h1 className="analytics-title">Analitik Bisnis & Penjualan</h1>
-            <SimulationBadge />
+            {isSimulated && <SimulationBadge />}
           </div>
           <p className="analytics-subtitle">
             Pusat inteligensi transaksi, agregasi omzet penjualan, metrik konversi, dan performa rekomendasi SPK SAW.

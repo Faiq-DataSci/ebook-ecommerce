@@ -21,7 +21,6 @@ import {
   PageContentSkeleton,
   resolveSkeletonVariant,
 } from './shared/components/ui'
-import './styles/tokens.css'
 import './styles/admin-layout.css'
 import './styles/admin-sidebar.css'
 import './styles/dashboard.css'

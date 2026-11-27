@@ -1,15 +1,61 @@
 import type { CSSProperties } from 'react'
+import { formatRupiah } from '../../../shared/utils/formatters'
 import {
   INITIAL_ORDERS_DATA,
   PAYMENT_METHOD_DISTRIBUTIONS,
   REVENUE_METRIC_SUMMARY,
 } from '../../transactions/data/transactionFinanceData'
+import type {
+  AdminOfficialTransactionRecord,
+  AdminSalesReportResponse,
+} from '../../transactions/services/transactionAdmin.service'
 
 interface OmzetReportPanelProps {
   onNavigate?: (path: string) => void
+  salesReport?: AdminSalesReportResponse | null
+  officialTransactions?: AdminOfficialTransactionRecord[]
 }
 
-export function OmzetReportPanel({ onNavigate }: OmzetReportPanelProps) {
+export function OmzetReportPanel({
+  onNavigate,
+  salesReport,
+  officialTransactions,
+}: OmzetReportPanelProps) {
+  const hasLiveSummary = Boolean(
+    salesReport && salesReport.summary.totalTransactions > 0,
+  )
+  const grossRevenue = hasLiveSummary
+    ? formatRupiah(salesReport!.summary.totalRevenue)
+    : REVENUE_METRIC_SUMMARY.grossRevenue
+  const mdrAmount = hasLiveSummary
+    ? Math.round(salesReport!.summary.totalRevenue * 0.023)
+    : 1255000
+  const netRevenue = hasLiveSummary
+    ? formatRupiah(Math.max(0, salesReport!.summary.totalRevenue - mdrAmount))
+    : REVENUE_METRIC_SUMMARY.netRevenue
+  const trxCount = hasLiveSummary
+    ? salesReport!.summary.totalTransactions
+    : REVENUE_METRIC_SUMMARY.successfulOrders
+
+  const recentRows =
+    officialTransactions && officialTransactions.length > 0
+      ? officialTransactions.slice(0, 5).map((trx) => ({
+          id: trx.id,
+          orderNumber: trx.orderNumber,
+          customerName: trx.customerName,
+          totalAmountFormatted: trx.amountFormatted,
+          paidAt: trx.paidAt,
+        }))
+      : INITIAL_ORDERS_DATA.filter((o) => o.status === 'PAID')
+          .slice(0, 5)
+          .map((o) => ({
+            id: o.id,
+            orderNumber: o.orderNumber,
+            customerName: o.customerName,
+            totalAmountFormatted: o.totalAmountFormatted,
+            paidAt: o.paidAt ?? '-',
+          }))
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Financial KPI Cards */}
@@ -18,9 +64,9 @@ export function OmzetReportPanel({ onNavigate }: OmzetReportPanelProps) {
           <div className="tf-kpi-header">
             <span className="tf-kpi-title">Omzet Kotor (GMV)</span>
           </div>
-          <div className="tf-kpi-value">{REVENUE_METRIC_SUMMARY.grossRevenue}</div>
+          <div className="tf-kpi-value">{grossRevenue}</div>
           <div className="tf-kpi-footer">
-            <span>{REVENUE_METRIC_SUMMARY.period} • {REVENUE_METRIC_SUMMARY.successfulOrders} trx</span>
+            <span>{hasLiveSummary ? 'Data Backend Live' : REVENUE_METRIC_SUMMARY.period} • {trxCount} trx</span>
           </div>
         </div>
 
@@ -28,7 +74,7 @@ export function OmzetReportPanel({ onNavigate }: OmzetReportPanelProps) {
           <div className="tf-kpi-header">
             <span className="tf-kpi-title">Beban MDR Gateway</span>
           </div>
-          <div className="tf-kpi-value">Rp 1.255.000</div>
+          <div className="tf-kpi-value">{formatRupiah(mdrAmount)}</div>
           <div className="tf-kpi-footer">
             <span>Rata-rata 2.3% per transaksi</span>
           </div>
@@ -38,7 +84,7 @@ export function OmzetReportPanel({ onNavigate }: OmzetReportPanelProps) {
           <div className="tf-kpi-header">
             <span className="tf-kpi-title">Pendapatan Bersih (Net)</span>
           </div>
-          <div className="tf-kpi-value">{REVENUE_METRIC_SUMMARY.netRevenue}</div>
+          <div className="tf-kpi-value">{netRevenue}</div>
           <div className="tf-kpi-footer">
             <span>Setelah potongan fee payment gateway</span>
           </div>
@@ -124,16 +170,14 @@ export function OmzetReportPanel({ onNavigate }: OmzetReportPanelProps) {
                 </tr>
               </thead>
               <tbody>
-                {INITIAL_ORDERS_DATA.filter((o) => o.status === 'PAID')
-                  .slice(0, 5)
-                  .map((o) => (
-                    <tr key={o.id}>
-                      <td className="tf-mono">{o.orderNumber}</td>
-                      <td>{o.customerName}</td>
-                      <td className="tf-money">{o.totalAmountFormatted}</td>
-                      <td className="tf-td-muted">{o.paidAt}</td>
-                    </tr>
-                  ))}
+                {recentRows.map((o) => (
+                  <tr key={o.id}>
+                    <td className="tf-mono">{o.orderNumber}</td>
+                    <td>{o.customerName}</td>
+                    <td className="tf-money">{o.totalAmountFormatted}</td>
+                    <td className="tf-td-muted">{o.paidAt}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

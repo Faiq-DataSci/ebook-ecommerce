@@ -1,11 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SETTLEMENT_RECORDS_DATA } from '../../transactions/data/transactionFinanceData'
+import {
+  fetchAdminOfficialTransactions,
+  fetchAdminSalesReport,
+  type AdminOfficialTransactionRecord,
+  type AdminSalesReportResponse,
+} from '../../transactions/services/transactionAdmin.service'
 import type { FinanceTab, SettlementRecord } from '../../transactions/types/transactionFinance'
 import { Toast, type ToastMessage } from '../../../shared/components/ui'
 import { OmzetReportPanel } from '../components/OmzetReportPanel'
 import { SettlementBatchModal } from '../components/SettlementBatchModal'
 import { SettlementReportPanel } from '../components/SettlementReportPanel'
-import '../../../styles/transaction-finance.css'
 
 interface FinancePageProps {
   currentPath?: string
@@ -28,10 +33,33 @@ export function FinancePage({
     }
   }
 
-  // State: Settlement
+  // State: Settlement & Live Finance Report
   const [settlements] = useState<SettlementRecord[]>(SETTLEMENT_RECORDS_DATA)
   const [settlementFilter, setSettlementFilter] = useState<'ALL' | 'SETTLED' | 'PROCESSING'>('ALL')
   const [selectedSettlement, setSelectedSettlement] = useState<SettlementRecord | null>(null)
+  const [salesReport, setSalesReport] = useState<AdminSalesReportResponse | null>(null)
+  const [officialTransactions, setOfficialTransactions] = useState<AdminOfficialTransactionRecord[]>([])
+  const [isSimulated, setIsSimulated] = useState<boolean>(true)
+
+  useEffect(() => {
+    let cancelled = false
+    Promise.all([
+      fetchAdminSalesReport({ groupBy: 'day' }),
+      fetchAdminOfficialTransactions({ page: 1, limit: 20 }),
+    ])
+      .then(([report, transactions]) => {
+        if (cancelled) return
+        setSalesReport(report)
+        setOfficialTransactions(transactions)
+        setIsSimulated(report.summary.totalTransactions === 0 && transactions.length === 0)
+      })
+      .catch(() => {
+        if (!cancelled) setIsSimulated(true)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   // State: Toasts
   const [toasts, setToasts] = useState<ToastMessage[]>([])
@@ -95,9 +123,11 @@ export function FinancePage({
             >
               KEUANGAN &amp; PEMBUKUAN
             </span>
-            <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--nb-text-muted)' }}>
-              DATA SIMULASI
-            </span>
+            {isSimulated && (
+              <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--nb-text-muted)' }}>
+                DATA SIMULASI
+              </span>
+            )}
           </div>
           <h1 className="tf-page-title">Keuangan &amp; Pembukuan Toko E-Book</h1>
           <p className="tf-page-subtitle">
@@ -157,7 +187,11 @@ export function FinancePage({
 
       {/* TAB 1: LAPORAN OMZET & BEBAN GATEWAY */}
       {activeTab === 'omzet' && (
-        <OmzetReportPanel onNavigate={onNavigate} />
+        <OmzetReportPanel
+          onNavigate={onNavigate}
+          salesReport={salesReport}
+          officialTransactions={officialTransactions}
+        />
       )}
 
       {/* TAB 2: SETTLEMENT & BUKU KAS */}

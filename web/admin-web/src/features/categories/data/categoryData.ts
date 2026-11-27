@@ -1,4 +1,4 @@
-import type { CategoryListItem, CategoryOption } from '../types/category'
+import type { CategoryListItem } from '../types/category'
 
 export const MOCK_CATEGORIES: CategoryListItem[] = [
   {
@@ -62,10 +62,3 @@ export const MOCK_CATEGORIES: CategoryListItem[] = [
     createdAt: '2026-02-01T10:00:00Z',
   },
 ]
-
-export const MOCK_CATEGORY_OPTIONS: CategoryOption[] = MOCK_CATEGORIES.map(
-  (category) => ({
-    id: category.id,
-    name: category.name,
-  }),
-)

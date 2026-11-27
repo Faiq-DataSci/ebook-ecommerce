@@ -4,8 +4,71 @@ import {
   MOCK_BOOKS,
 } from '../data/mock-books';
 import type { Order, PurchasedBookAccess } from '../types/order.types';
+import { fetchAuthenticatedApi, getStoredAccessToken } from './api/apiClient';
+import { API_ENDPOINTS } from './api/endpoints';
 
 const ORDERS_STORAGE_KEY = 'ebook_store_sim_orders';
+
+interface RawBackendOrder {
+  id: string;
+  orderNumber: string;
+  userId?: string;
+  totalAmount: string | number;
+  status: 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED' | 'CANCELLED';
+  expiresAt: string;
+  createdAt: string;
+  items?: Array<{
+    ebookId: string;
+    unitPrice?: string | number;
+    ebook?: {
+      id: string;
+      title: string;
+      author: string;
+      category?: { name: string } | null;
+    };
+  }>;
+}
+
+function mapBackendOrder(raw: RawBackendOrder): Order {
+  const firstItem = raw.items?.[0];
+  const paymentStatus: Order['paymentStatus'] =
+    raw.status === 'PAID'
+      ? 'paid'
+      : raw.status === 'PENDING'
+        ? 'pending'
+        : raw.status === 'EXPIRED'
+          ? 'expired'
+          : 'failed';
+  const orderStatus: Order['orderStatus'] =
+    raw.status === 'PAID'
+      ? 'completed'
+      : raw.status === 'PENDING'
+        ? 'pending'
+        : 'cancelled';
+
+  return {
+    id: raw.id,
+    orderNumber: raw.orderNumber,
+    customerId: raw.userId ?? 'customer',
+    bookId: firstItem?.ebookId ?? 'unknown',
+    bookTitle: firstItem?.ebook?.title ?? 'E-Book Digital',
+    bookAuthor: firstItem?.ebook?.author ?? 'Penulis',
+    bookCategory: firstItem?.ebook?.category?.name ?? 'Umum',
+    bookCoverAccent: 'blue',
+    bookCoverCode: 'EBK',
+    orderDate: raw.createdAt,
+    expiresAt: raw.expiresAt,
+    totalAmount: Number(raw.totalAmount ?? 0),
+    paymentStatus,
+    orderStatus,
+    paymentConfigurationNote: 'Diproses melalui backend REST API resmi.',
+    verificationNote:
+      paymentStatus === 'paid'
+        ? 'Pembayaran terverifikasi oleh backend.'
+        : 'Menunggu verifikasi pembayaran backend.',
+    isSimulation: false,
+  };
+}
 
 function readStoredOrders(): Order[] {
   try {
@@ -22,12 +85,50 @@ function readStoredOrders(): Order[] {
 
 export const orderService = {
   async getCustomerOrders(): Promise<Order[]> {
+    if (getStoredAccessToken()) {
+      try {
+        const res = await fetchAuthenticatedApi<RawBackendOrder[]>(API_ENDPOINTS.ORDERS);
+        if (res.ok && Array.isArray(res.body?.data)) {
+          return res.body.data.map(mapBackendOrder);
+        }
+      } catch {
+        // Fallback ke DATA SIMULASI bila backend offline
+      }
+    }
     return readStoredOrders();
   },
 
   async getOrderById(orderId: string): Promise<Order | null> {
+    if (getStoredAccessToken()) {
+      try {
+        const res = await fetchAuthenticatedApi<RawBackendOrder>(
+          API_ENDPOINTS.ORDER_BY_ID(orderId),
+        );
+        if (res.ok && res.body?.data) {
+          return mapBackendOrder(res.body.data);
+        }
+        if (res.status === 404) return null;
+      } catch {
+        // Fallback ke DATA SIMULASI bila backend offline
+      }
+    }
     const orders = readStoredOrders();
     return orders.find((order) => order.id === orderId) ?? null;
+  },
+
+  async getSignedAccessUrl(bookId: string): Promise<{ signedUrl: string; expiresIn: number } | null> {
+    if (!getStoredAccessToken()) return null;
+    try {
+      const res = await fetchAuthenticatedApi<{ signedUrl: string; expiresIn: number }>(
+        API_ENDPOINTS.BOOK_ACCESS_URL(bookId),
+      );
+      if (res.ok && res.body?.data?.signedUrl) {
+        return res.body.data;
+      }
+    } catch {
+      return null;
+    }
+    return null;
   },
 
   async createSimulatedOrder(bookId: string, customerId: string): Promise<Order> {

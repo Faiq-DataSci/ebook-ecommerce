@@ -14,10 +14,14 @@ import {
   getAdminCustomerById,
   getAdminCustomers,
   getAdminEbooks,
+  getAdminOrderById,
   getAdminOrders,
   getAdminPayments,
+  getAdminSalesReport,
+  getAdminTransactions,
   getDashboard,
   getSawWeights,
+  toggleAccessById,
   toggleCategoryStatus,
   toggleCustomerStatus,
   toggleEbookStatus,
@@ -29,6 +33,7 @@ import {
   uploadEbookPdf,
 } from './admin.controller.js'
 import {
+  adminAccessIdParamSchema,
   adminCategoryIdParamSchema,
   adminCustomerIdParamSchema,
   adminEbookIdParamSchema,
@@ -40,6 +45,9 @@ import {
   getAdminEbooksQuerySchema,
   getAdminOrdersQuerySchema,
   getAdminPaymentsQuerySchema,
+  getAdminSalesReportQuerySchema,
+  getAdminTransactionsQuerySchema,
+  toggleAccessByIdSchema,
   toggleCategoryStatusSchema,
   toggleCustomerStatusSchema,
   toggleEbookStatusSchema,
@@ -142,20 +150,40 @@ adminRouter.patch(
   toggleCustomerStatus,
 )
 
-// Admin Orders, Payments & E-Book Access Management
+// Admin Orders, Payments, Transactions, Reports & E-Book Access Management
 adminRouter.get(
   '/orders',
   validate({ query: getAdminOrdersQuerySchema }),
   getAdminOrders,
 )
 adminRouter.get(
+  '/orders/:id',
+  validate({ params: adminOrderIdParamSchema }),
+  getAdminOrderById,
+)
+adminRouter.get(
   '/payments',
   validate({ query: getAdminPaymentsQuerySchema }),
   getAdminPayments,
+)
+adminRouter.get(
+  '/transactions',
+  validate({ query: getAdminTransactionsQuerySchema }),
+  getAdminTransactions,
+)
+adminRouter.get(
+  '/reports/sales',
+  validate({ query: getAdminSalesReportQuerySchema }),
+  getAdminSalesReport,
 )
 adminRouter.patch(
   '/orders/:id/access',
   validate({ params: adminOrderIdParamSchema, body: toggleOrderAccessSchema }),
   toggleOrderAccess,
+)
+adminRouter.patch(
+  '/accesses/:id',
+  validate({ params: adminAccessIdParamSchema, body: toggleAccessByIdSchema }),
+  toggleAccessById,
 )
 

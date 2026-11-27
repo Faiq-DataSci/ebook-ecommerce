@@ -7,6 +7,8 @@ import type {
   GetAdminEbooksQuery,
   GetAdminOrdersQuery,
   GetAdminPaymentsQuery,
+  GetAdminSalesReportQuery,
+  GetAdminTransactionsQuery,
   UpdateCategoryInput,
   UpdateEbookInput,
 } from './admin.schema.js'
@@ -25,36 +27,29 @@ import {
 import {
   type DashboardSummary,
   getDashboardSummaryRecord,
-  type WeeklySalesPoint,
 } from './repositories/admin-dashboard.repository.js'
 import {
-  adminEbookSelect,
   createAdminEbookRecord,
   findAdminEbookRecords,
   toggleAdminEbookStatusRecord,
   updateAdminEbookRecord,
 } from './repositories/admin-ebook.repository.js'
 import {
-  getActiveCriteriaStore,
   getActiveSawCriteriaRecords,
   resetActiveCriteriaStore,
-  updateActiveCriteriaStore,
   updateActiveSawCriteriaRecords,
 } from './repositories/admin-saw.repository.js'
 import {
+  findAdminOrderByIdRecord,
   findAdminOrderRecords,
   findAdminPaymentRecords,
+  findAdminTransactionRecords,
+  getAdminSalesReportRecord,
+  toggleAdminAccessByIdRecord,
   toggleAdminOrderAccessRecord,
 } from './repositories/admin-transaction.repository.js'
 
-export {
-  adminEbookSelect,
-  getActiveCriteriaStore,
-  resetActiveCriteriaStore,
-  updateActiveCriteriaStore,
-  type DashboardSummary,
-  type WeeklySalesPoint,
-}
+export { resetActiveCriteriaStore }
 
 export class AdminRepository {
   async getDashboardSummary(): Promise<DashboardSummary> {
@@ -125,12 +120,28 @@ export class AdminRepository {
     return findAdminOrderRecords(query)
   }
 
+  async findAdminOrderById(orderId: string) {
+    return findAdminOrderByIdRecord(orderId)
+  }
+
   async findAdminPayments(query: GetAdminPaymentsQuery) {
     return findAdminPaymentRecords(query)
   }
 
+  async findAdminTransactions(query: GetAdminTransactionsQuery) {
+    return findAdminTransactionRecords(query)
+  }
+
+  async getAdminSalesReport(query: GetAdminSalesReportQuery) {
+    return getAdminSalesReportRecord(query)
+  }
+
   async toggleOrderAccess(orderId: string, isRevoked: boolean, actorUserId?: string) {
     return toggleAdminOrderAccessRecord(orderId, isRevoked, actorUserId)
+  }
+
+  async toggleAccessById(accessId: string, isRevoked: boolean, actorUserId?: string) {
+    return toggleAdminAccessByIdRecord(accessId, isRevoked, actorUserId)
   }
 }
 

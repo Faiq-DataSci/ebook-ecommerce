@@ -9,8 +9,8 @@ import { BookCover, BookCoverArtwork } from './BookCoverArtwork';
 import { QualityScoreBreakdown } from './QualityScoreBreakdown';
 import { BookCardHorizontal } from './BookCardHorizontal';
 
-// Re-export subcomponents for backward-compatibility
-export { BookCover, BookCoverArtwork, QualityScoreBreakdown };
+// Re-export subcomponent for backward-compatibility
+export { BookCoverArtwork };
 
 export interface BookCardProps {
   book: Book;

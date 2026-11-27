@@ -200,6 +200,126 @@ export async function fetchAdminTransactionsData(): Promise<{
   return { orders, payments }
 }
 
+export interface AdminOfficialTransactionRecord {
+  id: string
+  transactionCode: string
+  orderId: string
+  orderNumber: string
+  orderStatus: string
+  paymentId: string
+  paymentProvider: string
+  paymentMethod: string
+  paymentRef: string | null
+  customerId: string
+  customerName: string
+  customerEmail: string
+  amount: number
+  amountFormatted: string
+  recordedAt: string
+  paidAt: string
+  items: Array<{
+    ebookId: string
+    title: string
+    unitPrice: number
+  }>
+}
+
+export interface AdminSalesReportResponse {
+  period: {
+    startDate: string | null
+    endDate: string | null
+    groupBy: 'day' | 'month'
+  }
+  summary: {
+    totalRevenue: number
+    totalTransactions: number
+    averageOrderValue: number
+  }
+  series: Array<{
+    period: string
+    revenue: number
+    transactionsCount: number
+  }>
+  topEbooks: Array<{
+    ebookId: string
+    title: string
+    categoryName: string
+    unitsSold: number
+    revenue: number
+  }>
+}
+
+export async function fetchAdminOfficialTransactions(params?: {
+  page?: number
+  limit?: number
+  startDate?: string
+  endDate?: string
+  search?: string
+}): Promise<AdminOfficialTransactionRecord[]> {
+  const qs = new URLSearchParams()
+  if (params?.page) qs.set('page', String(params.page))
+  if (params?.limit) qs.set('limit', String(params.limit))
+  if (params?.startDate) qs.set('startDate', params.startDate)
+  if (params?.endDate) qs.set('endDate', params.endDate)
+  if (params?.search) qs.set('search', params.search)
+  const suffix = qs.toString() ? `?${qs.toString()}` : ''
+
+  const res = await apiClient.get<
+    Array<{
+      id: string
+      transactionCode: string
+      orderId: string
+      orderNumber: string
+      orderStatus: string
+      paymentId: string
+      paymentProvider: string
+      paymentMethod: string
+      paymentRef: string | null
+      customerId: string
+      customerName: string
+      customerEmail: string
+      amount: number | string
+      recordedAt: string
+      paidAt: string | null
+      items: Array<{ ebookId: string; title: string; unitPrice: number | string }>
+    }>
+  >(`/admin/transactions${suffix}`)
+
+  if (!Array.isArray(res.data)) return []
+
+  return res.data.map((trx) => {
+    const amount = Number(trx.amount ?? 0)
+    return {
+      ...trx,
+      amount,
+      amountFormatted: formatRupiah(amount),
+      recordedAt: formatDateTimeId(trx.recordedAt),
+      paidAt: formatDateTimeId(trx.paidAt ?? trx.recordedAt),
+      items: (trx.items ?? []).map((item) => ({
+        ...item,
+        unitPrice: Number(item.unitPrice ?? 0),
+      })),
+    }
+  })
+}
+
+export async function fetchAdminSalesReport(params?: {
+  startDate?: string
+  endDate?: string
+  groupBy?: 'day' | 'month'
+}): Promise<AdminSalesReportResponse> {
+  const qs = new URLSearchParams()
+  if (params?.startDate) qs.set('startDate', params.startDate)
+  if (params?.endDate) qs.set('endDate', params.endDate)
+  if (params?.groupBy) qs.set('groupBy', params.groupBy)
+  const suffix = qs.toString() ? `?${qs.toString()}` : ''
+
+  const res = await apiClient.get<AdminSalesReportResponse>(
+    `/admin/reports/sales${suffix}`,
+  )
+  return res.data
+}
+
 export async function toggleAdminOrderAccess(
   orderId: string,
   isRevoked: boolean,

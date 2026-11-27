@@ -16,14 +16,3 @@ export function formatRupiah(amount: string | number): string {
     maximumFractionDigits: 0,
   }).format(num)
 }
-
-export function formatPercent(value: number, decimals: number = 1): string {
-  return `${value.toFixed(decimals)}%`
-}
-
-export function formatCompactNumber(value: number): string {
-  return new Intl.NumberFormat('id-ID', {
-    notation: 'compact',
-    compactDisplay: 'short',
-  }).format(value)
-}

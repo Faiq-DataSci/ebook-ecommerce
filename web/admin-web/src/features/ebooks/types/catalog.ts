@@ -1,16 +1,4 @@
 // Tipe data Domain Katalog & Produk (Admin Web)
-// Re-export tipe kategori dari fitur categories agar impor lama tetap kompatibel
-
-export type {
-  CategoryFormData,
-  CategoryFormErrors,
-  CategoryFormField,
-  CategoryListItem,
-  CategoryOption,
-  CategorySortColumn,
-  CategoryStatus,
-  CategoryTableFilters,
-} from '../../categories/types/category'
 
 export type EbookStatus = 'AKTIF' | 'ARSIP'
 

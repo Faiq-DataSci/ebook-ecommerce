@@ -20,7 +20,7 @@ const formatRupiah = (val: number): string => {
 // ============================================================================
 // DATA SIMULASI: Seri Waktu Harian (30 Hari Terakhir)
 // ============================================================================
-export const MOCK_DAILY_SERIES: TimeSeriesPoint[] = [
+const MOCK_DAILY_SERIES: TimeSeriesPoint[] = [
   {
     date: '2026-10-25',
     label: '25 Okt',
@@ -297,7 +297,7 @@ export const MOCK_DAILY_SERIES: TimeSeriesPoint[] = [
 // ============================================================================
 // DATA SIMULASI: Breakdown Kategori E-Book
 // ============================================================================
-export const MOCK_CATEGORY_BREAKDOWN: CategoryBreakdownItem[] = [
+const MOCK_CATEGORY_BREAKDOWN: CategoryBreakdownItem[] = [
   {
     id: 'cat-rpl',
     name: 'Rekayasa Perangkat Lunak',
@@ -363,7 +363,7 @@ export const MOCK_CATEGORY_BREAKDOWN: CategoryBreakdownItem[] = [
 // ============================================================================
 // DATA SIMULASI: Corong Konversi Pembayaran (Conversion Funnel)
 // ============================================================================
-export const MOCK_FUNNEL_STAGES: FunnelStage[] = [
+const MOCK_FUNNEL_STAGES: FunnelStage[] = [
   {
     id: 'stage-views',
     label: 'Eksplorasi Katalog',
@@ -412,7 +412,7 @@ export const MOCK_FUNNEL_STAGES: FunnelStage[] = [
 // ============================================================================
 // DATA SIMULASI: Pangsa Metode Pembayaran
 // ============================================================================
-export const MOCK_PAYMENT_SHARES: PaymentMethodShare[] = [
+const MOCK_PAYMENT_SHARES: PaymentMethodShare[] = [
   {
     id: 'pay-qris',
     name: 'QRIS (GoPay, ShopeePay, Dana, BCA Mobile)',
@@ -448,7 +448,7 @@ export const MOCK_PAYMENT_SHARES: PaymentMethodShare[] = [
 // ============================================================================
 // DATA SIMULASI: Matriks Performa E-Book Teratas
 // ============================================================================
-export const MOCK_TOP_EBOOKS: TopPerformingEbook[] = [
+const MOCK_TOP_EBOOKS: TopPerformingEbook[] = [
   {
     id: 'eb-01',
     title: 'DATA SIMULASI — Arsitektur Microservices Modern dengan Node.js & Go',

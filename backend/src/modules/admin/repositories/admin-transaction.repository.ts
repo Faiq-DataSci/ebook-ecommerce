@@ -3,6 +3,8 @@ import { AppError } from '../../../utils/app-error.js'
 import type {
   GetAdminOrdersQuery,
   GetAdminPaymentsQuery,
+  GetAdminSalesReportQuery,
+  GetAdminTransactionsQuery,
 } from '../admin.schema.js'
 
 const orderInclude = {
@@ -321,4 +323,308 @@ export async function toggleAdminOrderAccessRecord(
   }
 
   return mapRawOrder(updated)
+}
+
+export async function findAdminOrderByIdRecord(orderId: string) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: orderInclude,
+  })
+
+  if (!order) {
+    throw new AppError(404, 'ORDER_NOT_FOUND', 'Pesanan tidak ditemukan')
+  }
+
+  return {
+    ...mapRawOrder(order),
+    payments: order.payments.map((payment) => ({
+      id: payment.id,
+      provider: payment.provider,
+      paymentMethod: payment.paymentMethod,
+      amount: Number(payment.amount ?? 0),
+      status: payment.status,
+      externalRef: payment.externalRef,
+      expiresAt: payment.expiresAt?.toISOString() ?? null,
+      paidAt: payment.paidAt?.toISOString() ?? null,
+      createdAt: payment.createdAt.toISOString(),
+    })),
+    ebookAccesses: order.ebookAccesses.map((access) => ({
+      id: access.id,
+      ebookId: access.ebookId,
+      grantedAt: access.grantedAt.toISOString(),
+      isRevoked: access.isRevoked,
+    })),
+  }
+}
+
+function buildDateRangeFilter(startDate?: string, endDate?: string) {
+  if (!startDate && !endDate) return undefined
+  const range: Record<string, Date> = {}
+  if (startDate) {
+    range.gte = new Date(startDate)
+  }
+  if (endDate) {
+    const end = new Date(endDate)
+    if (endDate.length <= 10) {
+      end.setUTCHours(23, 59, 59, 999)
+    }
+    range.lte = end
+  }
+  return range
+}
+
+export async function findAdminTransactionRecords(query: GetAdminTransactionsQuery) {
+  const where: Record<string, unknown> = {}
+
+  const recordedAtRange = buildDateRangeFilter(query.startDate, query.endDate)
+  if (recordedAtRange) {
+    where.recordedAt = recordedAtRange
+  }
+
+  if (query.search) {
+    where.OR = [
+      { transactionCode: { contains: query.search, mode: 'insensitive' } },
+      { order: { orderNumber: { contains: query.search, mode: 'insensitive' } } },
+      { user: { fullName: { contains: query.search, mode: 'insensitive' } } },
+      { user: { email: { contains: query.search, mode: 'insensitive' } } },
+    ]
+  }
+
+  const skip = (query.page - 1) * query.limit
+
+  const [transactions, total] = await Promise.all([
+    prisma.transaction.findMany({
+      where,
+      include: {
+        order: {
+          select: {
+            id: true,
+            orderNumber: true,
+            status: true,
+            items: {
+              include: {
+                ebook: {
+                  select: {
+                    id: true,
+                    title: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        payment: {
+          select: {
+            id: true,
+            provider: true,
+            paymentMethod: true,
+            externalRef: true,
+            paidAt: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: { recordedAt: 'desc' },
+      skip,
+      take: query.limit,
+    }),
+    prisma.transaction.count({ where }),
+  ])
+
+  const items = transactions.map((trx) => ({
+    id: trx.id,
+    transactionCode: trx.transactionCode,
+    orderId: trx.orderId,
+    orderNumber: trx.order.orderNumber,
+    orderStatus: trx.order.status,
+    paymentId: trx.paymentId,
+    paymentProvider: trx.payment.provider,
+    paymentMethod: trx.payment.paymentMethod,
+    paymentRef: trx.payment.externalRef,
+    customerId: trx.user.id,
+    customerName: trx.user.fullName,
+    customerEmail: trx.user.email,
+    amount: Number(trx.amount ?? 0),
+    recordedAt: trx.recordedAt.toISOString(),
+    paidAt: trx.payment.paidAt?.toISOString() ?? null,
+    items: trx.order.items.map((item) => ({
+      ebookId: item.ebook.id,
+      title: item.ebook.title,
+      unitPrice: Number(item.unitPrice ?? 0),
+    })),
+  }))
+
+  return {
+    items,
+    meta: {
+      page: query.page,
+      limit: query.limit,
+      total,
+      totalPages: Math.max(1, Math.ceil(total / query.limit)),
+    },
+  }
+}
+
+export async function getAdminSalesReportRecord(query: GetAdminSalesReportQuery) {
+  const where: Record<string, unknown> = {}
+  const recordedAtRange = buildDateRangeFilter(query.startDate, query.endDate)
+  if (recordedAtRange) {
+    where.recordedAt = recordedAtRange
+  }
+
+  const transactions = await prisma.transaction.findMany({
+    where,
+    include: {
+      order: {
+        select: {
+          items: {
+            include: {
+              ebook: {
+                select: {
+                  id: true,
+                  title: true,
+                  category: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    orderBy: { recordedAt: 'asc' },
+  })
+
+  let totalRevenue = 0
+  const periodMap = new Map<string, { period: string; revenue: number; transactionsCount: number }>()
+  const ebookMap = new Map<
+    string,
+    { ebookId: string; title: string; categoryName: string; unitsSold: number; revenue: number }
+  >()
+
+  for (const trx of transactions) {
+    const amount = Number(trx.amount ?? 0)
+    totalRevenue += amount
+
+    const iso = trx.recordedAt.toISOString()
+    const periodKey = query.groupBy === 'month' ? iso.slice(0, 7) : iso.slice(0, 10)
+    const periodBucket = periodMap.get(periodKey) ?? {
+      period: periodKey,
+      revenue: 0,
+      transactionsCount: 0,
+    }
+    periodBucket.revenue += amount
+    periodBucket.transactionsCount += 1
+    periodMap.set(periodKey, periodBucket)
+
+    for (const item of trx.order.items) {
+      const unitPrice = Number(item.unitPrice ?? 0)
+      const existingEbook = ebookMap.get(item.ebook.id) ?? {
+        ebookId: item.ebook.id,
+        title: item.ebook.title,
+        categoryName: item.ebook.category?.name ?? 'Umum',
+        unitsSold: 0,
+        revenue: 0,
+      }
+      existingEbook.unitsSold += 1
+      existingEbook.revenue += unitPrice
+      ebookMap.set(item.ebook.id, existingEbook)
+    }
+  }
+
+  const totalTransactions = transactions.length
+  const averageOrderValue =
+    totalTransactions > 0 ? Math.round(totalRevenue / totalTransactions) : 0
+
+  const topEbooks = Array.from(ebookMap.values())
+    .sort((a, b) => b.revenue - a.revenue || b.unitsSold - a.unitsSold)
+    .slice(0, 10)
+
+  return {
+    period: {
+      startDate: query.startDate ?? null,
+      endDate: query.endDate ?? null,
+      groupBy: query.groupBy,
+    },
+    summary: {
+      totalRevenue,
+      totalTransactions,
+      averageOrderValue,
+    },
+    series: Array.from(periodMap.values()),
+    topEbooks,
+  }
+}
+
+export async function toggleAdminAccessByIdRecord(
+  accessId: string,
+  isRevoked: boolean,
+  actorSupabaseId?: string,
+) {
+  const existing = await prisma.ebookAccess.findUnique({
+    where: { id: accessId },
+    include: {
+      user: { select: { id: true, fullName: true, email: true } },
+      ebook: { select: { id: true, title: true } },
+      order: { select: { id: true, orderNumber: true } },
+    },
+  })
+
+  if (!existing) {
+    throw new AppError(404, 'ACCESS_NOT_FOUND', 'Hak akses e-book tidak ditemukan')
+  }
+
+  let actorId: string | null = null
+  if (actorSupabaseId) {
+    const actor = await prisma.user.findUnique({
+      where: { supabaseUserId: actorSupabaseId },
+      select: { id: true },
+    })
+    actorId = actor?.id ?? null
+  }
+
+  const [updated] = await prisma.$transaction([
+    prisma.ebookAccess.update({
+      where: { id: accessId },
+      data: { isRevoked },
+    }),
+    prisma.auditLog.create({
+      data: {
+        actorId,
+        action: isRevoked
+          ? 'ADMIN_REVOKE_EBOOK_ACCESS'
+          : 'ADMIN_RESTORE_EBOOK_ACCESS',
+        entityType: 'EBOOK_ACCESS',
+        entityId: accessId,
+        metadata: {
+          orderNumber: existing.order.orderNumber,
+          ebookId: existing.ebookId,
+          userId: existing.userId,
+          isRevoked,
+        },
+      },
+    }),
+  ])
+
+  return {
+    id: updated.id,
+    userId: updated.userId,
+    customerName: existing.user.fullName,
+    customerEmail: existing.user.email,
+    ebookId: updated.ebookId,
+    ebookTitle: existing.ebook.title,
+    orderId: updated.orderId,
+    orderNumber: existing.order.orderNumber,
+    grantedAt: updated.grantedAt.toISOString(),
+    isRevoked: updated.isRevoked,
+  }
 }

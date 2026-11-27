@@ -7,6 +7,8 @@ import type {
   GetAdminEbooksQuery,
   GetAdminOrdersQuery,
   GetAdminPaymentsQuery,
+  GetAdminSalesReportQuery,
+  GetAdminTransactionsQuery,
   UpdateCategoryInput,
   UpdateEbookInput,
   UpdateSawWeightsInput,
@@ -83,12 +85,28 @@ export class AdminService {
     return this.repo.findAdminOrders(query)
   }
 
+  async getAdminOrderById(orderId: string) {
+    return this.repo.findAdminOrderById(orderId)
+  }
+
   async getAdminPayments(query: GetAdminPaymentsQuery) {
     return this.repo.findAdminPayments(query)
   }
 
+  async getAdminTransactions(query: GetAdminTransactionsQuery) {
+    return this.repo.findAdminTransactions(query)
+  }
+
+  async getAdminSalesReport(query: GetAdminSalesReportQuery) {
+    return this.repo.getAdminSalesReport(query)
+  }
+
   async toggleOrderAccess(orderId: string, isRevoked: boolean, actorUserId?: string) {
     return this.repo.toggleOrderAccess(orderId, isRevoked, actorUserId)
+  }
+
+  async toggleAccessById(accessId: string, isRevoked: boolean, actorUserId?: string) {
+    return this.repo.toggleAccessById(accessId, isRevoked, actorUserId)
   }
 }
 

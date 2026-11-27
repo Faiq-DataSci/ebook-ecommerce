@@ -12,6 +12,8 @@ import type {
   GetAdminEbooksQuery,
   GetAdminOrdersQuery,
   GetAdminPaymentsQuery,
+  GetAdminSalesReportQuery,
+  GetAdminTransactionsQuery,
 } from './admin.schema.js'
 
 export async function getDashboard(_req: Request, res: Response, next: NextFunction) {
@@ -282,6 +284,51 @@ export async function toggleOrderAccess(req: Request, res: Response, next: NextF
     const msg = isRevoked
       ? 'Hak akses e-book pada pesanan berhasil dicabut'
       : 'Hak akses e-book pada pesanan berhasil dipulihkan'
+    sendSuccess(res, updated, 200, undefined, msg)
+  } catch (err) {
+    next(err)
+  }
+}
+
+export async function getAdminOrderById(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params as { id: string }
+    const order = await adminService.getAdminOrderById(id)
+    sendSuccess(res, order, 200, undefined, 'Detail pesanan admin berhasil dimuat')
+  } catch (err) {
+    next(err)
+  }
+}
+
+export async function getAdminTransactions(req: Request, res: Response, next: NextFunction) {
+  try {
+    const query = req.query as unknown as GetAdminTransactionsQuery
+    const { items, meta } = await adminService.getAdminTransactions(query)
+    sendSuccess(res, items, 200, meta, 'Daftar transaksi resmi berhasil dimuat')
+  } catch (err) {
+    next(err)
+  }
+}
+
+export async function getAdminSalesReport(req: Request, res: Response, next: NextFunction) {
+  try {
+    const query = req.query as unknown as GetAdminSalesReportQuery
+    const report = await adminService.getAdminSalesReport(query)
+    sendSuccess(res, report, 200, undefined, 'Laporan penjualan periodik berhasil dimuat')
+  } catch (err) {
+    next(err)
+  }
+}
+
+export async function toggleAccessById(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params as { id: string }
+    const { isRevoked } = req.body as { isRevoked: boolean }
+    const actorSupabaseId = req.user?.id
+    const updated = await adminService.toggleAccessById(id, isRevoked, actorSupabaseId)
+    const msg = isRevoked
+      ? 'Hak akses e-book pelanggan berhasil dicabut'
+      : 'Hak akses e-book pelanggan berhasil dipulihkan'
     sendSuccess(res, updated, 200, undefined, msg)
   } catch (err) {
     next(err)

@@ -1169,5 +1169,200 @@ describe('Admin Routes Integration Tests (/api/v1/admin)', () => {
       expect(res.status).toBe(400)
       expect(res.body.error.code).toBe('VALIDATION_ERROR')
     })
+
+    it('returns 200 with order details on GET /api/v1/admin/orders/:id', async () => {
+      vi.spyOn(supabaseConfig, 'getSupabaseAdmin').mockReturnValue(mockAdminSupabase as any)
+      vi.spyOn(adminRepository, 'findAdminOrderById').mockResolvedValueOnce({
+        id: 'd0000000-0000-4000-8000-000000000001',
+        orderNumber: 'ORD-20261127-001',
+        customerId: 'c0000000-0000-4000-8000-000000000001',
+        customerName: 'Rina Kartika',
+        customerEmail: 'rina@example.com',
+        customerPhone: null,
+        totalAmount: 120000,
+        status: 'PAID',
+        paymentMethod: 'QRIS',
+        paymentGatewayRef: 'MID-TRX-001',
+        paymentExpiresAt: new Date().toISOString(),
+        paidAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        transactionCode: 'TRX-001',
+        ebookAccessGranted: true,
+        ebookAccessRevoked: false,
+        accessCount: 1,
+        rawWebhookPayload: null,
+        items: [],
+        payments: [
+          {
+            id: 'e0000000-0000-4000-8000-000000000001',
+            provider: 'midtrans',
+            paymentMethod: 'QRIS',
+            amount: 120000,
+            status: 'VERIFIED',
+            externalRef: 'MID-TRX-001',
+            expiresAt: null,
+            paidAt: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+          },
+        ],
+        ebookAccesses: [
+          {
+            id: 'f0000000-0000-4000-8000-000000000001',
+            ebookId: 'b0000000-0000-4000-8000-000000000001',
+            grantedAt: new Date().toISOString(),
+            isRevoked: false,
+          },
+        ],
+      })
+
+      const res = await request(app)
+        .get('/api/v1/admin/orders/d0000000-0000-4000-8000-000000000001')
+        .set('Authorization', 'Bearer admin-token')
+
+      expect(res.status).toBe(200)
+      expect(res.body.success).toBe(true)
+      expect(res.body.data.orderNumber).toBe('ORD-20261127-001')
+      expect(res.body.data.payments).toHaveLength(1)
+      expect(res.body.data.ebookAccesses).toHaveLength(1)
+    })
+
+    it('returns 404 ORDER_NOT_FOUND when order does not exist on GET /api/v1/admin/orders/:id', async () => {
+      vi.spyOn(supabaseConfig, 'getSupabaseAdmin').mockReturnValue(mockAdminSupabase as any)
+      vi.spyOn(adminRepository, 'findAdminOrderById').mockRejectedValueOnce(
+        new AppError(404, 'ORDER_NOT_FOUND', 'Pesanan tidak ditemukan'),
+      )
+
+      const res = await request(app)
+        .get('/api/v1/admin/orders/d0000000-0000-4000-8000-000000000099')
+        .set('Authorization', 'Bearer admin-token')
+
+      expect(res.status).toBe(404)
+      expect(res.body.error.code).toBe('ORDER_NOT_FOUND')
+    })
+
+    it('returns 200 with paginated transactions on GET /api/v1/admin/transactions', async () => {
+      vi.spyOn(supabaseConfig, 'getSupabaseAdmin').mockReturnValue(mockAdminSupabase as any)
+      vi.spyOn(adminRepository, 'findAdminTransactions').mockResolvedValueOnce({
+        items: [
+          {
+            id: 'a1000000-0000-4000-8000-000000000001',
+            transactionCode: 'TRX-20261127-001',
+            orderId: 'd0000000-0000-4000-8000-000000000001',
+            orderNumber: 'ORD-20261127-001',
+            orderStatus: 'PAID',
+            paymentId: 'e0000000-0000-4000-8000-000000000001',
+            paymentProvider: 'midtrans',
+            paymentMethod: 'QRIS',
+            paymentRef: 'MID-TRX-001',
+            customerId: 'c0000000-0000-4000-8000-000000000001',
+            customerName: 'Rina Kartika',
+            customerEmail: 'rina@example.com',
+            amount: 120000,
+            recordedAt: new Date().toISOString(),
+            paidAt: new Date().toISOString(),
+            items: [
+              {
+                ebookId: 'b0000000-0000-4000-8000-000000000001',
+                title: 'Arsitektur Web Skala Besar',
+                unitPrice: 120000,
+              },
+            ],
+          },
+        ],
+        meta: { page: 1, limit: 20, total: 1, totalPages: 1 },
+      })
+
+      const res = await request(app)
+        .get('/api/v1/admin/transactions?startDate=2026-11-01&endDate=2026-11-30')
+        .set('Authorization', 'Bearer admin-token')
+
+      expect(res.status).toBe(200)
+      expect(res.body.success).toBe(true)
+      expect(res.body.data).toHaveLength(1)
+      expect(res.body.data[0].transactionCode).toBe('TRX-20261127-001')
+      expect(res.body.meta.total).toBe(1)
+    })
+
+    it('returns 200 with sales report on GET /api/v1/admin/reports/sales', async () => {
+      vi.spyOn(supabaseConfig, 'getSupabaseAdmin').mockReturnValue(mockAdminSupabase as any)
+      vi.spyOn(adminRepository, 'getAdminSalesReport').mockResolvedValueOnce({
+        period: { startDate: '2026-11-01', endDate: '2026-11-30', groupBy: 'day' },
+        summary: {
+          totalRevenue: 240000,
+          totalTransactions: 2,
+          averageOrderValue: 120000,
+        },
+        series: [{ period: '2026-11-27', revenue: 240000, transactionsCount: 2 }],
+        topEbooks: [
+          {
+            ebookId: 'b0000000-0000-4000-8000-000000000001',
+            title: 'Arsitektur Web Skala Besar',
+            categoryName: 'Teknologi',
+            unitsSold: 2,
+            revenue: 240000,
+          },
+        ],
+      })
+
+      const res = await request(app)
+        .get('/api/v1/admin/reports/sales?startDate=2026-11-01&endDate=2026-11-30&groupBy=day')
+        .set('Authorization', 'Bearer admin-token')
+
+      expect(res.status).toBe(200)
+      expect(res.body.success).toBe(true)
+      expect(res.body.data.summary.totalRevenue).toBe(240000)
+      expect(res.body.data.series).toHaveLength(1)
+      expect(res.body.data.topEbooks).toHaveLength(1)
+    })
+
+    it('returns 400 VALIDATION_ERROR for invalid groupBy on GET /api/v1/admin/reports/sales', async () => {
+      vi.spyOn(supabaseConfig, 'getSupabaseAdmin').mockReturnValue(mockAdminSupabase as any)
+
+      const res = await request(app)
+        .get('/api/v1/admin/reports/sales?groupBy=year')
+        .set('Authorization', 'Bearer admin-token')
+
+      expect(res.status).toBe(400)
+      expect(res.body.error.code).toBe('VALIDATION_ERROR')
+    })
+
+    it('returns 200 when revoking access by ID on PATCH /api/v1/admin/accesses/:id', async () => {
+      vi.spyOn(supabaseConfig, 'getSupabaseAdmin').mockReturnValue(mockAdminSupabase as any)
+      vi.spyOn(adminRepository, 'toggleAccessById').mockResolvedValueOnce({
+        id: 'f0000000-0000-4000-8000-000000000001',
+        userId: 'c0000000-0000-4000-8000-000000000001',
+        customerName: 'Rina Kartika',
+        customerEmail: 'rina@example.com',
+        ebookId: 'b0000000-0000-4000-8000-000000000001',
+        ebookTitle: 'Arsitektur Web Skala Besar',
+        orderId: 'd0000000-0000-4000-8000-000000000001',
+        orderNumber: 'ORD-20261127-001',
+        grantedAt: new Date().toISOString(),
+        isRevoked: true,
+      })
+
+      const res = await request(app)
+        .patch('/api/v1/admin/accesses/f0000000-0000-4000-8000-000000000001')
+        .set('Authorization', 'Bearer admin-token')
+        .send({ isRevoked: true })
+
+      expect(res.status).toBe(200)
+      expect(res.body.success).toBe(true)
+      expect(res.body.data.isRevoked).toBe(true)
+      expect(res.body.message).toContain('dicabut')
+    })
+
+    it('returns 400 VALIDATION_ERROR for invalid UUID on PATCH /api/v1/admin/accesses/:id', async () => {
+      vi.spyOn(supabaseConfig, 'getSupabaseAdmin').mockReturnValue(mockAdminSupabase as any)
+
+      const res = await request(app)
+        .patch('/api/v1/admin/accesses/not-a-uuid')
+        .set('Authorization', 'Bearer admin-token')
+        .send({ isRevoked: true })
+
+      expect(res.status).toBe(400)
+      expect(res.body.error.code).toBe('VALIDATION_ERROR')
+    })
   })
 })

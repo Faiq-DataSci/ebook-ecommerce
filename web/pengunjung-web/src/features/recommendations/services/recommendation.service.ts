@@ -12,13 +12,13 @@ import type {
  * Dataset simulasi resmi dari docs/03-saw/perhitungan-manual.md & api-saw-contract.md
  * Digunakan sebagai fallback terverifikasi berlabel DATA SIMULASI bila backend offline.
  */
-export const SIMULATION_ACTIVE_CRITERIA: SawCriterionInfo[] = [
+const SIMULATION_ACTIVE_CRITERIA: SawCriterionInfo[] = [
   { id: 'C1', name: 'Harga E-Book', field: 'price', type: 'COST', weight: 0.4 },
   { id: 'C2', name: 'Rating Rata-Rata', field: 'ratingAvg', type: 'BENEFIT', weight: 0.35 },
   { id: 'C3', name: 'Jumlah Terjual', field: 'salesCount', type: 'BENEFIT', weight: 0.25 },
 ];
 
-export const SIMULATION_RECOMMENDATIONS_DATA: SawRecommendationItem[] = [
+const SIMULATION_RECOMMENDATIONS_DATA: SawRecommendationItem[] = [
   {
     rank: 1,
     ebookId: 'ebook-sim-003',

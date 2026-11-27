@@ -13,11 +13,6 @@ export const prisma = new PrismaClient({
   adapter,
 });
 
-export async function checkDatabaseConnection(): Promise<boolean> {
-  await prisma.$queryRaw`SELECT 1`;
-  return true;
-}
-
 export async function disconnectDatabase(): Promise<void> {
   await prisma.$disconnect();
   await pool.end();
