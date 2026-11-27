@@ -1,0 +1,571 @@
+/* ==========================================================================
+   Audit Matriks SAW & Panel Perhitungan — Neubrutalism Zona C (Aksen Lavender)
+   Mengacu pada design.md v2.0 (§10.8 & §11 Transparansi SAW)
+   ========================================================================== */
+
+.saw-auditor {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+/* Header Panel */
+.saw-header-card {
+  padding: 18px 22px;
+  background-color: var(--nb-white);
+  border: var(--nb-border-thin);
+  box-shadow: var(--nb-shadow);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.saw-header-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 320px;
+}
+
+.saw-badge-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.saw-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border: var(--nb-border-thin);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--nb-black);
+  background-color: var(--nb-paper);
+}
+
+.saw-badge.is-lavender {
+  background-color: var(--nb-lavender);
+}
+
+.saw-badge.is-yellow {
+  background-color: var(--nb-yellow);
+  font-family: var(--font-mono);
+}
+
+.saw-badge.is-green {
+  background-color: var(--nb-green);
+}
+
+.saw-badge.is-pink {
+  background-color: var(--nb-pink);
+}
+
+.saw-badge.is-blue {
+  background-color: var(--nb-blue);
+}
+
+.saw-header-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--nb-black);
+}
+
+.saw-header-desc {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--nb-text-muted);
+}
+
+.saw-header-meta {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--nb-text-muted);
+}
+
+/* Reference Criteria & Extreme Values Strip */
+.saw-criteria-ref-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.saw-criteria-ref-card {
+  background-color: var(--nb-white);
+  border: var(--nb-border-thin);
+  box-shadow: var(--nb-shadow-sm);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.saw-criteria-ref-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.saw-criteria-code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 2px 8px;
+  background-color: var(--nb-lavender);
+  border: var(--nb-border-thin);
+  color: var(--nb-black);
+}
+
+.saw-criteria-name {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--nb-black);
+}
+
+.saw-criteria-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 2px solid var(--nb-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--nb-black);
+}
+
+/* Table Section Header */
+.saw-stage-head {
+  padding: 14px 18px;
+  border-bottom: var(--nb-border-thin);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.saw-stage-head.is-yellow {
+  background-color: var(--nb-yellow);
+}
+
+.saw-stage-head.is-paper {
+  background-color: var(--nb-paper);
+}
+
+.saw-stage-head.is-lavender {
+  background-color: var(--nb-lavender);
+}
+
+.saw-stage-head.is-green {
+  background-color: var(--nb-green);
+}
+
+.saw-stage-kicker {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--nb-black);
+}
+
+.saw-stage-title {
+  margin: 2px 0 0;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--nb-black);
+}
+
+.saw-stage-note {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  background-color: var(--nb-white);
+  border: var(--nb-border-thin);
+  color: var(--nb-black);
+}
+
+.saw-alt-code {
+  display: inline-block;
+  padding: 2px 7px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  background-color: var(--nb-paper);
+  border: var(--nb-border-thin);
+  color: var(--nb-black);
+}
+
+.saw-optimal-val {
+  display: inline-block;
+  padding: 1px 6px;
+  background-color: var(--nb-green);
+  border: 1.5px solid var(--nb-black);
+  font-weight: 700;
+  color: var(--nb-black);
+}
+
+/* ==========================================================================
+   Panel Khusus Perhitungan SAW (Di Luar Tabel — Interaktif & Terstruktur)
+   ========================================================================== */
+
+.saw-calc-panel {
+  background-color: var(--nb-white);
+  border: var(--nb-border);
+  box-shadow: var(--nb-shadow);
+  overflow: hidden;
+}
+
+.saw-calc-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: var(--nb-paper);
+}
+
+/* Formula Cards */
+.saw-formula-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.saw-formula-card {
+  background-color: var(--nb-white);
+  border: var(--nb-border-thin);
+  box-shadow: var(--nb-shadow-sm);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.saw-formula-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--nb-black);
+}
+
+.saw-formula-box {
+  background-color: var(--nb-paper);
+  border: var(--nb-border-thin);
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--nb-black);
+}
+
+.saw-formula-note {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--nb-text-muted);
+}
+
+/* Alternative Selector Strip */
+.saw-selector-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.saw-selector-label {
+  font-family: var(--font-heading);
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--nb-black);
+}
+
+.saw-selector-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.saw-alt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 14px;
+  background-color: var(--nb-white);
+  border: var(--nb-border-thin);
+  box-shadow: var(--nb-shadow-xs);
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--nb-black);
+  cursor: pointer;
+  text-align: left;
+}
+
+.saw-alt-btn.is-active {
+  background-color: var(--nb-yellow);
+  box-shadow: var(--nb-shadow-sm);
+}
+
+.saw-alt-btn-code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 6px;
+  background-color: var(--nb-lavender);
+  border: 1.5px solid var(--nb-black);
+}
+
+/* Selected Alternative Walkthrough Box */
+.saw-walkthrough-box {
+  background-color: var(--nb-white);
+  border: var(--nb-border-thin);
+  box-shadow: var(--nb-shadow-sm);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.saw-walkthrough-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: var(--nb-border-thin);
+}
+
+.saw-walkthrough-book {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--nb-black);
+  margin: 0;
+}
+
+.saw-walkthrough-meta {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--nb-text-muted);
+}
+
+.saw-walkthrough-score-pill {
+  padding: 8px 14px;
+  background-color: var(--nb-yellow);
+  border: var(--nb-border-thin);
+  box-shadow: var(--nb-shadow-xs);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--nb-black);
+}
+
+/* Step 1 Normalization Cards */
+.saw-step-heading {
+  margin: 0 0 10px;
+  font-family: var(--font-heading);
+  font-size: 13.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--nb-black);
+}
+
+.saw-norm-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.saw-norm-step-card {
+  background-color: var(--nb-paper);
+  border: var(--nb-border-thin);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.saw-norm-step-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.saw-norm-equation {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--nb-black);
+  background-color: var(--nb-white);
+  border: 1.5px solid var(--nb-black);
+  padding: 8px 10px;
+  word-break: break-word;
+}
+
+.saw-norm-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--nb-black);
+}
+
+/* Step 2 Preference Score Equation Box */
+.saw-v-equation-box {
+  background-color: var(--nb-paper);
+  border: var(--nb-border-thin);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.saw-v-line {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--nb-black);
+  word-break: break-word;
+}
+
+.saw-v-total-line {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px 12px;
+  background-color: var(--nb-lavender);
+  border: var(--nb-border-thin);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--nb-black);
+}
+
+/* Segmented ScoreBar (design.md §11.1) */
+.saw-scorebar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.saw-scorebar-track {
+  width: 100%;
+  height: 24px;
+  background-color: var(--nb-white);
+  border: var(--nb-border-thin);
+  display: flex;
+  overflow: hidden;
+}
+
+.saw-scorebar-seg {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: var(--nb-border-thin);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--nb-black);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.saw-scorebar-seg.pattern-0 {
+  background-color: var(--nb-lavender);
+}
+
+.saw-scorebar-seg.pattern-1 {
+  background-color: var(--nb-yellow);
+}
+
+.saw-scorebar-seg.pattern-2 {
+  background-color: var(--nb-blue);
+}
+
+.saw-scorebar-seg.pattern-3 {
+  background-color: var(--nb-green);
+}
+
+.saw-scorebar-seg.pattern-4 {
+  background-color: var(--nb-orange);
+}
+
+.saw-scorebar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--nb-black);
+}
+
+.saw-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.saw-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--nb-black);
+  display: inline-block;
+}
+
+/* Ranking Table Mini ScoreBar */
+.saw-rank-bar-track {
+  width: 100%;
+  min-width: 120px;
+  height: 16px;
+  background-color: var(--nb-paper);
+  border: var(--nb-border-thin);
+  display: flex;
+  overflow: hidden;
+}
+
+.saw-rank-footer-note {
+  padding: 12px 18px;
+  background-color: var(--nb-paper);
+  border-top: var(--nb-border-thin);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--nb-text-muted);
+}
+
+@media (max-width: 900px) {
+  .saw-formula-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .saw-calc-body,
+  .saw-walkthrough-box,
+  .saw-header-card {
+    padding: 14px;
+  }
+}

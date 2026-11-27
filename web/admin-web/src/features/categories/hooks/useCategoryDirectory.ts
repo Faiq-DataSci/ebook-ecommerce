@@ -1,7 +1,13 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ToastMessage } from '../../../shared/components/ui'
 import { DEFAULT_CATEGORY_FILTERS } from '../constants/category.constants'
-import { MOCK_CATEGORIES } from '../data/categoryData'
+import {
+  createAdminCategory,
+  deleteAdminCategory,
+  fetchAdminCategories,
+  toggleAdminCategoryStatus,
+  updateAdminCategory,
+} from '../services/category.service'
 import type {
   CategoryFormData,
   CategoryListItem,
@@ -17,12 +23,12 @@ import {
 } from '../utils/category.utils'
 
 export function useCategoryDirectory() {
-  const [categories, setCategories] =
-    useState<CategoryListItem[]>(MOCK_CATEGORIES)
+  const [categories, setCategories] = useState<CategoryListItem[]>([])
   const [filters, setFilters] = useState<CategoryTableFilters>(
     DEFAULT_CATEGORY_FILTERS,
   )
-  const [isLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [toasts, setToasts] = useState<ToastMessage[]>([])
 
   const addToast = useCallback(
@@ -35,6 +41,56 @@ export function useCategoryDirectory() {
 
   const dismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id))
+  }, [])
+
+  const loadCategories = useCallback(
+    async (showFeedback = false) => {
+      setIsLoading(true)
+      setErrorMessage(null)
+      try {
+        const list = await fetchAdminCategories()
+        setCategories(list)
+        if (showFeedback) {
+          addToast('info', 'Data kategori berhasil disinkronkan dari server.')
+        }
+      } catch (err) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : 'Gagal memuat daftar kategori dari server backend.'
+        setErrorMessage(message)
+        if (showFeedback) {
+          addToast('error', message)
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [addToast],
+  )
+
+  useEffect(() => {
+    let isMounted = true
+    fetchAdminCategories()
+      .then((list) => {
+        if (!isMounted) return
+        setCategories(list)
+        setErrorMessage(null)
+      })
+      .catch((err) => {
+        if (!isMounted) return
+        const message =
+          err instanceof Error
+            ? err.message
+            : 'Gagal memuat daftar kategori dari server backend.'
+        setErrorMessage(message)
+      })
+      .finally(() => {
+        if (isMounted) setIsLoading(false)
+      })
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const filteredAndSortedCategories = useMemo(() => {
@@ -103,71 +159,84 @@ export function useCategoryDirectory() {
   }, [])
 
   const refreshCategories = useCallback(() => {
-    setCategories((prev) => [...prev])
-    addToast('info', 'Data kategori berhasil disegarkan.')
-  }, [addToast])
+    void loadCategories(true)
+  }, [loadCategories])
 
   const createCategory = useCallback(
-    (data: CategoryFormData) => {
-      const trimmedName = data.name.trim()
-      const newCategory: CategoryListItem = {
-        id: `cat-${Date.now()}`,
-        name: trimmedName,
-        slug: data.slug.trim(),
-        description: data.description.trim() || null,
-        isActive: data.isActive,
-        ebookCount: 0,
-        createdAt: new Date().toISOString(),
+    async (data: CategoryFormData) => {
+      try {
+        const res = await createAdminCategory(data)
+        setFilters((prev) => ({ ...prev, page: 1 }))
+        await loadCategories(false)
+        addToast('success', res.message)
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Gagal menambahkan kategori.'
+        addToast('error', message)
+        throw err
       }
-      setCategories((prev) => [newCategory, ...prev])
-      setFilters((prev) => ({ ...prev, page: 1 }))
-      addToast('success', `Kategori "${trimmedName}" berhasil ditambahkan.`)
     },
-    [addToast],
+    [addToast, loadCategories],
   )
 
   const updateCategory = useCallback(
-    (categoryId: string, data: CategoryFormData) => {
-      const trimmedName = data.name.trim()
-      setCategories((prev) =>
-        prev.map((category) =>
-          category.id === categoryId
-            ? {
-                ...category,
-                name: trimmedName,
-                slug: data.slug.trim(),
-                description: data.description.trim() || null,
-                isActive: data.isActive,
-              }
-            : category,
-        ),
-      )
-      addToast('success', `Kategori "${trimmedName}" berhasil diperbarui.`)
+    async (categoryId: string, data: CategoryFormData) => {
+      try {
+        const res = await updateAdminCategory(categoryId, data)
+        await loadCategories(false)
+        addToast('success', res.message)
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Gagal memperbarui kategori.'
+        addToast('error', message)
+        throw err
+      }
     },
-    [addToast],
+    [addToast, loadCategories],
+  )
+
+  const toggleCategoryStatus = useCallback(
+    async (target: CategoryListItem): Promise<boolean> => {
+      const nextActive = !target.isActive
+      try {
+        const res = await toggleAdminCategoryStatus(target.id, nextActive)
+        await loadCategories(false)
+        addToast('success', res.message)
+        return true
+      } catch (err) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : 'Gagal mengubah status kategori.'
+        addToast('error', message)
+        return false
+      }
+    },
+    [addToast, loadCategories],
   )
 
   const deleteCategory = useCallback(
-    (target: CategoryListItem): boolean => {
-      if (target.ebookCount > 0) {
-        addToast(
-          'error',
-          `Kategori masih dipakai oleh ${target.ebookCount} e-book. Pindahkan atau arsipkan e-book terkait terlebih dahulu.`,
-        )
+    async (target: CategoryListItem): Promise<boolean> => {
+      try {
+        const res = await deleteAdminCategory(target.id)
+        await loadCategories(false)
+        addToast('success', res.message)
+        return true
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Gagal menghapus kategori.'
+        addToast('error', message)
         return false
       }
-
-      setCategories((prev) => prev.filter((item) => item.id !== target.id))
-      addToast('success', `Kategori "${target.name}" berhasil dihapus.`)
-      return true
     },
-    [addToast],
+    [addToast, loadCategories],
   )
 
   return {
     categories,
     filters,
     isLoading,
+    errorMessage,
     toasts,
     filteredTotal: filteredAndSortedCategories.length,
     paginatedCategories,
@@ -183,6 +252,7 @@ export function useCategoryDirectory() {
     refreshCategories,
     createCategory,
     updateCategory,
+    toggleCategoryStatus,
     deleteCategory,
     dismissToast,
   }

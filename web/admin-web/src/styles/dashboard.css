@@ -1216,19 +1216,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 8px;
-}
-
-.quick-shortcut-icon-box {
-  width: 34px;
-  height: 34px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1.5px solid var(--nb-black);
-  box-shadow: 1.5px 1.5px 0px var(--nb-black);
-  color: var(--nb-black);
-  flex-shrink: 0;
 }
 
 .quick-shortcut-badge {
@@ -1237,9 +1226,9 @@
   font-weight: 800;
   text-transform: uppercase;
   padding: 2px 6px;
-  background-color: var(--nb-black);
-  color: var(--nb-white);
-  border: 1px solid var(--nb-black);
+  background-color: var(--nb-yellow);
+  color: var(--nb-black);
+  border: 1.5px solid var(--nb-black);
   letter-spacing: 0.02em;
 }
 

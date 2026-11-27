@@ -207,9 +207,11 @@ export function SawCalculationDetailModal({
               <tbody>
                 {item.calculationSteps.map((step) => {
                   const displayRaw =
-                    step.criterionId === 'C1'
+                    step.field === 'price' || step.criterionId === 'C1'
                       ? formatCurrency(step.rawValue)
-                      : String(step.rawValue);
+                      : step.field === 'pageCount'
+                        ? `${step.rawValue} hal.`
+                        : String(step.rawValue);
 
                   return (
                     <tr key={step.criterionId} style={{ backgroundColor: 'var(--nb-white)' }}>

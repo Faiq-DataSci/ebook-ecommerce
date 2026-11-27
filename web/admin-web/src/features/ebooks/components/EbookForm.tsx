@@ -100,7 +100,7 @@ export function EbookForm({
           className="nb-btn nb-dialog-btn-secondary"
           onClick={onCancel}
         >
-          ← Kembali ke Koleksi
+          Kembali ke Koleksi
         </button>
       </div>
 
@@ -439,11 +439,11 @@ export function EbookForm({
               <PrivateAssetUploader
                 label="Berkas Sampul Katalog"
                 accept="image/jpeg,image/png,image/webp"
-                maxSizeMB={2}
+                maxSizeMB={5}
                 isPrivate={false}
-                hint="Format JPG, PNG, atau WebP (maks. 2 MB • rasio 2:3)."
+                hint="Format JPG, PNG, atau WebP (maks. 5 MB • rasio 2:3)."
                 fileName={formData.coverFileName}
-                previewUrl={editingEbook?.coverUrl}
+                previewUrl={formData.coverUrl ?? editingEbook?.coverUrl}
                 onFileSelect={onCoverSelect}
                 onFileRemove={onCoverRemove}
               />
@@ -452,9 +452,9 @@ export function EbookForm({
               <PrivateAssetUploader
                 label="Dokumen Naskah PDF"
                 accept=".pdf"
-                maxSizeMB={50}
+                maxSizeMB={25}
                 isPrivate={true}
-                hint="Format .PDF dokumen resmi saja (maks. 50 MB)."
+                hint="Format .PDF dokumen resmi saja (maks. 25 MB)."
                 fileName={formData.pdfFileName}
                 onFileSelect={onPdfSelect}
                 onFileRemove={onPdfRemove}

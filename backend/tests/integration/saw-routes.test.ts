@@ -92,6 +92,12 @@ describe('SAW Recommendation Routes Integration Tests (GET /api/v1/recommendatio
     // Skor berurutan menurun (descending)
     expect(rank1.sawScore).toBeGreaterThanOrEqual(rank2.sawScore)
     expect(rank2.sawScore).toBeGreaterThanOrEqual(rank3.sawScore)
+
+    // Metadata activeCriteria dikembalikan untuk transparansi di Web & Mobile
+    expect(Array.isArray(res.body.meta.activeCriteria)).toBe(true)
+    expect(res.body.meta.activeCriteria.length).toBeGreaterThanOrEqual(1)
+    expect(res.body.meta.activeCriteria[0]).toHaveProperty('id')
+    expect(res.body.meta.activeCriteria[0]).toHaveProperty('weight')
   })
 
   it('GET /api/v1/recommendations/saw respects limit query parameter', async () => {

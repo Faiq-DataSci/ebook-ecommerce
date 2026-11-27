@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   ConfirmDialog,
+  TableSkeleton,
   Toast,
   type ToastMessage,
 } from '../../../shared/components/ui'
@@ -12,6 +13,10 @@ import {
   INITIAL_ORDERS_DATA,
   INITIAL_PAYMENTS_DATA,
 } from '../data/transactionFinanceData'
+import {
+  fetchAdminTransactionsData,
+  toggleAdminOrderAccess,
+} from '../services/transactionAdmin.service'
 import type {
   OrderRecord,
   OrderStatus,
@@ -41,8 +46,13 @@ export function TransactionFinancePage({
     }
   }
 
+  // State: Data Source & Loading
+  const [dataSource, setDataSource] = useState<'LIVE' | 'SIMULATION' | 'UNAVAILABLE'>('LIVE')
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
   // State: Orders Tab
-  const [orders, setOrders] = useState<OrderRecord[]>(INITIAL_ORDERS_DATA)
+  const [orders, setOrders] = useState<OrderRecord[]>([])
   const [orderSearch, setOrderSearch] = useState('')
   const [orderStatusFilter, setOrderStatusFilter] = useState<OrderStatus>('ALL')
   const [selectedOrder, setSelectedOrder] = useState<OrderRecord | null>(null)
@@ -50,21 +60,89 @@ export function TransactionFinancePage({
   const orderPageSize = 5
 
   // State: Payments Tab
-  const [payments, setPayments] = useState<PaymentAuditRecord[]>(INITIAL_PAYMENTS_DATA)
+  const [payments, setPayments] = useState<PaymentAuditRecord[]>([])
   const [paymentSearch, setPaymentSearch] = useState('')
   const [paymentStatusFilter, setPaymentStatusFilter] = useState<PaymentStatus>('ALL')
   const [selectedPaymentPayload, setSelectedPaymentPayload] = useState<PaymentAuditRecord | null>(null)
 
   // State: Feedback & Dialogs
   const [toasts, setToasts] = useState<ToastMessage[]>([])
-  const showToast = (type: ToastMessage['type'], text: string) => {
+  const showToast = useCallback((type: ToastMessage['type'], text: string) => {
     setToasts((prev) => [
       ...prev,
       { id: 'toast-' + Date.now() + Math.random(), type, text },
     ])
-  }
+  }, [])
   const dismissToast = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id))
+  }
+
+  const loadTransactions = useCallback(
+    async (showFeedback = false) => {
+      setIsLoading(true)
+      setErrorMessage(null)
+      try {
+        const res = await fetchAdminTransactionsData()
+        setOrders(res.orders)
+        setPayments(res.payments)
+        setDataSource('LIVE')
+        if (showFeedback) {
+          showToast('info', 'Data transaksi dan audit pembayaran berhasil disinkronkan dari server.')
+        }
+      } catch (err: unknown) {
+        const msg =
+          err instanceof Error
+            ? err.message
+            : 'Gagal memuat data transaksi dari server backend.'
+        setErrorMessage(msg)
+        setDataSource('UNAVAILABLE')
+        setOrders([])
+        setPayments([])
+        if (showFeedback) {
+          showToast('error', msg)
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [showToast],
+  )
+
+  useEffect(() => {
+    let mounted = true
+    fetchAdminTransactionsData()
+      .then((res) => {
+        if (!mounted) return
+        setOrders(res.orders)
+        setPayments(res.payments)
+        setDataSource('LIVE')
+        setErrorMessage(null)
+      })
+      .catch((err: unknown) => {
+        if (!mounted) return
+        const msg =
+          err instanceof Error
+            ? err.message
+            : 'Gagal memuat data transaksi dari server backend.'
+        setErrorMessage(msg)
+        setDataSource('UNAVAILABLE')
+        setOrders([])
+        setPayments([])
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false)
+      })
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  const handleEnableSimulation = () => {
+    setOrders(INITIAL_ORDERS_DATA)
+    setPayments(INITIAL_PAYMENTS_DATA)
+    setDataSource('SIMULATION')
+    setErrorMessage(null)
+    showToast('info', 'Menampilkan pratinjau DATA SIMULASI lokal.')
   }
 
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -117,21 +195,44 @@ export function TransactionFinancePage({
         : `Mencabut akses akan menonaktifkan izin unduh/baca PDF pelanggan ${order.customerName} pada buku ini. Tindakan ini dicatat pada audit log.`,
       confirmLabel: isRevoked ? 'Pulihkan Akses' : 'Cabut Akses',
       confirmVariant: isRevoked ? 'primary' : 'danger',
-      onConfirm: () => {
+      onConfirm: async () => {
+        setConfirmDialog((prev) => ({ ...prev, open: false }))
+        const nextRevoked = !isRevoked
+
+        if (dataSource === 'LIVE') {
+          try {
+            const res = await toggleAdminOrderAccess(order.id, nextRevoked)
+            setOrders((prev) =>
+              prev.map((o) => (o.id === order.id ? res.order : o)),
+            )
+            if (selectedOrder && selectedOrder.id === order.id) {
+              setSelectedOrder(res.order)
+            }
+            showToast(nextRevoked ? 'info' : 'success', res.message)
+          } catch (err: unknown) {
+            const msg =
+              err instanceof Error
+                ? err.message
+                : 'Gagal memperbarui hak akses digital pada server.'
+            showToast('error', msg)
+          }
+          return
+        }
+
         setOrders((prev) =>
           prev.map((o) =>
             o.id === order.id
               ? {
                   ...o,
-                  ebookAccessRevoked: !isRevoked,
+                  ebookAccessRevoked: nextRevoked,
                   timeline: [
                     ...o.timeline,
                     {
                       stage: isRevoked ? 'Hak Akses Dipulihkan' : 'Hak Akses Dicabut Admin',
                       timestamp: 'Baru saja',
                       description: isRevoked
-                        ? 'Admin memulihkan kembali hak akses membaca PDF.'
-                        : 'Admin mencabut hak akses EbookAccess (penanganan sengketa).',
+                        ? 'Admin memulihkan kembali hak akses membaca PDF (DATA SIMULASI).'
+                        : 'Admin mencabut hak akses EbookAccess (DATA SIMULASI).',
                       status: isRevoked ? 'completed' : 'failed',
                     },
                   ],
@@ -144,16 +245,15 @@ export function TransactionFinancePage({
             prev
               ? {
                   ...prev,
-                  ebookAccessRevoked: !isRevoked,
+                  ebookAccessRevoked: nextRevoked,
                 }
               : null,
           )
         }
         showToast(
           isRevoked ? 'success' : 'info',
-          `Status hak akses digital pesanan ${order.orderNumber} telah diperbarui.`,
+          `Status hak akses digital pesanan ${order.orderNumber} diperbarui (DATA SIMULASI).`,
         )
-        setConfirmDialog((prev) => ({ ...prev, open: false }))
       },
     })
   }
@@ -309,7 +409,9 @@ export function TransactionFinancePage({
               OPERASIONAL TRANSAKSI
             </span>
             <span className="tf-badge-zone">ZONA C: PADAT DATA</span>
-            <span className="tf-badge-simulation">DATA SIMULASI</span>
+            {dataSource === 'SIMULATION' && (
+              <span className="tf-badge-simulation">DATA SIMULASI</span>
+            )}
           </div>
           <h1 className="tf-page-title">Transaksi &amp; Pemenuhan Pesanan</h1>
           <p className="tf-page-subtitle">
@@ -318,6 +420,17 @@ export function TransactionFinancePage({
         </div>
 
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className="tf-action-btn"
+            style={{ minHeight: '40px', padding: '0 16px', backgroundColor: 'var(--nb-white)' }}
+            onClick={() => void loadTransactions(true)}
+            disabled={isLoading}
+            title="Segarkan Data Transaksi dari Backend"
+          >
+            <span>{isLoading ? 'Memuat...' : 'Segarkan'}</span>
+          </button>
+
           <button
             type="button"
             className="tf-action-btn"
@@ -333,12 +446,40 @@ export function TransactionFinancePage({
             className="tf-action-btn"
             style={{ minHeight: '40px', padding: '0 16px', backgroundColor: 'var(--nb-yellow)' }}
             onClick={handleExportCSV}
+            disabled={orders.length === 0}
             title="Ekspor CSV Pesanan"
           >
             <span>Unduh Rekap CSV</span>
           </button>
         </div>
       </div>
+
+      {errorMessage && dataSource === 'UNAVAILABLE' && (
+        <section className="sys-banner is-error" role="alert">
+          <div className="sys-banner-body">
+            <h2 className="sys-banner-title">
+              Gagal memuat data transaksi dari backend
+            </h2>
+            <p className="sys-banner-text">{errorMessage}</p>
+          </div>
+          <div className="sys-banner-actions">
+            <button
+              type="button"
+              className="sys-btn sys-btn-primary nb-btn"
+              onClick={() => void loadTransactions(true)}
+            >
+              Coba Lagi
+            </button>
+            <button
+              type="button"
+              className="sys-btn nb-btn"
+              onClick={handleEnableSimulation}
+            >
+              Lihat DATA SIMULASI
+            </button>
+          </div>
+        </section>
+      )}
 
       {/* Sub-Navigation Tabs Strip */}
       <div className="tf-nav-tabs" role="tablist" aria-label="Navigasi Submenu Transaksi">
@@ -383,35 +524,41 @@ export function TransactionFinancePage({
       </div>
 
       {/* TAB 1: SEMUA PESANAN */}
-      {activeTab === 'pesanan' && (
-        <OrdersTablePanel
-          orders={orders}
-          filteredOrders={filteredOrders}
-          orderSearch={orderSearch}
-          orderStatusFilter={orderStatusFilter}
-          orderPage={orderPage}
-          orderPageSize={orderPageSize}
-          setOrderSearch={setOrderSearch}
-          setOrderStatusFilter={setOrderStatusFilter}
-          setOrderPage={setOrderPage}
-          onSelectOrder={setSelectedOrder}
-        />
-      )}
+      {activeTab === 'pesanan' &&
+        (isLoading ? (
+          <TableSkeleton rows={5} cols={6} />
+        ) : (
+          <OrdersTablePanel
+            orders={orders}
+            filteredOrders={filteredOrders}
+            orderSearch={orderSearch}
+            orderStatusFilter={orderStatusFilter}
+            orderPage={orderPage}
+            orderPageSize={orderPageSize}
+            setOrderSearch={setOrderSearch}
+            setOrderStatusFilter={setOrderStatusFilter}
+            setOrderPage={setOrderPage}
+            onSelectOrder={setSelectedOrder}
+          />
+        ))}
 
       {/* TAB 2: VERIFIKASI BAYAR & WEBHOOK */}
-      {activeTab === 'verifikasi' && (
-        <PaymentsTablePanel
-          orders={orders}
-          payments={payments}
-          filteredPayments={filteredPayments}
-          paymentSearch={paymentSearch}
-          paymentStatusFilter={paymentStatusFilter}
-          setPaymentSearch={setPaymentSearch}
-          setPaymentStatusFilter={setPaymentStatusFilter}
-          onSimulateWebhook={handleSimulateWebhook}
-          onSelectPaymentPayload={setSelectedPaymentPayload}
-        />
-      )}
+      {activeTab === 'verifikasi' &&
+        (isLoading ? (
+          <TableSkeleton rows={5} cols={6} />
+        ) : (
+          <PaymentsTablePanel
+            orders={orders}
+            payments={payments}
+            filteredPayments={filteredPayments}
+            paymentSearch={paymentSearch}
+            paymentStatusFilter={paymentStatusFilter}
+            setPaymentSearch={setPaymentSearch}
+            setPaymentStatusFilter={setPaymentStatusFilter}
+            onSimulateWebhook={handleSimulateWebhook}
+            onSelectPaymentPayload={setSelectedPaymentPayload}
+          />
+        ))}
 
       {/* ORDER DETAIL MODAL */}
       {selectedOrder && (

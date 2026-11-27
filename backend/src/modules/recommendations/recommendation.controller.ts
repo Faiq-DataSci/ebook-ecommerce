@@ -10,7 +10,8 @@ export async function getSawRecommendationsController(
 ): Promise<void> {
   try {
     const query = req.query as unknown as GetSawRecommendationsQuery
-    const recommendations = await recommendationService.getSawRecommendations(query)
+    const { items: recommendations, activeCriteria } =
+      await recommendationService.getSawRecommendationsWithCriteria(query)
     sendSuccess(
       res,
       recommendations,
@@ -18,6 +19,7 @@ export async function getSawRecommendationsController(
       {
         total: recommendations.length,
         limit: query.limit,
+        activeCriteria,
       },
       'Rekomendasi e-book berbasis SPK SAW berhasil dihitung',
     )

@@ -8,6 +8,7 @@ export const recommendationEbookSelect = {
   price: true,
   coverUrl: true,
   pageCount: true,
+  publishedYear: true,
   ratingAvg: true,
   salesCount: true,
   isActive: true,

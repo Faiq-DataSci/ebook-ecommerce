@@ -33,24 +33,18 @@ export function DashboardQuickShortcuts({ onNavigate }: DashboardQuickShortcutsP
             title={`Buka modul ${action.label}`}
           >
             <div className="quick-shortcut-top">
-              <span
-                className="quick-shortcut-icon-box"
-                style={{ backgroundColor: action.bgColor }}
-                aria-hidden="true"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-                  {action.icon}
-                </span>
-              </span>
+              <span className="quick-shortcut-title">{action.label}</span>
               {action.badgeText && (
-                <span className="quick-shortcut-badge">
+                <span
+                  className="quick-shortcut-badge"
+                  style={{ backgroundColor: action.bgColor, color: 'var(--nb-black)' }}
+                >
                   {action.badgeText}
                 </span>
               )}
             </div>
 
             <div className="quick-shortcut-body">
-              <span className="quick-shortcut-title">{action.label}</span>
               {action.description && (
                 <span className="quick-shortcut-text">{action.description}</span>
               )}

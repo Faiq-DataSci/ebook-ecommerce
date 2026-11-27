@@ -1,6 +1,6 @@
 # Katalog Endpoint REST API (`/api/v1`)
 
-> **Status Dokumen:** `[ADA]` (Hanya `GET /api/v1/health` dan `GET /api/v1/admin/ping` pada [`backend/src/app.ts`](../../backend/src/app.ts)) | `[RENCANA]` (Seluruh endpoint bisnis lainnya)
+> **Status Dokumen:** `[ADA]` (Health, Auth/Profil, Katalog Publik, Rekomendasi SAW, Pesanan, Pembayaran/Webhook, Akses Signed URL, Transaksi, Admin Dashboard/SAW/Kategori/E-Book CRUD + Upload PDF `multipart/form-data` ke bucket privat pada `backend/src/`) | `[RENCANA]` (Admin Customers/Orders/Payments/Reports/Accesses CRUD)
 > **Sumber Acuan Utama:** [`docs/02-api/api-spec.yaml`](../02-api/api-spec.yaml) (OpenAPI 3.1)
 > **Catatan Data:** Seluruh contoh request dan response memakai label **`"DATA SIMULASI"`**.
 
@@ -66,7 +66,7 @@
 
 ---
 
-## 2. Kategori (`[RENCANA]`)
+## 2. Kategori (`[ADA]`)
 
 ### 2.1 Daftar Kategori Aktif
 - **HTTP Method:** `GET`
@@ -79,11 +79,11 @@
 - **Response Sukses:** `{ "success": true, "data": [{ "id": "uuid", "name": "DATA SIMULASI - Teknologi", "slug": "teknologi" }] }`
 - **HTTP Status Code:** `200 OK`
 - **Error Handling:** Mengembalikan array kosong `[]` bila belum ada kategori aktif.
-- **Status:** `[RENCANA]`
+- **Status:** `[ADA]`
 
 ---
 
-## 3. Katalog E-Book (`[RENCANA]`)
+## 3. Katalog E-Book (`[ADA]`)
 
 ### 3.1 Daftar & Pencarian E-Book Aktif
 - **HTTP Method:** `GET`
@@ -91,12 +91,12 @@
 - **Deskripsi:** Menampilkan katalog e-book aktif dengan filter kategori, pencarian kata kunci, dan paginasi.
 - **Authentication:** Tidak diperlukan
 - **Authorization:** Publik
-- **Request Parameters:** Query Zod: `search?` (string max 100), `categoryId?` (UUID), `page?` (`>= 1`, default `1`), `limit?` (`1–100`, default `20`).
+- **Request Parameters:** Query Zod: `search?`, `categoryId?` (UUID), `page?` (`>= 1`, default `1`), `limit?` (`1–50`, default `10`), `sortBy?` (`newest|price_asc|price_desc|popular|rating`).
 - **Request Body:** Tidak ada
-- **Response Sukses:** `{ "success": true, "data": [{ "id": "uuid", "title": "DATA SIMULASI - Panduan Praktis Flutter", "author": "DATA SIMULASI", "price": "40000.00", "ratingAvg": "4.80", "salesCount": 150 }], "meta": { "page": 1, "limit": 20, "total": 1, "totalPages": 1 } }`
+- **Response Sukses:** `{ "success": true, "data": [{ "id": "uuid", "title": "DATA SIMULASI - Panduan Praktis Flutter", "author": "DATA SIMULASI", "price": "40000.00", "ratingAvg": "4.80", "salesCount": 150 }], "meta": { "page": 1, "limit": 10, "total": 1, "totalPages": 1 } }`
 - **HTTP Status Code:** `200 OK`, `400 Bad Request`
 - **Error Handling:** `VALIDATION_ERROR`; `storagePath` tidak pernah disertakan.
-- **Status:** `[RENCANA]`
+- **Status:** `[ADA]`
 
 ### 3.2 Detail E-Book Aktif
 - **HTTP Method:** `GET`
@@ -109,7 +109,7 @@
 - **Response Sukses:** `{ "success": true, "data": { "id": "uuid", "title": "DATA SIMULASI", "author": "DATA SIMULASI", "description": "DATA SIMULASI", "price": "40000.00", "ratingAvg": "4.80", "salesCount": 150 } }`
 - **HTTP Status Code:** `200 OK`, `400 Bad Request`, `404 Not Found`
 - **Error Handling:** `NOT_FOUND` bila e-book tidak ada atau `isActive = false`; `storagePath` tidak diekspos.
-- **Status:** `[RENCANA]`
+- **Status:** `[ADA]`
 
 ---
 
@@ -280,63 +280,63 @@
 
 ---
 
-## 10. Admin — Kategori (`[RENCANA]`)
+## 10. Admin — Kategori (`[ADA]`)
 
-### 10.1 Tambah Kategori
-- **HTTP Method:** `POST`
+### 10.1 Daftar & Tambah Kategori
+- **HTTP Method:** `GET` / `POST`
 - **Endpoint:** `/api/v1/admin/categories`
-- **Deskripsi:** Menambahkan kategori baru dengan `name` dan `slug` unik.
+- **Deskripsi:** Menampilkan seluruh kategori (termasuk arsip dan `_count.ebooks`) serta menambahkan kategori baru dengan `name` dan `slug` unik (`slug` otomatis dibuat bila tidak dikirim).
 - **Authentication:** Wajib (Bearer Token)
 - **Authorization:** `ADMIN`
-- **Request Parameters:** Tidak ada
-- **Request Body:** `{ "name": "DATA SIMULASI - Pemrograman", "slug": "pemrograman", "description": "DATA SIMULASI" }`
+- **Request Parameters:** (`GET`) Query Zod: `page?`, `limit?` (`1–50`), `search?`, `status?` (`ALL|AKTIF|ARSIP`)
+- **Request Body:** (`POST`) `{ "name": "DATA SIMULASI - Pemrograman", "slug"?: "pemrograman", "description"?: "DATA SIMULASI", "isActive"?: true }`
 - **Response Sukses:** `{ "success": true, "data": { "id": "uuid", "name": "DATA SIMULASI - Pemrograman", "slug": "pemrograman" } }`
-- **HTTP Status Code:** `201 Created`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `409 Conflict`
+- **HTTP Status Code:** `200 OK`, `201 Created`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `409 Conflict`
 - **Error Handling:** `CONFLICT` bila nama/slug sudah ada.
-- **Status:** `[RENCANA]`
+- **Status:** `[ADA]` (teruji pada `backend/tests/integration/admin-routes.test.ts`)
 
-### 10.2 Perbarui & Hapus Kategori
-- **HTTP Method:** `PATCH` / `DELETE`
+### 10.2 Perbarui, Ubah Status, & Hapus Kategori
+- **HTTP Method:** `PATCH` (alias `PUT`) / `PATCH :id/status` / `DELETE`
 - **Endpoint:** `/api/v1/admin/categories/:id`
-- **Deskripsi:** Memperbarui metadata kategori atau menghapus kategori yang belum memiliki e-book.
+- **Deskripsi:** Memperbarui metadata kategori (`PATCH`), mengubah status arsip/aktif (`PATCH /:id/status`), atau menghapus permanen kategori yang belum memiliki e-book (`DELETE`).
 - **Authentication:** Wajib (Bearer Token)
 - **Authorization:** `ADMIN`
 - **Request Parameters:** Path `:id` (UUID)
-- **Request Body:** (`PATCH`) `{ "name"?: "string", "slug"?: "string", "isActive"?: true }`
-- **Response Sukses:** `200 OK` / `204 No Content`
-- **HTTP Status Code:** `200 OK`, `204 No Content`, `400 Bad Request`, `403 Forbidden`, `404 Not Found`, `409 Conflict`
+- **Request Body:** (`PATCH`) `{ "name"?: "string", "slug"?: "string", "description"?: "string|null", "isActive"?: true }`
+- **Response Sukses:** `200 OK` `{ "success": true, "message": "...", "data": { ... } }`
+- **HTTP Status Code:** `200 OK`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`, `409 Conflict`
 - **Error Handling:** Tolak `DELETE` dengan `409 CONFLICT` jika kategori masih dipakai e-book (`onDelete: Restrict`).
-- **Status:** `[RENCANA]`
+- **Status:** `[ADA]` (teruji pada `backend/tests/integration/admin-routes.test.ts`)
 
 ---
 
-## 11. Admin — E-Book (`[RENCANA]`)
+## 11. Admin — E-Book (`[ADA]`)
 
-### 11.1 Tambah E-Book & Unggah PDF Privat
-- **HTTP Method:** `POST`
-- **Endpoint:** `/api/v1/admin/ebooks`
-- **Deskripsi:** Menambah data e-book baru sekaligus mengunggah `pdfFile` ke bucket privat dan opsional `coverImage`.
+### 11.1 Daftar, Unggah PDF Privat, & Tambah E-Book
+- **HTTP Method:** `GET` / `POST`
+- **Endpoint:** `/api/v1/admin/ebooks` dan `/api/v1/admin/ebooks/upload-pdf`
+- **Deskripsi:** Menampilkan seluruh koleksi e-book admin (`GET`), mengunggah berkas biner PDF ke bucket privat Supabase Storage (`POST /api/v1/admin/ebooks/upload-pdf`, `multipart/form-data` field `pdfFile`), dan menambah e-book baru (`POST /api/v1/admin/ebooks` mendukung `application/json` dengan `storagePath` maupun `multipart/form-data` langsung dengan field `pdfFile`).
 - **Authentication:** Wajib (Bearer Token)
 - **Authorization:** `ADMIN`
-- **Request Parameters:** Tidak ada
-- **Request Body:** `multipart/form-data` (`categoryId`, `title`, `author`, `description`, `price`, `pdfFile`, `coverImage?`)
+- **Request Parameters:** (`GET`) Query Zod: `page?`, `limit?` (`1–50`), `search?`, `categoryId?`, `status?` (`ALL|AKTIF|ARSIP`), `sortBy?`, `sortOrder?`
+- **Request Body:** (`POST /upload-pdf`) `multipart/form-data` (`pdfFile`, maks 25 MB, validasi MIME & header `%PDF-`); (`POST /ebooks`) `application/json` atau `multipart/form-data` (`categoryId`, `title`, `author`, `description`, `price`, `storagePath`/`pdfFile`, `coverUrl?`, `pageCount?`, `publishedYear?`, `isActive?`)
 - **Response Sukses:** `{ "success": true, "data": { "id": "uuid", "title": "DATA SIMULASI", "price": "50000.00", "isActive": true } }`
-- **HTTP Status Code:** `201 Created`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`
-- **Error Handling:** Validasi mime-type PDF, harga `>= 0`, dan keberadaan `categoryId`.
-- **Status:** `[RENCANA]`
+- **HTTP Status Code:** `200 OK`, `201 Created`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`
+- **Error Handling:** Validasi Zod (`price >= 0`, UUID `categoryId` valid, keberadaan kategori di DB) serta validasi file PDF (ekstensi, MIME, header biner `%PDF-`, maks 25 MB).
+- **Status:** `[ADA]` (JSON CRUD & multipart upload PDF teruji pada `backend/tests/integration/admin-routes.test.ts`)
 
-### 11.2 Perbarui & Arsipkan E-Book
-- **HTTP Method:** `PATCH` / `DELETE`
+### 11.2 Perbarui, Ubah Status, & Arsipkan E-Book
+- **HTTP Method:** `PATCH` (alias `PUT`) / `PATCH :id/status` / `DELETE`
 - **Endpoint:** `/api/v1/admin/ebooks/:id`
-- **Deskripsi:** Memperbarui metadata/harga/status (`PATCH`) atau mengarsipkan e-book (`DELETE` → soft delete `isActive = false`).
+- **Deskripsi:** Memperbarui metadata/harga/status (`PATCH`), mengaktifkan kembali (`PATCH /:id/status`), atau mengarsipkan e-book (`DELETE` → soft delete `isActive = false`).
 - **Authentication:** Wajib (Bearer Token)
 - **Authorization:** `ADMIN`
 - **Request Parameters:** Path `:id` (UUID)
-- **Request Body:** (`PATCH`) `{ "title"?: "string", "price"?: "50000.00", "isActive"?: false }`
-- **Response Sukses:** `200 OK` / `204 No Content`
-- **HTTP Status Code:** `200 OK`, `204 No Content`, `400 Bad Request`, `403 Forbidden`, `404 Not Found`
-- **Error Handling:** Non-hard-delete agar `OrderItem` dan `EbookAccess` historis tetap utuh.
-- **Status:** `[RENCANA]`
+- **Request Body:** (`PATCH`) `{ "title"?: "string", "price"?: 50000, "isActive"?: false }`
+- **Response Sukses:** `200 OK` `{ "success": true, "message": "...", "data": { ... } }`
+- **HTTP Status Code:** `200 OK`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`
+- **Error Handling:** Non-hard-delete (`isActive = false`) agar `OrderItem` dan `EbookAccess` historis tetap utuh.
+- **Status:** `[ADA]` (teruji pada `backend/tests/integration/admin-routes.test.ts`)
 
 ---
 

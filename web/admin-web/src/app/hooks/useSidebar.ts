@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { resolveRouteMeta } from '../navigation/adminNavigation'
+
+const ROUTE_SKELETON_MS = 240
 
 export interface UseSidebarReturn {
   isCollapsed: boolean
   isMobileOpen: boolean
+  isRouteTransitioning: boolean
   expandedDropdowns: Record<string, boolean>
   activePath: string
   toggleSidebarCollapse: () => void
@@ -14,17 +17,54 @@ export interface UseSidebarReturn {
   navigateTo: (path: string) => void
 }
 
+function normalizeAdminPath(rawPath: string): string {
+  return rawPath === '/' || rawPath === '/admin' ? '/admin/dashboard' : rawPath
+}
+
 export function useSidebar(): UseSidebarReturn {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
     return localStorage.getItem('admin_sidebar_collapsed') === 'true'
   })
   const [isMobileOpen, setIsMobileOpen] = useState<boolean>(false)
-  const [activePath, setActivePath] = useState<string>(() => {
-    const initial = window.location.pathname
-    return initial === '/' || initial === '/admin'
-      ? '/admin/dashboard'
-      : initial
-  })
+  const [isRouteTransitioning, setIsRouteTransitioning] = useState<boolean>(false)
+  const [activePath, setActivePath] = useState<string>(() =>
+    normalizeAdminPath(window.location.pathname),
+  )
+
+  const activePathRef = useRef<string>(activePath)
+  const transitionTimerRef = useRef<number | null>(null)
+
+  const triggerRouteSkeleton = useCallback((nextPath: string) => {
+    if (nextPath === activePathRef.current) {
+      return
+    }
+    activePathRef.current = nextPath
+
+    if (transitionTimerRef.current !== null) {
+      window.clearTimeout(transitionTimerRef.current)
+      transitionTimerRef.current = null
+    }
+
+    if (nextPath === '/login') {
+      setIsRouteTransitioning(false)
+      return
+    }
+
+    setIsRouteTransitioning(true)
+    transitionTimerRef.current = window.setTimeout(() => {
+      transitionTimerRef.current = null
+      setIsRouteTransitioning(false)
+    }, ROUTE_SKELETON_MS)
+  }, [])
+
+  // Cleanup route transition timer on unmount
+  useEffect(() => {
+    return () => {
+      if (transitionTimerRef.current !== null) {
+        window.clearTimeout(transitionTimerRef.current)
+      }
+    }
+  }, [])
 
   // Normalize root URL to /admin/dashboard in history without reloading
   useEffect(() => {
@@ -44,11 +84,8 @@ export function useSidebar(): UseSidebarReturn {
   // Synchronize with browser back/forward buttons
   useEffect(() => {
     const handlePopState = () => {
-      const nextPath =
-        window.location.pathname === '/' ||
-        window.location.pathname === '/admin'
-          ? '/admin/dashboard'
-          : window.location.pathname
+      const nextPath = normalizeAdminPath(window.location.pathname)
+      triggerRouteSkeleton(nextPath)
       setActivePath(nextPath)
       const meta = resolveRouteMeta(nextPath)
       if (meta.parentDropdownId) {
@@ -61,7 +98,7 @@ export function useSidebar(): UseSidebarReturn {
 
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
-  }, [])
+  }, [triggerRouteSkeleton])
 
   const toggleSidebarCollapse = useCallback(() => {
     setIsCollapsed((prev) => {
@@ -106,25 +143,31 @@ export function useSidebar(): UseSidebarReturn {
     }))
   }, [])
 
-  const navigateTo = useCallback((path: string) => {
-    if (window.location.pathname !== path) {
-      window.history.pushState({}, '', path)
-    }
-    window.dispatchEvent(new PopStateEvent('popstate'))
-    setActivePath(path)
-    const meta = resolveRouteMeta(path)
-    if (meta.parentDropdownId) {
-      setExpandedDropdowns((prev) => ({
-        ...prev,
-        [meta.parentDropdownId!]: true,
-      }))
-    }
-    setIsMobileOpen(false)
-  }, [])
+  const navigateTo = useCallback(
+    (path: string) => {
+      const normalizedPath = normalizeAdminPath(path)
+      if (window.location.pathname !== normalizedPath) {
+        window.history.pushState({}, '', normalizedPath)
+      }
+      triggerRouteSkeleton(normalizedPath)
+      window.dispatchEvent(new PopStateEvent('popstate'))
+      setActivePath(normalizedPath)
+      const meta = resolveRouteMeta(normalizedPath)
+      if (meta.parentDropdownId) {
+        setExpandedDropdowns((prev) => ({
+          ...prev,
+          [meta.parentDropdownId!]: true,
+        }))
+      }
+      setIsMobileOpen(false)
+    },
+    [triggerRouteSkeleton],
+  )
 
   return {
     isCollapsed,
     isMobileOpen,
+    isRouteTransitioning,
     expandedDropdowns,
     activePath,
     toggleSidebarCollapse,

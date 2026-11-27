@@ -20,6 +20,7 @@ logs/
 # Keys, certificates & database backups
 *.pem
 *.key
+*.p8
 *.p12
 *.pfx
 *.sql
@@ -28,6 +29,12 @@ logs/
 *.db
 *.keystore
 *.jks
+key.properties
+google-services.json
+GoogleService-Info.plist
+*service-account*.json
+*firebase-adminsdk*.json
+.supabase/
 
 # Flutter / Dart
 .dart_tool/

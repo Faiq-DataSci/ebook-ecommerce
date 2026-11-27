@@ -1,20 +1,50 @@
 import { Router } from 'express'
 import { authenticate, authorize } from '../../middlewares/auth.middleware.js'
+import {
+  parseOptionalCoverUpload,
+  parseOptionalPdfUpload,
+} from '../../middlewares/upload.middleware.js'
 import { validate } from '../../middlewares/validate.middleware.js'
 import {
+  archiveEbook,
+  createCategory,
   createEbook,
+  deleteCategory,
+  getAdminCategories,
+  getAdminCustomerById,
+  getAdminCustomers,
   getAdminEbooks,
+  getAdminOrders,
+  getAdminPayments,
   getDashboard,
   getSawWeights,
+  toggleCategoryStatus,
+  toggleCustomerStatus,
   toggleEbookStatus,
+  toggleOrderAccess,
+  updateCategory,
   updateEbook,
   updateSawWeights,
+  uploadEbookCover,
+  uploadEbookPdf,
 } from './admin.controller.js'
 import {
+  adminCategoryIdParamSchema,
+  adminCustomerIdParamSchema,
   adminEbookIdParamSchema,
+  adminOrderIdParamSchema,
+  createCategorySchema,
   createEbookSchema,
+  getAdminCategoriesQuerySchema,
+  getAdminCustomersQuerySchema,
   getAdminEbooksQuerySchema,
+  getAdminOrdersQuerySchema,
+  getAdminPaymentsQuerySchema,
+  toggleCategoryStatusSchema,
+  toggleCustomerStatusSchema,
   toggleEbookStatusSchema,
+  toggleOrderAccessSchema,
+  updateCategorySchema,
   updateEbookSchema,
   updateSawWeightsSchema,
 } from './admin.schema.js'
@@ -34,7 +64,19 @@ adminRouter.put('/saw/weights', validate({ body: updateSawWeightsSchema }), upda
 
 // Admin E-Books CRUD Management
 adminRouter.get('/ebooks', validate({ query: getAdminEbooksQuerySchema }), getAdminEbooks)
-adminRouter.post('/ebooks', validate({ body: createEbookSchema }), createEbook)
+adminRouter.post('/ebooks/upload-cover', parseOptionalCoverUpload, uploadEbookCover)
+adminRouter.post('/ebooks/upload-pdf', parseOptionalPdfUpload, uploadEbookPdf)
+adminRouter.post(
+  '/ebooks',
+  parseOptionalPdfUpload,
+  validate({ body: createEbookSchema }),
+  createEbook,
+)
+adminRouter.patch(
+  '/ebooks/:id',
+  validate({ params: adminEbookIdParamSchema, body: updateEbookSchema }),
+  updateEbook,
+)
 adminRouter.put(
   '/ebooks/:id',
   validate({ params: adminEbookIdParamSchema, body: updateEbookSchema }),
@@ -44,5 +86,76 @@ adminRouter.patch(
   '/ebooks/:id/status',
   validate({ params: adminEbookIdParamSchema, body: toggleEbookStatusSchema }),
   toggleEbookStatus,
+)
+adminRouter.delete(
+  '/ebooks/:id',
+  validate({ params: adminEbookIdParamSchema }),
+  archiveEbook,
+)
+
+// Admin Categories CRUD Management
+adminRouter.get(
+  '/categories',
+  validate({ query: getAdminCategoriesQuerySchema }),
+  getAdminCategories,
+)
+adminRouter.post(
+  '/categories',
+  validate({ body: createCategorySchema }),
+  createCategory,
+)
+adminRouter.patch(
+  '/categories/:id',
+  validate({ params: adminCategoryIdParamSchema, body: updateCategorySchema }),
+  updateCategory,
+)
+adminRouter.put(
+  '/categories/:id',
+  validate({ params: adminCategoryIdParamSchema, body: updateCategorySchema }),
+  updateCategory,
+)
+adminRouter.patch(
+  '/categories/:id/status',
+  validate({ params: adminCategoryIdParamSchema, body: toggleCategoryStatusSchema }),
+  toggleCategoryStatus,
+)
+adminRouter.delete(
+  '/categories/:id',
+  validate({ params: adminCategoryIdParamSchema }),
+  deleteCategory,
+)
+
+// Admin Customers / Users Management
+adminRouter.get(
+  '/customers',
+  validate({ query: getAdminCustomersQuerySchema }),
+  getAdminCustomers,
+)
+adminRouter.get(
+  '/customers/:id',
+  validate({ params: adminCustomerIdParamSchema }),
+  getAdminCustomerById,
+)
+adminRouter.patch(
+  '/customers/:id/status',
+  validate({ params: adminCustomerIdParamSchema, body: toggleCustomerStatusSchema }),
+  toggleCustomerStatus,
+)
+
+// Admin Orders, Payments & E-Book Access Management
+adminRouter.get(
+  '/orders',
+  validate({ query: getAdminOrdersQuerySchema }),
+  getAdminOrders,
+)
+adminRouter.get(
+  '/payments',
+  validate({ query: getAdminPaymentsQuerySchema }),
+  getAdminPayments,
+)
+adminRouter.patch(
+  '/orders/:id/access',
+  validate({ params: adminOrderIdParamSchema, body: toggleOrderAccessSchema }),
+  toggleOrderAccess,
 )
 

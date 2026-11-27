@@ -9,6 +9,7 @@ enum SawRankingStatus { loading, loaded, empty, error }
 class SawRankingState {
   final SawRankingStatus status;
   final List<SawRecommendationModel> rankings;
+  final List<SawCriterionModel> activeCriteria;
   final String selectedCategory;
   final String? errorMessage;
   final bool isRemote;
@@ -17,6 +18,7 @@ class SawRankingState {
   const SawRankingState({
     this.status = SawRankingStatus.loaded,
     this.rankings = const <SawRecommendationModel>[],
+    this.activeCriteria = SawCriterionModel.defaultCriteria,
     this.selectedCategory = 'semua',
     this.errorMessage,
     this.isRemote = false,
@@ -26,6 +28,7 @@ class SawRankingState {
   SawRankingState copyWith({
     SawRankingStatus? status,
     List<SawRecommendationModel>? rankings,
+    List<SawCriterionModel>? activeCriteria,
     String? selectedCategory,
     String? errorMessage,
     bool clearError = false,
@@ -35,6 +38,7 @@ class SawRankingState {
     return SawRankingState(
       status: status ?? this.status,
       rankings: rankings ?? this.rankings,
+      activeCriteria: activeCriteria ?? this.activeCriteria,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       isRemote: isRemote ?? this.isRemote,
@@ -63,18 +67,21 @@ class SawRankingNotifier extends StateNotifier<SawRankingState> {
     state = state.copyWith(status: SawRankingStatus.loading, clearError: true);
 
     try {
-      final items = await repository.getSawRankingList(
+      final response = await repository.getSawRankingWithCriteria(
         categoryId: cat == 'semua' ? null : cat,
         limit: 10,
       );
 
       state = state.copyWith(
-        status: items.isEmpty
+        status: response.items.isEmpty
             ? SawRankingStatus.empty
             : SawRankingStatus.loaded,
-        rankings: items,
+        rankings: response.items,
+        activeCriteria: response.activeCriteria.isNotEmpty
+            ? response.activeCriteria
+            : SawCriterionModel.defaultCriteria,
         selectedCategory: cat,
-        isRemote: isRemoteConfig,
+        isRemote: isRemoteConfig || response.isRemote,
         clearError: true,
       );
     } catch (e) {

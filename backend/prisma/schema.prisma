@@ -27,6 +27,11 @@ enum PaymentStatus {
   EXPIRED
 }
 
+enum SawCriterionType {
+  BENEFIT
+  COST
+}
+
 model User {
   id             String         @id @default(uuid()) @db.Uuid
   supabaseUserId String         @unique @map("supabase_user_id")
@@ -195,4 +200,21 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+model SawCriterion {
+  id          String           @id @default(uuid()) @db.Uuid
+  code        String           @unique @db.VarChar(20)
+  name        String           @db.VarChar(100)
+  field       String           @db.VarChar(50)
+  type        SawCriterionType
+  weight      Decimal          @db.Decimal(6, 4)
+  isActive    Boolean          @default(true) @map("is_active")
+  description String?          @db.VarChar(300)
+  sortOrder   Int              @default(0) @map("sort_order")
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime         @updatedAt @map("updated_at") @db.Timestamptz()
+
+  @@index([isActive, sortOrder])
+  @@map("saw_criteria")
 }

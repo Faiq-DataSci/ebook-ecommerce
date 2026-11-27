@@ -2,7 +2,6 @@ import 'package:ebook_store/features/splash/presentation/pages/splash_screen.dar
 import 'package:ebook_store/features/splash/presentation/widgets/splash_footer.dart';
 import 'package:ebook_store/features/splash/presentation/widgets/splash_header.dart';
 import 'package:ebook_store/features/splash/presentation/widgets/splash_hero_card.dart';
-import 'package:ebook_store/features/splash/presentation/widgets/splash_painters.dart';
 import 'package:ebook_store/main.dart';
 import 'package:ebook_store/features/home/presentation/pages/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -44,8 +43,8 @@ void main() {
           expect(find.text('E-Commerce Ebook'), findsOneWidget);
           expect(find.text('KATALOG READY'), findsOneWidget);
 
-          // Stitch Vector icon & Custom Painters
-          expect(find.byType(StitchEbookIcon), findsOneWidget);
+          // App logo image inside hero card stage
+          expect(find.byType(Image), findsOneWidget);
 
           // 3. Footer Verification
           expect(find.byType(SplashFooter), findsOneWidget);

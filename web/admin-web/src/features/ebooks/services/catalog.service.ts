@@ -1,8 +1,11 @@
-import { apiClient } from '../../../services/api/apiClient'
+import {
+  API_BASE_URL,
+  ApiError,
+  apiClient,
+  getAuthHeader,
+} from '../../../services/api/apiClient'
 import { formatRupiah } from '../../../shared/utils/formatters'
-import { MOCK_CATEGORIES } from '../../categories/data/categoryData'
 import type { CategoryListItem } from '../../categories/types/category'
-import { MOCK_EBOOKS } from '../data/catalogData'
 import type {
   EbookFormData,
   EbookListItem,
@@ -49,7 +52,8 @@ export interface RawBackendEbook {
  * Mengubah objek raw dari backend Express/Prisma menjadi format tampilan EbookListItem
  */
 export function mapBackendEbookToListItem(raw: RawBackendEbook): EbookListItem {
-  const priceNum = typeof raw.price === 'number' ? raw.price : parseFloat(String(raw.price)) || 0
+  const priceNum =
+    typeof raw.price === 'number' ? raw.price : parseFloat(String(raw.price)) || 0
   const ratingNum = raw.ratingAvg ? parseFloat(String(raw.ratingAvg)) : 0
 
   return {
@@ -73,34 +77,23 @@ export function mapBackendEbookToListItem(raw: RawBackendEbook): EbookListItem {
 }
 
 /**
- * Mengambil daftar kategori aktif untuk filter dan form pilihan kategori
+ * Mengambil daftar kategori dari backend untuk filter dan form pilihan kategori
  */
-export async function fetchCategories(): Promise<{
-  categories: CategoryListItem[]
-  isSimulation: boolean
-}> {
-  try {
-    const res = await apiClient.get<RawBackendCategory[]>('/categories')
-    if (res.data && Array.isArray(res.data) && res.data.length > 0) {
-      const items: CategoryListItem[] = res.data.map((c) => ({
-        id: c.id,
-        name: c.name,
-        slug: c.slug,
-        description: c.description,
-        isActive: c.isActive,
-        ebookCount: c._count?.ebooks ?? 0,
-        createdAt: c.createdAt,
-      }))
-      return { categories: items, isSimulation: false }
-    }
-  } catch (err) {
-    console.warn(
-      'Endpoint backend /categories belum dapat diakses, menggunakan DATA SIMULASI fallback:',
-      err,
-    )
-  }
+export async function fetchCategories(): Promise<CategoryListItem[]> {
+  const res = await apiClient.get<RawBackendCategory[]>(
+    '/admin/categories?page=1&limit=50&status=ALL',
+  )
+  if (!Array.isArray(res.data)) return []
 
-  return { categories: MOCK_CATEGORIES, isSimulation: true }
+  return res.data.map((c) => ({
+    id: c.id,
+    name: c.name,
+    slug: c.slug,
+    description: c.description,
+    isActive: c.isActive,
+    ebookCount: c._count?.ebooks ?? 0,
+    createdAt: c.createdAt,
+  }))
 }
 
 /**
@@ -110,83 +103,122 @@ export async function fetchAdminEbooks(filters: EbookTableFilters): Promise<{
   ebooks: EbookListItem[]
   total: number
   totalPages: number
-  isSimulation: boolean
 }> {
-  try {
-    const params = new URLSearchParams()
-    params.set('page', String(filters.page))
-    params.set('limit', String(filters.limit))
-    params.set('status', filters.status)
-    params.set('sortBy', filters.sortBy)
-    params.set('sortOrder', filters.sortOrder)
-    if (filters.search.trim()) {
-      params.set('search', filters.search.trim())
-    }
-    if (filters.categoryId) {
-      params.set('categoryId', filters.categoryId)
-    }
-
-    const res = await apiClient.get<RawBackendEbook[]>(`/admin/ebooks?${params.toString()}`)
-    if (res.data && Array.isArray(res.data)) {
-      const mapped = res.data.map(mapBackendEbookToListItem)
-      return {
-        ebooks: mapped,
-        total: res.meta?.total ?? mapped.length,
-        totalPages: res.meta?.totalPages ?? Math.max(1, Math.ceil(mapped.length / filters.limit)),
-        isSimulation: false,
-      }
-    }
-  } catch (err) {
-    console.warn(
-      'Endpoint backend /admin/ebooks belum dapat diakses atau unauthenticated, menggunakan DATA SIMULASI fallback:',
-      err,
-    )
-  }
-
-  // Fallback lokal dengan dataset MOCK_EBOOKS
-  let filtered = [...MOCK_EBOOKS]
+  const params = new URLSearchParams()
+  params.set('page', String(filters.page))
+  params.set('limit', String(filters.limit))
+  params.set('status', filters.status)
+  params.set('sortBy', filters.sortBy)
+  params.set('sortOrder', filters.sortOrder)
   if (filters.search.trim()) {
-    const q = filters.search.toLowerCase()
-    filtered = filtered.filter(
-      (b) =>
-        b.title.toLowerCase().includes(q) ||
-        b.author.toLowerCase().includes(q) ||
-        b.categoryName.toLowerCase().includes(q),
-    )
+    params.set('search', filters.search.trim())
   }
   if (filters.categoryId) {
-    filtered = filtered.filter((b) => b.categoryId === filters.categoryId)
-  }
-  if (filters.status !== 'ALL') {
-    const activeBool = filters.status === 'AKTIF'
-    filtered = filtered.filter((b) => b.isActive === activeBool)
+    params.set('categoryId', filters.categoryId)
   }
 
-  filtered.sort((a, b) => {
-    let cmp = 0
-    if (filters.sortBy === 'title') {
-      cmp = a.title.localeCompare(b.title)
-    } else if (filters.sortBy === 'price') {
-      cmp = a.priceNumeric - b.priceNumeric
-    } else if (filters.sortBy === 'salesCount') {
-      cmp = a.salesCount - b.salesCount
-    } else if (filters.sortBy === 'createdAt') {
-      cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    }
-    return filters.sortOrder === 'asc' ? cmp : -cmp
-  })
-
-  const total = filtered.length
-  const totalPages = Math.max(1, Math.ceil(total / filters.limit))
-  const start = (filters.page - 1) * filters.limit
-  const paginated = filtered.slice(start, start + filters.limit)
+  const res = await apiClient.get<RawBackendEbook[]>(
+    `/admin/ebooks?${params.toString()}`,
+  )
+  const mapped = Array.isArray(res.data)
+    ? res.data.map(mapBackendEbookToListItem)
+    : []
 
   return {
-    ebooks: paginated,
-    total,
-    totalPages,
-    isSimulation: true,
+    ebooks: mapped,
+    total: res.meta?.total ?? mapped.length,
+    totalPages:
+      res.meta?.totalPages ?? Math.max(1, Math.ceil(mapped.length / filters.limit)),
   }
+}
+
+export interface UploadedCoverAsset {
+  coverUrl: string
+  storagePath: string
+  fileName: string
+  sizeBytes: number
+  bucket: string
+}
+
+/**
+ * Mengunggah gambar sampul e-book ke bucket publik Supabase Storage via backend Express
+ * Endpoint: POST /api/v1/admin/ebooks/upload-cover (multipart/form-data)
+ */
+export async function uploadAdminEbookCover(file: File): Promise<UploadedCoverAsset> {
+  const authHeaders = await getAuthHeader()
+  const formData = new FormData()
+  formData.append('coverFile', file)
+
+  const res = await fetch(`${API_BASE_URL}/admin/ebooks/upload-cover`, {
+    method: 'POST',
+    headers: {
+      ...authHeaders,
+    },
+    body: formData,
+  })
+
+  const json = (await res.json().catch(() => null)) as {
+    success?: boolean
+    data?: UploadedCoverAsset
+    message?: string
+    error?: { code?: string; message?: string }
+  } | null
+
+  if (!res.ok || !json?.data) {
+    throw new ApiError(
+      json?.error?.message ||
+        json?.message ||
+        `Gagal mengunggah gambar sampul (HTTP ${res.status})`,
+      res.status,
+      json?.error?.code,
+    )
+  }
+
+  return json.data
+}
+
+export interface UploadedPdfAsset {
+  storagePath: string
+  fileName: string
+  sizeBytes: number
+  bucket: string
+}
+
+/**
+ * Mengunggah berkas PDF biner langsung ke bucket privat Supabase Storage via backend Express
+ * Endpoint: POST /api/v1/admin/ebooks/upload-pdf (multipart/form-data)
+ */
+export async function uploadAdminEbookPdf(file: File): Promise<UploadedPdfAsset> {
+  const authHeaders = await getAuthHeader()
+  const formData = new FormData()
+  formData.append('pdfFile', file)
+
+  const res = await fetch(`${API_BASE_URL}/admin/ebooks/upload-pdf`, {
+    method: 'POST',
+    headers: {
+      ...authHeaders,
+    },
+    body: formData,
+  })
+
+  const json = (await res.json().catch(() => null)) as {
+    success?: boolean
+    data?: UploadedPdfAsset
+    message?: string
+    error?: { code?: string; message?: string }
+  } | null
+
+  if (!res.ok || !json?.data) {
+    throw new ApiError(
+      json?.error?.message ||
+        json?.message ||
+        `Gagal mengunggah PDF ke bucket privat (HTTP ${res.status})`,
+      res.status,
+      json?.error?.code,
+    )
+  }
+
+  return json.data
 }
 
 /**
@@ -194,14 +226,18 @@ export async function fetchAdminEbooks(filters: EbookTableFilters): Promise<{
  */
 export async function createAdminEbook(
   formData: EbookFormData,
-  categoryNameFallback = 'Umum',
-): Promise<{
-  ebook: EbookListItem
-  isSimulation: boolean
-}> {
+): Promise<{ ebook: EbookListItem; message: string }> {
   const priceNum = parseInt(formData.price.replace(/\D/g, ''), 10) || 0
   const pageCountNum = formData.pageCount ? parseInt(formData.pageCount, 10) : null
-  const publishedYearNum = formData.publishedYear ? parseInt(formData.publishedYear, 10) : null
+  const publishedYearNum = formData.publishedYear
+    ? parseInt(formData.publishedYear, 10)
+    : null
+
+  const normalizedStoragePath = formData.pdfFileName
+    ? formData.pdfFileName.includes('/')
+      ? formData.pdfFileName
+      : `ebooks-private/${formData.pdfFileName}`
+    : 'ebooks-private/default.pdf'
 
   const payload = {
     categoryId: formData.categoryId,
@@ -209,140 +245,86 @@ export async function createAdminEbook(
     author: formData.author.trim(),
     description: formData.description.trim(),
     price: priceNum,
-    coverUrl: formData.coverFileName ? `/covers/${formData.coverFileName}` : null,
-    storagePath: formData.pdfFileName
-      ? `ebooks-private/${formData.pdfFileName}`
-      : 'ebooks-private/default.pdf',
+    coverUrl:
+      formData.coverUrl ||
+      (formData.coverFileName?.startsWith('http') ? formData.coverFileName : null),
+    storagePath: normalizedStoragePath,
     pageCount: pageCountNum,
     publishedYear: publishedYearNum,
     isActive: formData.isActive,
   }
 
-  try {
-    const res = await apiClient.post<RawBackendEbook>('/admin/ebooks', payload)
-    if (res.data) {
-      return { ebook: mapBackendEbookToListItem(res.data), isSimulation: false }
-    }
-  } catch (err) {
-    console.warn('Gagal memanggil POST /admin/ebooks, beralih ke fallback simulasi:', err)
+  const res = await apiClient.post<RawBackendEbook>('/admin/ebooks', payload)
+  return {
+    ebook: mapBackendEbookToListItem(res.data),
+    message: res.message || `E-book "${payload.title}" berhasil disimpan ke backend.`,
   }
-
-  // Fallback simulasi
-  const simulated: EbookListItem = {
-    id: `00000000-0000-4000-8000-${Date.now().toString().slice(-12).padStart(12, '0')}`,
-    title: formData.title.startsWith('DATA SIMULASI')
-      ? formData.title.trim()
-      : `DATA SIMULASI — ${formData.title.trim()}`,
-    author: formData.author.startsWith('DATA SIMULASI')
-      ? formData.author.trim()
-      : `DATA SIMULASI — ${formData.author.trim()}`,
-    categoryId: formData.categoryId,
-    categoryName: categoryNameFallback,
-    price: formatRupiah(priceNum),
-    priceNumeric: priceNum,
-    ratingAvg: 'Belum ada rating',
-    salesCount: 0,
-    pageCount: pageCountNum,
-    publishedYear: publishedYearNum ?? new Date().getFullYear(),
-    isActive: formData.isActive,
-    coverUrl: null,
-    createdAt: new Date().toISOString(),
-    description: formData.description,
-  }
-
-  return { ebook: simulated, isSimulation: true }
 }
 
 /**
- * Memperbarui data e-book melalui PUT /api/v1/admin/ebooks/:id
+ * Memperbarui data e-book melalui PATCH /api/v1/admin/ebooks/:id
  */
 export async function updateAdminEbook(
   id: string,
   formData: Partial<EbookFormData>,
-  categoryNameFallback = 'Umum',
-): Promise<{ ebook: EbookListItem; isSimulation: boolean }> {
-  const priceNum = formData.price ? parseInt(formData.price.replace(/\D/g, ''), 10) : undefined
-  const pageCountNum = formData.pageCount ? parseInt(formData.pageCount, 10) : undefined
-  const publishedYearNum = formData.publishedYear ? parseInt(formData.publishedYear, 10) : undefined
+): Promise<{ ebook: EbookListItem; message: string }> {
+  const priceNum = formData.price
+    ? parseInt(formData.price.replace(/\D/g, ''), 10)
+    : undefined
+  const pageCountNum = formData.pageCount
+    ? parseInt(formData.pageCount, 10)
+    : undefined
+  const publishedYearNum = formData.publishedYear
+    ? parseInt(formData.publishedYear, 10)
+    : undefined
 
   const payload: Record<string, unknown> = {}
   if (formData.categoryId !== undefined) payload.categoryId = formData.categoryId
   if (formData.title !== undefined) payload.title = formData.title.trim()
   if (formData.author !== undefined) payload.author = formData.author.trim()
-  if (formData.description !== undefined) payload.description = formData.description.trim()
+  if (formData.description !== undefined)
+    payload.description = formData.description.trim()
   if (priceNum !== undefined) payload.price = priceNum
   if (pageCountNum !== undefined) payload.pageCount = pageCountNum
   if (publishedYearNum !== undefined) payload.publishedYear = publishedYearNum
   if (formData.isActive !== undefined) payload.isActive = formData.isActive
-  if (formData.coverFileName) payload.coverUrl = `/covers/${formData.coverFileName}`
-  if (formData.pdfFileName) payload.storagePath = `ebooks-private/${formData.pdfFileName}`
-
-  try {
-    const res = await apiClient.put<RawBackendEbook>(`/admin/ebooks/${id}`, payload)
-    if (res.data) {
-      return { ebook: mapBackendEbookToListItem(res.data), isSimulation: false }
-    }
-  } catch (err) {
-    console.warn('Gagal memanggil PUT /admin/ebooks/:id, beralih ke fallback simulasi:', err)
+  if (formData.coverUrl !== undefined) {
+    payload.coverUrl = formData.coverUrl
+  }
+  if (formData.pdfFileName) {
+    payload.storagePath = formData.pdfFileName.includes('/')
+      ? formData.pdfFileName
+      : `ebooks-private/${formData.pdfFileName}`
   }
 
-  // Fallback simulasi
-  const simulated: EbookListItem = {
-    id,
-    title: formData.title?.trim() || 'DATA SIMULASI — E-Book Diperbarui',
-    author: formData.author?.trim() || 'DATA SIMULASI — Penulis',
-    categoryId: formData.categoryId || '00000000-0000-4000-8000-000000000101',
-    categoryName: categoryNameFallback,
-    price: formatRupiah(priceNum ?? 75000),
-    priceNumeric: priceNum ?? 75000,
-    ratingAvg: '4.80',
-    salesCount: 10,
-    pageCount: pageCountNum ?? 200,
-    publishedYear: publishedYearNum ?? 2025,
-    isActive: formData.isActive ?? true,
-    coverUrl: null,
-    createdAt: new Date().toISOString(),
-    description: formData.description,
+  const res = await apiClient.patch<RawBackendEbook>(`/admin/ebooks/${id}`, payload)
+  return {
+    ebook: mapBackendEbookToListItem(res.data),
+    message: res.message || 'Data e-book berhasil diperbarui di backend.',
   }
-
-  return { ebook: simulated, isSimulation: true }
 }
 
 /**
- * Mengubah status aktif / arsip e-book melalui PATCH /api/v1/admin/ebooks/:id/status
+ * Mengubah status aktif / arsip e-book:
+ * - Arsipkan (isActive = false): DELETE /api/v1/admin/ebooks/:id (soft delete)
+ * - Aktifkan kembali (isActive = true): PATCH /api/v1/admin/ebooks/:id/status
  */
 export async function toggleAdminEbookStatus(
   id: string,
   isActive: boolean,
-): Promise<{ ebook: EbookListItem; isSimulation: boolean }> {
-  try {
-    const res = await apiClient.patch<RawBackendEbook>(`/admin/ebooks/${id}/status`, { isActive })
-    if (res.data) {
-      return { ebook: mapBackendEbookToListItem(res.data), isSimulation: false }
-    }
-  } catch (err) {
-    console.warn(
-      'Gagal memanggil PATCH /admin/ebooks/:id/status, beralih ke fallback simulasi:',
-      err,
-    )
-  }
+): Promise<{ ebook: EbookListItem; message: string }> {
+  const res = isActive
+    ? await apiClient.patch<RawBackendEbook>(`/admin/ebooks/${id}/status`, {
+        isActive: true,
+      })
+    : await apiClient.delete<RawBackendEbook>(`/admin/ebooks/${id}`)
 
-  const simulated: EbookListItem = {
-    id,
-    title: 'DATA SIMULASI — E-Book Status',
-    author: 'DATA SIMULASI — Penulis',
-    categoryId: '00000000-0000-4000-8000-000000000101',
-    categoryName: 'Umum',
-    price: 'Rp 75.000',
-    priceNumeric: 75000,
-    ratingAvg: 'Belum ada rating',
-    salesCount: 0,
-    pageCount: 200,
-    publishedYear: 2025,
-    isActive,
-    coverUrl: null,
-    createdAt: new Date().toISOString(),
+  return {
+    ebook: mapBackendEbookToListItem(res.data),
+    message:
+      res.message ||
+      (isActive
+        ? 'E-book berhasil diaktifkan kembali di etalase publik.'
+        : 'E-book berhasil diarsipkan dari etalase publik.'),
   }
-
-  return { ebook: simulated, isSimulation: true }
 }

@@ -14,6 +14,7 @@ export function CategoryCatalogPage() {
     categories,
     filters,
     isLoading,
+    errorMessage,
     toasts,
     filteredTotal,
     paginatedCategories,
@@ -29,12 +30,15 @@ export function CategoryCatalogPage() {
     refreshCategories,
     createCategory,
     updateCategory,
+    toggleCategoryStatus,
     deleteCategory,
     dismissToast,
   } = useCategoryDirectory()
 
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false)
   const [editingCategory, setEditingCategory] =
+    useState<CategoryListItem | null>(null)
+  const [categoryToToggle, setCategoryToToggle] =
     useState<CategoryListItem | null>(null)
   const [categoryToDelete, setCategoryToDelete] =
     useState<CategoryListItem | null>(null)
@@ -55,11 +59,11 @@ export function CategoryCatalogPage() {
   }, [])
 
   const handleSaveCategory = useCallback(
-    (data: CategoryFormData) => {
+    async (data: CategoryFormData) => {
       if (editingCategory) {
-        updateCategory(editingCategory.id, data)
+        await updateCategory(editingCategory.id, data)
       } else {
-        createCategory(data)
+        await createCategory(data)
       }
       setIsFormOpen(false)
       setEditingCategory(null)
@@ -67,9 +71,15 @@ export function CategoryCatalogPage() {
     [editingCategory, updateCategory, createCategory],
   )
 
-  const handleConfirmDelete = useCallback(() => {
+  const handleConfirmToggleStatus = useCallback(async () => {
+    if (!categoryToToggle) return
+    await toggleCategoryStatus(categoryToToggle)
+    setCategoryToToggle(null)
+  }, [categoryToToggle, toggleCategoryStatus])
+
+  const handleConfirmDelete = useCallback(async () => {
     if (!categoryToDelete) return
-    deleteCategory(categoryToDelete)
+    await deleteCategory(categoryToDelete)
     setCategoryToDelete(null)
   }, [categoryToDelete, deleteCategory])
 
@@ -83,8 +93,29 @@ export function CategoryCatalogPage() {
       <div className="catalog-page-container">
         <CategoryPageHeader
           addButtonRef={addButtonRef}
+          isSimulation={false}
           onAddClick={handleOpenAdd}
         />
+
+        {errorMessage && (
+          <section className="sys-banner is-error" role="alert">
+            <div className="sys-banner-body">
+              <h2 className="sys-banner-title">
+                Gagal memuat daftar kategori dari backend
+              </h2>
+              <p className="sys-banner-text">{errorMessage}</p>
+            </div>
+            <div className="sys-banner-actions">
+              <button
+                type="button"
+                className="sys-btn sys-btn-primary nb-btn"
+                onClick={refreshCategories}
+              >
+                Coba Lagi
+              </button>
+            </div>
+          </section>
+        )}
 
         <CategorySummaryCards
           metrics={summaryMetrics}
@@ -114,6 +145,7 @@ export function CategoryCatalogPage() {
           onSort={handleSort}
           onPageChange={setPage}
           onEdit={handleOpenEdit}
+          onToggleStatus={setCategoryToToggle}
           onDelete={setCategoryToDelete}
           onAddFirst={handleOpenAdd}
         />
@@ -128,29 +160,48 @@ export function CategoryCatalogPage() {
       />
 
       <ConfirmDialog
+        open={Boolean(categoryToToggle)}
+        title={
+          categoryToToggle?.isActive
+            ? `Arsipkan kategori "${categoryToToggle?.name || ''}"?`
+            : `Aktifkan kembali kategori "${categoryToToggle?.name || ''}"?`
+        }
+        confirmLabel={
+          categoryToToggle?.isActive ? 'Arsipkan Kategori' : 'Aktifkan Kategori'
+        }
+        confirmVariant={categoryToToggle?.isActive ? 'danger' : 'primary'}
+        onConfirm={handleConfirmToggleStatus}
+        onCancel={() => setCategoryToToggle(null)}
+      >
+        {categoryToToggle?.isActive ? (
+          <p className="nb-confirm-copy">
+            Mengarsipkan kategori ini akan menyembunyikan kategori beserta{' '}
+            <strong>{categoryToToggle.ebookCount} e-book</strong> di dalamnya
+            dari katalog Web Pengunjung dan Aplikasi Mobile tanpa menghapus data
+            riwayat pembelian.
+          </p>
+        ) : (
+          <p className="nb-confirm-copy">
+            Mengaktifkan kembali kategori ini akan menampilkannya kembali di
+            katalog publik Web Pengunjung dan Aplikasi Mobile.
+          </p>
+        )}
+      </ConfirmDialog>
+
+      <ConfirmDialog
         open={Boolean(categoryToDelete)}
-        title={`Hapus kategori "${categoryToDelete?.name || ''}"?`}
+        title={`Hapus permanen kategori "${categoryToDelete?.name || ''}"?`}
         confirmLabel="Hapus Kategori"
         confirmVariant="danger"
-        isConfirmDisabled={(categoryToDelete?.ebookCount || 0) > 0}
         onConfirm={handleConfirmDelete}
         onCancel={() => setCategoryToDelete(null)}
       >
-        {(categoryToDelete?.ebookCount || 0) > 0 ? (
-          <div className="nb-form-error-box nb-confirm-guard-box" role="alert">
-            <div>
-              <strong>Kategori tidak dapat dihapus:</strong> Kategori ini masih
-              dipakai oleh{' '}
-              <strong>{categoryToDelete?.ebookCount} e-book</strong>. Pindahkan
-              atau arsipkan e-book tersebut sebelum menghapus kategori.
-            </div>
-          </div>
-        ) : (
-          <p className="nb-confirm-copy">
-            Kategori ini tidak sedang dipakai oleh e-book manapun. Menghapus
-            kategori akan menghilangkan data ini dari daftar kategori.
-          </p>
-        )}
+        <p className="nb-confirm-copy">
+          Tindakan ini akan menghapus kategori secara permanen dari database
+          PostgreSQL. Jika kategori masih digunakan oleh e-book (
+          <strong>{categoryToDelete?.ebookCount ?? 0} e-book</strong>), server
+          akan menolak penghapusan dengan kode konflik 409.
+        </p>
       </ConfirmDialog>
     </>
   )

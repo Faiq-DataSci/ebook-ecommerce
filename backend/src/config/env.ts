@@ -12,6 +12,7 @@ const envSchema = z
     SUPABASE_ANON_KEY: z.string().min(1).optional(),
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
     SUPABASE_EBOOK_BUCKET: z.string().min(1).default('ebooks-private'),
+    SUPABASE_COVER_BUCKET: z.string().min(1).default('ebook-covers'),
     PAYMENT_GATEWAY_PROVIDER: z.enum(['midtrans', 'xendit']).default('midtrans'),
     PAYMENT_GATEWAY_IS_PRODUCTION: z.preprocess((val) => {
       if (typeof val === 'boolean') {

@@ -1,6 +1,9 @@
 import type { NextFunction, Request, Response } from 'express'
+import { env } from '../config/env.js'
+import { prisma } from '../config/prisma.js'
 import { getSupabaseAdmin } from '../config/supabase.js'
 import { AppError } from '../utils/app-error.js'
+import { recordSecurityEvent } from '../utils/audit-logger.js'
 
 export type UserRole = 'CUSTOMER' | 'ADMIN'
 
@@ -43,8 +46,31 @@ export async function authenticate(
     const { data, error } = await supabase.auth.getUser(token)
 
     if (error || !data.user) {
+      recordSecurityEvent({
+        action: 'AUTH_INVALID_TOKEN',
+        entityType: 'Auth',
+        req,
+      })
       next(new AppError(401, 'UNAUTHENTICATED', 'Sesi tidak valid atau kedaluwarsa'))
       return
+    }
+
+    // Kill-switch akun: tolak segera apabila akun dinonaktifkan di database (isActive = false)
+    if (env.NODE_ENV !== 'test') {
+      const dbUser = await prisma.user.findUnique({
+        where: { supabaseUserId: data.user.id },
+        select: { isActive: true },
+      })
+      if (dbUser && !dbUser.isActive) {
+        recordSecurityEvent({
+          action: 'AUTH_BLOCKED_INACTIVE_USER',
+          entityType: 'User',
+          actorSupabaseId: data.user.id,
+          req,
+        })
+        next(new AppError(403, 'FORBIDDEN', 'Akun dinonaktifkan oleh administrator'))
+        return
+      }
     }
 
     const rawRole = data.user.app_metadata?.role
@@ -72,6 +98,13 @@ export function authorize(...allowedRoles: UserRole[]) {
     }
 
     if (!allowedRoles.includes(req.user.role)) {
+      recordSecurityEvent({
+        action: 'AUTH_ROLE_FORBIDDEN',
+        entityType: 'Authorization',
+        actorSupabaseId: req.user.id,
+        req,
+        metadata: { actualRole: req.user.role, allowedRoles },
+      })
       next(new AppError(403, 'FORBIDDEN', 'Anda tidak memiliki hak akses'))
       return
     }

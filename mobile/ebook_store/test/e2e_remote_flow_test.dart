@@ -99,6 +99,17 @@ class FakeRemoteSawDatasource implements RecommendationRemoteDataSource {
   }) async {
     return [];
   }
+
+  @override
+  Future<SawRankingResponse> getSawRankingWithCriteria({
+    String? categoryId,
+    int limit = 10,
+  }) async {
+    return const SawRankingResponse(
+      items: <SawRecommendationModel>[],
+      isRemote: true,
+    );
+  }
 }
 
 void main() {

@@ -1,9 +1,9 @@
 import type { Session } from '@supabase/supabase-js'
+import { API_BASE_URL } from '../../../services/api/apiClient'
 import { isSupabaseConfigured, supabase } from '../../../services/supabase/client'
 import type { AdminUser, LoginCredentials } from '../types/auth.types'
 
 const SIMULATION_SESSION_KEY = 'admin_simulasi_session'
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 export class AuthService {
   /**

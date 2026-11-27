@@ -1,6 +1,75 @@
 import '../../../../core/constants/app_assets.dart';
 import '../../domain/models/ebook.dart';
 
+/// Metadata kriteria aktif SAW yang dikirim oleh backend di `meta.activeCriteria`.
+class SawCriterionModel {
+  final String id;
+  final String name;
+  final String field;
+  final String type; // 'BENEFIT' | 'COST'
+  final double weight;
+
+  const SawCriterionModel({
+    required this.id,
+    required this.name,
+    required this.field,
+    required this.type,
+    required this.weight,
+  });
+
+  factory SawCriterionModel.fromJson(Map<String, dynamic> json) {
+    final weightVal = json['weight'];
+    final parsedWeight = weightVal is num
+        ? weightVal.toDouble()
+        : double.tryParse(weightVal?.toString() ?? '0') ?? 0.0;
+
+    return SawCriterionModel(
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      field: json['field']?.toString() ?? '',
+      type: (json['type']?.toString() ?? 'BENEFIT').toUpperCase(),
+      weight: parsedWeight,
+    );
+  }
+
+  static const List<SawCriterionModel> defaultCriteria = [
+    SawCriterionModel(
+      id: 'C1',
+      name: 'Harga',
+      field: 'price',
+      type: 'COST',
+      weight: 0.40,
+    ),
+    SawCriterionModel(
+      id: 'C2',
+      name: 'Rating',
+      field: 'ratingAvg',
+      type: 'BENEFIT',
+      weight: 0.35,
+    ),
+    SawCriterionModel(
+      id: 'C3',
+      name: 'Terjual',
+      field: 'salesCount',
+      type: 'BENEFIT',
+      weight: 0.25,
+    ),
+  ];
+}
+
+/// Respons lengkap ranking SAW beserta kriteria aktif yang dipakai backend.
+class SawRankingResponse {
+  final List<SawRecommendationModel> items;
+  final List<SawCriterionModel> activeCriteria;
+  final bool isRemote;
+
+  const SawRankingResponse({
+    required this.items,
+    this.activeCriteria = SawCriterionModel.defaultCriteria,
+    this.isRemote = false,
+  });
+}
+
 /// Data Transfer Object untuk respons endpoint SAW backend (`GET /api/v1/recommendations/saw`).
 class SawRecommendationModel {
   final int rank;

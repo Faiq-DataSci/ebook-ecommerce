@@ -21,6 +21,7 @@ interface CategoryTableProps {
   onSort: (column: CategorySortColumn) => void
   onPageChange: (page: number) => void
   onEdit: (category: CategoryListItem) => void
+  onToggleStatus: (category: CategoryListItem) => void
   onDelete: (category: CategoryListItem) => void
   onAddFirst: () => void
 }
@@ -45,6 +46,7 @@ export function CategoryTable({
   onSort,
   onPageChange,
   onEdit,
+  onToggleStatus,
   onDelete,
   onAddFirst,
 }: CategoryTableProps) {
@@ -167,10 +169,23 @@ export function CategoryTable({
                   </button>
                   <button
                     type="button"
+                    className="nb-btn nb-table-action-btn"
+                    onClick={() => onToggleStatus(category)}
+                    aria-label={`${category.isActive ? 'Arsipkan' : 'Aktifkan'} kategori ${category.name}`}
+                    title={
+                      category.isActive
+                        ? 'Arsipkan kategori dari katalog publik'
+                        : 'Aktifkan kembali kategori ke katalog publik'
+                    }
+                  >
+                    {category.isActive ? 'Arsipkan' : 'Aktifkan'}
+                  </button>
+                  <button
+                    type="button"
                     className="nb-btn nb-table-action-btn is-danger"
                     onClick={() => onDelete(category)}
-                    aria-label={`Hapus kategori ${category.name}`}
-                    title="Hapus kategori"
+                    aria-label={`Hapus permanen kategori ${category.name}`}
+                    title="Hapus kategori (hanya jika belum dipakai e-book)"
                   >
                     Hapus
                   </button>

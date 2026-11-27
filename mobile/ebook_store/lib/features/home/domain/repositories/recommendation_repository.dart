@@ -7,4 +7,8 @@ abstract class RecommendationRepository {
     String? categoryId,
     int limit = 10,
   });
+  Future<SawRankingResponse> getSawRankingWithCriteria({
+    String? categoryId,
+    int limit = 10,
+  });
 }

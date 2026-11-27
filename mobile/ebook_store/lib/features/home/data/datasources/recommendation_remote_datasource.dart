@@ -8,6 +8,10 @@ abstract class RecommendationRemoteDataSource {
     String? categoryId,
     int limit = 10,
   });
+  Future<SawRankingResponse> getSawRankingWithCriteria({
+    String? categoryId,
+    int limit = 10,
+  });
 }
 
 class RecommendationRemoteDataSourceImpl
@@ -51,6 +55,18 @@ class RecommendationRemoteDataSourceImpl
     String? categoryId,
     int limit = 10,
   }) async {
+    final result = await getSawRankingWithCriteria(
+      categoryId: categoryId,
+      limit: limit,
+    );
+    return result.items;
+  }
+
+  @override
+  Future<SawRankingResponse> getSawRankingWithCriteria({
+    String? categoryId,
+    int limit = 10,
+  }) async {
     try {
       final queryParams = <String, dynamic>{'limit': limit};
       if (categoryId != null &&
@@ -66,16 +82,39 @@ class RecommendationRemoteDataSourceImpl
 
       if (response.statusCode == 200 && response.data != null) {
         final dynamic rawData = response.data['data'];
+        final dynamic rawMeta = response.data['meta'];
+
+        List<SawCriterionModel> parsedCriteria =
+            SawCriterionModel.defaultCriteria;
+        if (rawMeta is Map && rawMeta['activeCriteria'] is List) {
+          final metaList = rawMeta['activeCriteria'] as List;
+          if (metaList.isNotEmpty) {
+            parsedCriteria = metaList
+                .map(
+                  (c) => SawCriterionModel.fromJson(c as Map<String, dynamic>),
+                )
+                .toList();
+          }
+        }
+
         if (rawData is List) {
-          return rawData
+          final items = rawData
               .map(
                 (e) =>
                     SawRecommendationModel.fromJson(e as Map<String, dynamic>),
               )
               .toList();
+          return SawRankingResponse(
+            items: items,
+            activeCriteria: parsedCriteria,
+            isRemote: true,
+          );
         }
       }
-      return <SawRecommendationModel>[];
+      return const SawRankingResponse(
+        items: <SawRecommendationModel>[],
+        isRemote: true,
+      );
     } on DioException {
       rethrow;
     } catch (e) {

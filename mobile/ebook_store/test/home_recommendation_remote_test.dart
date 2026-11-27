@@ -50,6 +50,19 @@ class FakeRemoteDataSource implements RecommendationRemoteDataSource {
       ),
     ];
   }
+
+  @override
+  Future<SawRankingResponse> getSawRankingWithCriteria({
+    String? categoryId,
+    int limit = 10,
+  }) async {
+    final items = await getSawRankingList(categoryId: categoryId, limit: limit);
+    return SawRankingResponse(
+      items: items,
+      activeCriteria: SawCriterionModel.defaultCriteria,
+      isRemote: true,
+    );
+  }
 }
 
 void main() {

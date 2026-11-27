@@ -547,11 +547,33 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
 
   /admin/categories:
+    get:
+      tags: [Admin Categories]
+      summary: Daftar seluruh kategori e-book (Admin)
+      description: "[ADA] Mengambil seluruh kategori termasuk yang diarsipkan beserta jumlah e-book."
+      x-implementation-status: "[ADA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+      responses:
+        "200":
+          description: Daftar kategori admin berhasil dimuat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
     post:
       tags: [Admin Categories]
       summary: Tambah kategori e-book
-      description: "[RENCANA] Membuat kategori baru."
-      x-implementation-status: "[RENCANA]"
+      description: "[ADA] Membuat kategori baru dengan name & slug unik."
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []
@@ -561,7 +583,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [name, slug]
+              required: [name]
               properties:
                 name:
                   type: string
@@ -569,6 +591,9 @@ paths:
                   type: string
                 description:
                   type: string
+                  nullable: true
+                isActive:
+                  type: boolean
       responses:
         "201":
           description: Kategori dibuat
@@ -589,7 +614,7 @@ paths:
     patch:
       tags: [Admin Categories]
       summary: Perbarui kategori e-book
-      x-implementation-status: "[RENCANA]"
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []
@@ -602,11 +627,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
     delete:
       tags: [Admin Categories]
-      summary: Hapus / nonaktifkan kategori e-book
-      description: "[RENCANA] Menolak penghapusan apabila kategori masih direferensikan oleh Ebook (onDelete Restrict)."
-      x-implementation-status: "[RENCANA]"
+      summary: Hapus permanen kategori e-book
+      description: "[ADA] Menolak penghapusan (409 CONFLICT) apabila kategori masih direferensikan oleh Ebook (onDelete Restrict)."
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []
@@ -619,25 +648,49 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
         "409":
           $ref: "#/components/responses/ConflictError"
 
   /admin/ebooks:
+    get:
+      tags: [Admin Ebooks]
+      summary: Daftar seluruh koleksi e-book (Admin)
+      description: "[ADA] Mengambil seluruh e-book (aktif & arsip) dengan filter, pencarian, pengurutan, dan paginasi."
+      x-implementation-status: "[ADA]"
+      x-required-role: ADMIN
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+      responses:
+        "200":
+          description: Daftar e-book admin berhasil dimuat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
     post:
       tags: [Admin Ebooks]
-      summary: Tambah e-book dan unggah file PDF ke bucket privat
-      description: "[RENCANA] Menerima metadata e-book serta file sampul/PDF untuk diunggah ke Supabase Storage bucket privat oleh backend."
-      x-implementation-status: "[RENCANA]"
+      summary: Tambah e-book baru (mendukung JSON storagePath dan multipart/form-data pdfFile)
+      description: "[ADA] Menerima metadata e-book dalam application/json atau multipart/form-data (field pdfFile otomatis diunggah ke bucket privat Supabase Storage)."
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
               type: object
-              required: [categoryId, title, author, description, price, pdfFile]
+              required: [categoryId, title, author, description, price]
               properties:
                 categoryId:
                   type: string
@@ -649,11 +702,23 @@ paths:
                 description:
                   type: string
                 price:
+                  type: number
+                  minimum: 0
+                  example: 75000
+                coverUrl:
                   type: string
-                  example: "75000.00"
-                pdfFile:
+                  nullable: true
+                storagePath:
                   type: string
-                  format: binary
+                  example: "ebooks-private/simulasi.pdf"
+                pageCount:
+                  type: integer
+                  nullable: true
+                publishedYear:
+                  type: integer
+                  nullable: true
+                isActive:
+                  type: boolean
       responses:
         "201":
           description: E-book berhasil ditambahkan
@@ -667,12 +732,14 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
 
   /admin/ebooks/{id}:
     patch:
       tags: [Admin Ebooks]
       summary: Perbarui metadata/harga/status e-book
-      x-implementation-status: "[RENCANA]"
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []
@@ -685,10 +752,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
     delete:
       tags: [Admin Ebooks]
       summary: Arsipkan e-book (soft delete isActive=false)
-      x-implementation-status: "[RENCANA]"
+      x-implementation-status: "[ADA]"
       x-required-role: ADMIN
       security:
         - bearerAuth: []
@@ -701,6 +772,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
 
   /admin/customers:
     get:

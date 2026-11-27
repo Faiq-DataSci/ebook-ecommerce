@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
-import { ConfirmDialog, Toast, type ToastMessage } from '../../../shared/components/ui';
+import {
+  ConfirmDialog,
+  PageContentSkeleton,
+  Toast,
+  type ToastMessage,
+} from '../../../shared/components/ui';
+import { useAuth } from '../../authentication/hooks/useAuth';
 import { SawCriteriaTablePanel } from '../components/SawCriteriaTablePanel';
 import { SawLiveMatrixAuditor } from '../components/SawLiveMatrixAuditor';
 import { SawWeightEditModal } from '../components/SawWeightEditModal';
@@ -65,10 +71,13 @@ export function SpkRecommendationPage({
     onConfirm: () => {},
   });
 
+  const { session } = useAuth();
+  const accessToken = session?.access_token;
+
   // Load Criteria & Weights from Backend on Mount
   useEffect(() => {
     let isMounted = true;
-    spkAdminService.getActiveSawWeights().then((res) => {
+    spkAdminService.getActiveSawWeights(accessToken).then((res) => {
       if (isMounted) {
         setCriteria(res.criteria);
         setIsSimulation(res.isSimulation);
@@ -77,13 +86,13 @@ export function SpkRecommendationPage({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [accessToken]);
 
   // Load Matrix Audit Data when criteria change
-  const refreshMatrix = async () => {
+  const refreshMatrix = async (targetCriteria: SawCriterionAdminRecord[] = criteria) => {
     setIsLoadingMatrix(true);
     try {
-      const data = await spkAdminService.getLiveMatrixAuditData(criteria);
+      const data = await spkAdminService.getLiveMatrixAuditData(targetCriteria, accessToken);
       setAuditData(data);
     } finally {
       setIsLoadingMatrix(false);
@@ -92,7 +101,7 @@ export function SpkRecommendationPage({
 
   useEffect(() => {
     let isCancelled = false;
-    spkAdminService.getLiveMatrixAuditData(criteria).then((data) => {
+    spkAdminService.getLiveMatrixAuditData(criteria, accessToken).then((data) => {
       if (!isCancelled) {
         setAuditData(data);
       }
@@ -100,7 +109,7 @@ export function SpkRecommendationPage({
     return () => {
       isCancelled = true;
     };
-  }, [criteria]);
+  }, [criteria, accessToken]);
 
   // Handler: Update Bobot Kriteria Lokal dari Modal
   const handleUpdateCriterionWeight = (id: string, newWeight: number) => {
@@ -110,29 +119,46 @@ export function SpkRecommendationPage({
     showToast('info', `Bobot kriteria ${id} diubah menjadi ${newWeight.toFixed(2)} (Lokal). Periksa total bobot sebelum menyimpan.`);
   };
 
-  // Handler: Simpan Bobot ke Server (dengan Dialog Konfirmasi)
+  // Handler: Simpan Konfigurasi Kriteria & Bobot ke Server (dengan Dialog Konfirmasi)
   const handleRequestSaveWeights = (weightsToSave: SawCriterionAdminRecord[]) => {
-    const total = weightsToSave.reduce((sum, c) => sum + (c.isActive ? c.weight : 0), 0);
+    const activeItems = weightsToSave.filter((c) => c.isActive);
+    const total = activeItems.reduce((sum, c) => sum + c.weight, 0);
+    if (activeItems.length === 0) {
+      showToast('error', 'Gagal menyimpan: Minimal harus ada 1 kriteria yang aktif.');
+      return;
+    }
     if (Math.abs(total - 1.0) > 1e-4) {
-      showToast('error', `Gagal menyimpan: Total bobot kriteria harus berjumlah 1,00 (aktual: ${total.toFixed(2)}).`);
+      showToast('error', `Gagal menyimpan: Total bobot kriteria aktif harus berjumlah 1,00 (aktual: ${total.toFixed(2)}).`);
       return;
     }
 
     setConfirmDialog({
       open: true,
-      title: 'Terapkan Konfigurasi Bobot SAW Baru?',
-      description:
-        'Perubahan bobot kriteria akan segera memengaruhi urutan peringkat rekomendasi e-book di seluruh etalase toko publik. Pastikan matriks bobot telah sesuai dengan prioritas bisnis.',
+      title: 'Terapkan Konfigurasi Kriteria & Bobot SAW Baru?',
+      description: `Anda akan menyimpan ${weightsToSave.length} kriteria (${activeItems.length} aktif, total bobot 1,00). Perubahan ini akan langsung memengaruhi urutan peringkat rekomendasi e-book di seluruh etalase toko publik.`,
       onConfirm: async () => {
         setConfirmDialog((prev) => ({ ...prev, open: false }));
         setIsSaving(true);
         try {
-          const res = await spkAdminService.updateSawWeights({
-            criteria: weightsToSave.map((c) => ({ id: c.id, weight: c.weight })),
-          });
+          const res = await spkAdminService.updateSawWeights(
+            {
+              replaceAll: true,
+              criteria: weightsToSave.map((c) => ({
+                id: c.id,
+                name: c.name,
+                field: c.field,
+                type: c.type,
+                weight: c.isActive ? c.weight : 0,
+                isActive: c.isActive,
+                description: c.description,
+              })),
+            },
+            accessToken,
+          );
+          setCriteria(weightsToSave);
           showToast('success', res.message);
           setIsSimulation(res.isSimulation);
-          await refreshMatrix();
+          await refreshMatrix(weightsToSave);
         } catch (err: unknown) {
           const msg = err instanceof Error ? err.message : 'Gagal menyimpan bobot';
           showToast('error', msg);
@@ -171,18 +197,6 @@ export function SpkRecommendationPage({
           <p className="tf-page-subtitle">
             Pengelolaan Bobot Kriteria Simple Additive Weighting &amp; Live Matrix Auditor Transparansi Rekomendasi E-Book
           </p>
-        </div>
-
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            className="tf-action-btn"
-            style={{ minHeight: '40px', padding: '0 16px', backgroundColor: 'var(--nb-white)' }}
-            onClick={() => onNavigate?.('/admin/katalog/ebook')}
-            title="Buka Koleksi E-Book"
-          >
-            <span>Katalog E-Book</span>
-          </button>
         </div>
       </div>
 
@@ -225,16 +239,20 @@ export function SpkRecommendationPage({
       )}
 
       {/* TAB 2: AUDIT MATRIKS SAW PANEL */}
-      {activeTab === 'matriks' && auditData && (
-        <SawLiveMatrixAuditor
-          auditData={auditData}
-          onRefreshMatrix={refreshMatrix}
-          isLoading={isLoadingMatrix}
-        />
-      )}
+      {activeTab === 'matriks' &&
+        (!auditData || isLoadingMatrix ? (
+          <PageContentSkeleton variant="spk" embedded />
+        ) : (
+          <SawLiveMatrixAuditor
+            auditData={auditData}
+            onRefreshMatrix={() => void refreshMatrix()}
+            isLoading={isLoadingMatrix}
+          />
+        ))}
 
       {/* EDIT WEIGHT MODAL */}
       <SawWeightEditModal
+        key={selectedCriterionForEdit?.id ?? 'closed'}
         criterion={selectedCriterionForEdit}
         onClose={() => setSelectedCriterionForEdit(null)}
         onUpdateCriterionWeight={handleUpdateCriterionWeight}

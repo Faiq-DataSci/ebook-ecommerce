@@ -43,6 +43,7 @@ export interface EbookFormData {
   publishedYear: string
   isActive: boolean
   coverFileName?: string
+  coverUrl?: string | null
   pdfFileName?: string
 }
 

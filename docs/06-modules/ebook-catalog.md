@@ -1,6 +1,6 @@
 # Modul Katalog E-Book, Kategori, & Rekomendasi SAW (`E-Book Catalog, Category, & SAW`)
 
-**Status Implementasi:** Sebagian `[ADA]` (antarmuka etalase katalog, pencarian debounced, filter kategori & harga, dan halaman detail e-book telah `[ADA]` pada [`web/pengunjung-web`](../../web/pengunjung-web) dan [`mobile/ebook_store`](../../mobile/ebook_store); skema Prisma & helper `supabase-storage.ts` `[ADA]`); sebagian `[RENCANA]` (seluruh router, service, dan endpoint REST API katalog, upload PDF, serta mesin kalkulasi SAW backend belum diimplementasikan).
+**Status Implementasi:** Sebagian besar `[ADA]` (REST API publik `/categories`, `/ebooks`, `/ebooks/:id`, `/recommendations/saw`, REST API admin CRUD Kategori `GET/POST/PATCH/DELETE /admin/categories`, E-Book `GET/POST/PATCH/DELETE /admin/ebooks` + unggah file biner PDF `multipart/form-data` via `POST /admin/ebooks/upload-pdf` & `POST /admin/ebooks` ke bucket privat `ebooks-private`, integrasi penuh tanpa mock di `web/admin-web`, serta antarmuka konsumen di `web/pengunjung-web` & `mobile/ebook_store`); sebagian `[RENCANA]` (keputusan terbuka #5/#6/#7/#9).
 
 ---
 
@@ -76,18 +76,19 @@ flowchart LR
 
 | Endpoint | Method | Authentication | Authorization | Deskripsi | Status |
 |---|---|---|---|---|---|
-| `/api/v1/categories` | `GET` | Opsional | `PUBLIC` | Daftar kategori aktif | `[RENCANA]` |
-| `/api/v1/ebooks` | `GET` | Opsional | `PUBLIC` | Daftar & pencarian e-book aktif (tanpa `storagePath`) | `[RENCANA]` |
-| `/api/v1/ebooks/:id` | `GET` | Opsional | `PUBLIC` | Detail e-book aktif (tanpa `storagePath`) | `[RENCANA]` |
-| `/api/v1/recommendations/saw` | `GET` | Opsional | `PUBLIC` / `CUSTOMER` | Rekomendasi SAW hasil perhitungan backend | `[RENCANA]` |
-| `/api/v1/admin/categories` | `POST` | Bearer JWT | `ADMIN` | Tambah kategori baru | `[RENCANA]` |
-| `/api/v1/admin/categories/:id` | `PATCH` | Bearer JWT | `ADMIN` | Ubah kategori | `[RENCANA]` |
-| `/api/v1/admin/categories/:id` | `DELETE` | Bearer JWT | `ADMIN` | Hapus kategori (`onDelete: Restrict`) | `[RENCANA]` |
-| `/api/v1/admin/ebooks` | `POST` | Bearer JWT | `ADMIN` | Tambah e-book + upload PDF (`multipart/form-data`) | `[RENCANA]` |
-| `/api/v1/admin/ebooks/:id` | `PATCH` | Bearer JWT | `ADMIN` | Ubah metadata/harga e-book | `[RENCANA]` |
-| `/api/v1/admin/ebooks/:id` | `DELETE` | Bearer JWT | `ADMIN` | Arsipkan e-book (`isActive = false`, soft delete) | `[RENCANA]` |
-| `/api/v1/admin/saw/weights` | `GET` | Bearer JWT | `ADMIN` | Lihat konfigurasi bobot SAW aktif | `[RENCANA]` |
-| `/api/v1/admin/saw/weights` | `PUT` | Bearer JWT | `ADMIN` | Ubah bobot SAW (validasi total bobot `= 1.0`) | `[RENCANA]` |
+| `/api/v1/categories` | `GET` | Opsional | `PUBLIC` | Daftar kategori aktif | `[ADA]` |
+| `/api/v1/ebooks` | `GET` | Opsional | `PUBLIC` | Daftar & pencarian e-book aktif (tanpa `storagePath`) | `[ADA]` |
+| `/api/v1/ebooks/:id` | `GET` | Opsional | `PUBLIC` | Detail e-book aktif (tanpa `storagePath`) | `[ADA]` |
+| `/api/v1/recommendations/saw` | `GET` | Opsional | `PUBLIC` / `CUSTOMER` | Rekomendasi SAW hasil perhitungan backend | `[ADA]` |
+| `/api/v1/admin/categories` | `GET` / `POST` | Bearer JWT | `ADMIN` | Daftar & tambah kategori baru | `[ADA]` |
+| `/api/v1/admin/categories/:id` | `PATCH` | Bearer JWT | `ADMIN` | Ubah kategori (alias `PUT` & `PATCH /:id/status`) | `[ADA]` |
+| `/api/v1/admin/categories/:id` | `DELETE` | Bearer JWT | `ADMIN` | Hapus kategori (`409 CONFLICT` jika dipakai e-book) | `[ADA]` |
+| `/api/v1/admin/ebooks/upload-pdf` | `POST` | Bearer JWT | `ADMIN` | Unggah file PDF biner (`multipart/form-data`, field `pdfFile`) ke bucket privat `ebooks-private` | `[ADA]` |
+| `/api/v1/admin/ebooks` | `GET` / `POST` | Bearer JWT | `ADMIN` | Daftar & tambah e-book (`application/json` + `storagePath` maupun `multipart/form-data` langsung) | `[ADA]` |
+| `/api/v1/admin/ebooks/:id` | `PATCH` | Bearer JWT | `ADMIN` | Ubah metadata/harga e-book (alias `PUT` & `PATCH /:id/status`) | `[ADA]` |
+| `/api/v1/admin/ebooks/:id` | `DELETE` | Bearer JWT | `ADMIN` | Arsipkan e-book (`isActive = false`, soft delete) | `[ADA]` |
+| `/api/v1/admin/saw/weights` | `GET` | Bearer JWT | `ADMIN` | Lihat konfigurasi bobot SAW aktif | `[ADA]` |
+| `/api/v1/admin/saw/weights` | `PUT` | Bearer JWT | `ADMIN` | Ubah bobot SAW (validasi total bobot `= 1.0`) | `[ADA]` |
 
 ### Contoh Respons Publik & Validasi Zod (`[RENCANA]`)
 

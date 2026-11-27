@@ -72,7 +72,7 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
       if (filter.minRating != null && filter.minRating! > 0) {
         queryParams['minRating'] = filter.minRating;
       }
-      queryParams['sort'] = filter.sort.apiValue;
+      queryParams['sortBy'] = _mapSortByParam(filter.sort);
 
       final response = await dio.get('/ebooks', queryParameters: queryParams);
 
@@ -142,6 +142,20 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
     } catch (e) {
       if (e is CatalogFailure) rethrow;
       throw const CatalogFailure.unknown();
+    }
+  }
+
+  String _mapSortByParam(CatalogSortOption sort) {
+    switch (sort) {
+      case CatalogSortOption.hargaAsc:
+        return 'price_asc';
+      case CatalogSortOption.hargaDesc:
+        return 'price_desc';
+      case CatalogSortOption.ratingDesc:
+        return 'rating';
+      case CatalogSortOption.terbaru:
+      case CatalogSortOption.judulAsc:
+        return 'newest';
     }
   }
 

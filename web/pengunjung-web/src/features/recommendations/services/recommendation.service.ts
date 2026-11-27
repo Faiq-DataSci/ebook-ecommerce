@@ -187,21 +187,26 @@ export const recommendationService = {
 
       const json = await response.json();
       const rawData = json.data;
+      const metaCriteria: SawCriterionInfo[] =
+        Array.isArray(json.meta?.activeCriteria) && json.meta.activeCriteria.length > 0
+          ? (json.meta.activeCriteria as SawCriterionInfo[])
+          : SIMULATION_ACTIVE_CRITERIA;
 
-      // Map response backend riil
+      // Map response backend riil dengan kriteria aktif dari server
       if (Array.isArray(rawData)) {
         const items: SawRecommendationItem[] = (rawData as RawBackendRecommendationItem[]).map((item) => {
           const rawValues = item.rawValues || {};
           const normalizedValues = item.normalizedValues || {};
 
-          // Bentuk step kalkulasi per kriteria aktif
-          const calculationSteps: SawCalculationStep[] = SIMULATION_ACTIVE_CRITERIA.map((crit) => {
+          // Bentuk step kalkulasi per kriteria aktif dari backend
+          const calculationSteps: SawCalculationStep[] = metaCriteria.map((crit) => {
             const rawVal = rawValues[crit.id] ?? (rawValues[crit.field] || 0);
             const normVal = normalizedValues[crit.id] ?? 0;
             const contrib = Number((crit.weight * normVal).toFixed(4));
             return {
               criterionId: crit.id,
               criterionName: crit.name,
+              field: crit.field,
               type: crit.type,
               weight: crit.weight,
               rawValue: rawVal,
@@ -235,7 +240,7 @@ export const recommendationService = {
             second: '2-digit',
           }),
           totalAlternatives: items.length,
-          activeCriteria: SIMULATION_ACTIVE_CRITERIA,
+          activeCriteria: metaCriteria,
           items,
         };
       }

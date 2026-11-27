@@ -61,9 +61,6 @@ export function DashboardWelcomeBanner({
             onClick={onDownloadCsv}
             title="Unduh rekap transaksi periode ini dalam format CSV"
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-              download
-            </span>
             <span>Unduh Rekap CSV</span>
           </button>
         </div>

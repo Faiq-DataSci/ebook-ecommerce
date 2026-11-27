@@ -1,3 +1,7 @@
+import { formatRupiah } from '../../../shared/utils/formatters'
+
+export { formatRupiah }
+
 export function getCategoryMeta(slug?: string): { icon: string; activeBg: string } {
   switch (slug) {
     case 'rekayasa-perangkat-lunak':
@@ -13,10 +17,4 @@ export function getCategoryMeta(slug?: string): { icon: string; activeBg: string
     default:
       return { icon: 'folder', activeBg: 'var(--nb-muted)' }
   }
-}
-
-export function formatRupiah(val: string | number): string {
-  const num = typeof val === 'string' ? parseInt(val.replace(/\D/g, ''), 10) : val
-  if (isNaN(num)) return 'Rp 0'
-  return `Rp ${num.toLocaleString('id-ID')}`
 }

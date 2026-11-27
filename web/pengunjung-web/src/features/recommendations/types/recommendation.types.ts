@@ -11,6 +11,7 @@ export interface SawCriterionInfo {
 export interface SawCalculationStep {
   criterionId: string;
   criterionName: string;
+  field?: string;
   type: CriterionType;
   weight: number;
   rawValue: number;

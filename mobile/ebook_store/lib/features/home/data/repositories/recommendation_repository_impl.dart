@@ -33,28 +33,46 @@ class RecommendationRepositoryImpl implements RecommendationRepository {
     String? categoryId,
     int limit = 10,
   }) async {
+    final result = await getSawRankingWithCriteria(
+      categoryId: categoryId,
+      limit: limit,
+    );
+    return result.items;
+  }
+
+  @override
+  Future<SawRankingResponse> getSawRankingWithCriteria({
+    String? categoryId,
+    int limit = 10,
+  }) async {
     if (useRemote) {
       try {
-        final results = await remoteDataSource.getSawRankingList(
+        final result = await remoteDataSource.getSawRankingWithCriteria(
           categoryId: categoryId,
           limit: limit,
         );
-        if (results.isNotEmpty) return results;
+        if (result.items.isNotEmpty) return result;
       } catch (_) {
         // Fallback aman ke data simulasi saat offline
       }
     }
-    if (categoryId != null && categoryId.isNotEmpty && categoryId != 'semua') {
-      return HomeMockData.simulationSawRankingList
-          .where(
-            (item) =>
-                item.categoryName?.toLowerCase().contains(
-                  categoryId.toLowerCase(),
-                ) ??
-                false,
-          )
-          .toList();
-    }
-    return HomeMockData.simulationSawRankingList;
+    final fallbackItems =
+        (categoryId != null && categoryId.isNotEmpty && categoryId != 'semua')
+        ? HomeMockData.simulationSawRankingList
+              .where(
+                (item) =>
+                    item.categoryName?.toLowerCase().contains(
+                      categoryId.toLowerCase(),
+                    ) ??
+                    false,
+              )
+              .toList()
+        : HomeMockData.simulationSawRankingList;
+
+    return SawRankingResponse(
+      items: fallbackItems,
+      activeCriteria: SawCriterionModel.defaultCriteria,
+      isRemote: false,
+    );
   }
 }

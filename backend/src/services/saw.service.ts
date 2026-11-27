@@ -8,6 +8,8 @@ export interface SawCriterion {
   field: string
   type: CriterionType
   weight: number
+  isActive?: boolean
+  description?: string
 }
 
 export interface SawAlternative {

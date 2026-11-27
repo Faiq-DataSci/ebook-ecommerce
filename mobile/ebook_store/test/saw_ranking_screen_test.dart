@@ -14,8 +14,12 @@ import 'package:ebook_store/features/recommendations/presentation/providers/saw_
 class FakeRecommendationRepositoryForRanking
     implements RecommendationRepository {
   final List<SawRecommendationModel> mockRankings;
+  final List<SawCriterionModel> mockCriteria;
 
-  FakeRecommendationRepositoryForRanking(this.mockRankings);
+  FakeRecommendationRepositoryForRanking(
+    this.mockRankings, {
+    this.mockCriteria = SawCriterionModel.defaultCriteria,
+  });
 
   @override
   Future<Ebook> getFeaturedSawBook({String? categoryId}) async {
@@ -27,18 +31,35 @@ class FakeRecommendationRepositoryForRanking
     String? categoryId,
     int limit = 10,
   }) async {
-    if (categoryId != null && categoryId.isNotEmpty && categoryId != 'semua') {
-      return mockRankings
-          .where(
-            (e) =>
-                e.categoryName?.toLowerCase().contains(
-                  categoryId.toLowerCase(),
-                ) ??
-                false,
-          )
-          .toList();
-    }
-    return mockRankings;
+    final res = await getSawRankingWithCriteria(
+      categoryId: categoryId,
+      limit: limit,
+    );
+    return res.items;
+  }
+
+  @override
+  Future<SawRankingResponse> getSawRankingWithCriteria({
+    String? categoryId,
+    int limit = 10,
+  }) async {
+    final filtered =
+        (categoryId != null && categoryId.isNotEmpty && categoryId != 'semua')
+        ? mockRankings
+              .where(
+                (e) =>
+                    e.categoryName?.toLowerCase().contains(
+                      categoryId.toLowerCase(),
+                    ) ??
+                    false,
+              )
+              .toList()
+        : mockRankings;
+    return SawRankingResponse(
+      items: filtered,
+      activeCriteria: mockCriteria,
+      isRemote: false,
+    );
   }
 }
 
@@ -300,6 +321,91 @@ void main() {
         // Navigasi ke SawRankingScreen berhasil
         expect(find.byType(SawRankingScreen), findsOneWidget);
         expect(find.text('SPK REKOMENDASI SAW'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      '6. Merender kriteria dinamis dari backend (misal 4 kriteria termasuk C4: Halaman)',
+      (WidgetTester tester) async {
+        await tester.binding.setSurfaceSize(const Size(390, 884));
+
+        const dynamicCriteria = [
+          SawCriterionModel(
+            id: 'C1',
+            name: 'Harga',
+            field: 'price',
+            type: 'COST',
+            weight: 0.30,
+          ),
+          SawCriterionModel(
+            id: 'C2',
+            name: 'Rating',
+            field: 'ratingAvg',
+            type: 'BENEFIT',
+            weight: 0.30,
+          ),
+          SawCriterionModel(
+            id: 'C3',
+            name: 'Terjual',
+            field: 'salesCount',
+            type: 'BENEFIT',
+            weight: 0.25,
+          ),
+          SawCriterionModel(
+            id: 'C4',
+            name: 'Halaman',
+            field: 'pageCount',
+            type: 'BENEFIT',
+            weight: 0.15,
+          ),
+        ];
+
+        final dynamicRankings = [
+          const SawRecommendationModel(
+            rank: 1,
+            ebookId: 'eb-dyn-1',
+            title: 'Arsitektur Cloud Modern',
+            author: 'Raka Pratama',
+            price: '80000',
+            categoryName: 'Teknologi & AI',
+            sawScore: 0.960,
+            displayScore: '0.960',
+            rawValues: {'C1': 80000, 'C2': 4.9, 'C3': 350, 'C4': 420},
+            normalizedValues: {'C1': 1.0, 'C2': 1.0, 'C3': 0.9, 'C4': 1.0},
+          ),
+        ];
+
+        final fakeRepo = FakeRecommendationRepositoryForRanking(
+          dynamicRankings,
+          mockCriteria: dynamicCriteria,
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              recommendationRepositoryProvider.overrideWithValue(fakeRepo),
+              sawRankingProvider.overrideWith(
+                (ref) => SawRankingNotifier(
+                  repository: fakeRepo,
+                  isRemote: true,
+                  autoFetch: true,
+                ),
+              ),
+            ],
+            child: const MaterialApp(home: SawRankingScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('C4: Halaman'), findsOneWidget);
+        expect(find.text('(BENEFIT 15%)'), findsOneWidget);
+
+        await tester.tap(find.byKey(const Key('toggle_matrix_button_1')));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('matrix_table_1')), findsOneWidget);
+        expect(find.text('420'), findsOneWidget);
+        expect(find.text('0.15'), findsOneWidget);
       },
     );
   });

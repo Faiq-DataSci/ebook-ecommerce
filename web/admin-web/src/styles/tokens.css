@@ -494,6 +494,62 @@ body {
   border-bottom: none;
 }
 
+/* Route-Level Page Content Skeleton (all admin navigations) */
+.nb-page-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.nb-page-skeleton.is-embedded {
+  gap: 16px;
+}
+
+.nb-page-skeleton-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nb-page-skeleton-tabs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.nb-page-skeleton-tab {
+  width: 152px;
+  height: 40px;
+}
+
+.nb-page-skeleton-tab.is-active {
+  background-color: var(--nb-yellow);
+  box-shadow: var(--nb-shadow-xs);
+}
+
+.nb-page-skeleton-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  background-color: var(--nb-white);
+  border: var(--nb-border-thin);
+  box-shadow: var(--nb-shadow-xs);
+}
+
+.nb-page-skeleton-two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
 @media (max-width: 1024px) {
   .nb-shell-skeleton-sidebar {
     display: none;
@@ -503,7 +559,8 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .nb-shell-skeleton-panels {
+  .nb-shell-skeleton-panels,
+  .nb-page-skeleton-two-col {
     grid-template-columns: 1fr;
   }
 }

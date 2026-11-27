@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import { disconnectDatabase, prisma } from '../src/config/prisma.js'
+import { SIMULATION_SAW_CRITERIA } from '../src/services/saw.service.js'
 import { buildSimulationSeedData } from './seed-data.js'
 
 async function main(): Promise<void> {
@@ -143,8 +144,31 @@ async function main(): Promise<void> {
     })
   }
 
+  for (const [idx, criterion] of SIMULATION_SAW_CRITERIA.entries()) {
+    await prisma.sawCriterion.upsert({
+      where: { code: criterion.id },
+      update: {
+        name: criterion.name,
+        field: criterion.field,
+        type: criterion.type,
+        weight: criterion.weight,
+        isActive: true,
+        sortOrder: idx,
+      },
+      create: {
+        code: criterion.id,
+        name: criterion.name,
+        field: criterion.field,
+        type: criterion.type,
+        weight: criterion.weight,
+        isActive: true,
+        sortOrder: idx,
+      },
+    })
+  }
+
   console.log(
-    `Seed DATA SIMULASI selesai: ${data.users.length} users, ${data.categories.length} categories, ${data.ebooks.length} ebooks, ${data.orders.length} orders, ${data.transactions.length} transactions, ${data.ebookAccesses.length} ebook accesses.`,
+    `Seed DATA SIMULASI selesai: ${data.users.length} users, ${data.categories.length} categories, ${data.ebooks.length} ebooks, ${data.orders.length} orders, ${data.transactions.length} transactions, ${data.ebookAccesses.length} ebook accesses, ${SIMULATION_SAW_CRITERIA.length} saw criteria.`,
   )
 }
 

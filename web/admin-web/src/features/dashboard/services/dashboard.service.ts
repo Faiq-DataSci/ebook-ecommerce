@@ -1,6 +1,5 @@
+import { apiClient } from '../../../services/api/apiClient'
 import { isSupabaseConfigured, supabase } from '../../../services/supabase/client'
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 export interface WeeklySalesPointData {
   day: string
@@ -70,28 +69,10 @@ export function subscribeToRealtimeSalesUpdates(onUpdate: () => void): () => voi
  * Endpoint: GET /api/v1/admin/dashboard
  */
 export async function fetchDashboardSummary(): Promise<DashboardSummaryData | null> {
-  if (!API_BASE_URL) return null
-
   try {
-    let token: string | undefined
-    if (isSupabaseConfigured) {
-      const { data } = await supabase.auth.getSession()
-      token = data.session?.access_token
-    }
-
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    }
-    if (token) {
-      headers.Authorization = `Bearer ${token}`
-    }
-
-    const res = await fetch(`${API_BASE_URL}/admin/dashboard`, { headers })
-    if (!res.ok) return null
-
-    const json = await res.json()
+    const json = await apiClient.get<DashboardSummaryData>('/admin/dashboard')
     if (json && json.success && json.data) {
-      return json.data as DashboardSummaryData
+      return json.data
     }
     return null
   } catch {

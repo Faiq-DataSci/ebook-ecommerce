@@ -611,12 +611,12 @@ export const QUICK_ACTIONS: QuickActionItem[] = [
     targetPath: '/admin/katalog/kategori',
   },
   {
-    id: 'qa-audit',
-    label: 'Audit Akses & DRM',
-    description: 'Inspeksi keamanan bucket & signed URL',
-    icon: 'security',
+    id: 'qa-pelanggan',
+    label: 'Pelanggan & User',
+    description: 'Pantau akun pelanggan & status hak akses e-book',
+    icon: 'group',
     bgColor: '#FF7675',
-    badgeText: 'Keamanan',
-    targetPath: '/admin/sistem/akses',
+    badgeText: 'Manajemen Sistem',
+    targetPath: '/admin/sistem/pelanggan',
   },
 ]

@@ -10,11 +10,17 @@ import { TransactionFinancePage } from './features/transactions/pages/Transactio
 import { FinancePage } from './features/finance/pages/FinancePage'
 import { AnalyticsPage } from './features/analytics/pages/AnalyticsPage'
 import { SpkRecommendationPage } from './features/spk-recommendations/pages/SpkRecommendationPage'
+import { CustomersPage } from './features/system-management/customers/pages/CustomersPage'
+import { SettingsPage } from './features/system-management/settings/pages/SettingsPage'
 import { LoginPage } from './features/authentication/pages/LoginPage'
 import { AuthProvider } from './app/providers/AuthProvider'
 import { ProtectedRoute } from './app/router/ProtectedRoute'
 import { useAuth } from './features/authentication/hooks/useAuth'
-import { ConfirmDialog } from './shared/components/ui/ConfirmDialog'
+import {
+  ConfirmDialog,
+  PageContentSkeleton,
+  resolveSkeletonVariant,
+} from './shared/components/ui'
 import './styles/tokens.css'
 import './styles/admin-layout.css'
 import './styles/admin-sidebar.css'
@@ -22,6 +28,8 @@ import './styles/dashboard.css'
 import './styles/catalog.css'
 import './styles/transaction-finance.css'
 import './styles/analytics.css'
+import './styles/system-management.css'
+import './styles/spk-matrix.css'
 
 function AdminAppContent() {
   const sidebar = useSidebar()
@@ -124,6 +132,12 @@ function AdminAppContent() {
         />
       )
       break
+    case '/admin/sistem/pelanggan':
+      pageContent = <CustomersPage />
+      break
+    case '/admin/sistem/pengaturan':
+      pageContent = <SettingsPage onNavigate={sidebar.navigateTo} />
+      break
     default:
       pageContent = (
         <DashboardPage
@@ -158,7 +172,13 @@ function AdminAppContent() {
         onNavigate={sidebar.navigateTo}
         onLogoutClick={() => setIsLogoutDialogOpen(true)}
       >
-        {pageContent}
+        {sidebar.isRouteTransitioning ? (
+          <PageContentSkeleton
+            variant={resolveSkeletonVariant(sidebar.activePath)}
+          />
+        ) : (
+          pageContent
+        )}
       </AdminLayout>
 
       <ConfirmDialog

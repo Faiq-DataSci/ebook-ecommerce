@@ -3,11 +3,13 @@ import { SimulationBadge } from '../../../shared/components/ui'
 
 interface CategoryPageHeaderProps {
   addButtonRef?: RefObject<HTMLButtonElement | null>
+  isSimulation?: boolean
   onAddClick: () => void
 }
 
 export function CategoryPageHeader({
   addButtonRef,
+  isSimulation = false,
   onAddClick,
 }: CategoryPageHeaderProps) {
   return (
@@ -15,7 +17,7 @@ export function CategoryPageHeader({
       <div className="catalog-title-group">
         <div className="catalog-header-title-row">
           <h1 className="catalog-page-title">Kategori &amp; Tag</h1>
-          <SimulationBadge />
+          {isSimulation && <SimulationBadge />}
         </div>
         <p className="catalog-page-subtitle">
           Kelola taksonomi, label klasifikasi, dan status aktivasi kategori

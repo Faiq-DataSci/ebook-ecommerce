@@ -29,6 +29,15 @@ export class CatalogRepository {
   async findActiveCategories() {
     return prisma.category.findMany({
       where: { isActive: true },
+      include: {
+        _count: {
+          select: {
+            ebooks: {
+              where: { isActive: true },
+            },
+          },
+        },
+      },
       orderBy: { name: 'asc' },
     })
   }

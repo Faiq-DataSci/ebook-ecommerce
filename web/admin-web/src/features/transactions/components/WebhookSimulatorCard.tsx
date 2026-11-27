@@ -30,11 +30,11 @@ export function WebhookSimulatorCard({
     const grossAmount = targetOrder.totalAmount.toFixed(2)
 
     const logEntry1 = `[${timeStr}] [REQ] POST /api/webhooks/midtrans HTTP/1.1 | Event: ${eventType.toUpperCase()} | Order: ${targetOrder.orderNumber}`
-    const logEntry2 = `[${timeStr}] ✓ Validating HMAC SHA512 Signature: 9e8a7c... [OK]`
+    const logEntry2 = `[${timeStr}] [SIG] Validating HMAC SHA512 Signature: 9e8a7c... [OK]`
     const logEntry3 = eventType === 'settlement'
-      ? `[${timeStr}] ★ Order ${targetOrder.orderNumber} PAID (Rp ${grossAmount}). EbookAccess AKTIF & Signed URL tersedia.`
-      : `[${timeStr}] ✕ Order ${targetOrder.orderNumber} diubah ke ${eventType.toUpperCase()}. Akses e-book dinonaktifkan.`
-    const logEntry4 = `[${timeStr}] 🗲 Response: 200 OK (Execution: 14ms)`
+      ? `[${timeStr}] [PAID] Order ${targetOrder.orderNumber} PAID (Rp ${grossAmount}). EbookAccess AKTIF & Signed URL tersedia.`
+      : `[${timeStr}] [STATUS] Order ${targetOrder.orderNumber} diubah ke ${eventType.toUpperCase()}. Akses e-book dinonaktifkan.`
+    const logEntry4 = `[${timeStr}] [HTTP] Response: 200 OK (Execution: 14ms)`
 
     setLogs((prev) => [logEntry4, logEntry3, logEntry2, logEntry1, ...prev].slice(0, 10))
 
