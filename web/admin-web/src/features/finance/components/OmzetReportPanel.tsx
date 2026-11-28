@@ -14,47 +14,86 @@ interface OmzetReportPanelProps {
   onNavigate?: (path: string) => void
   salesReport?: AdminSalesReportResponse | null
   officialTransactions?: AdminOfficialTransactionRecord[]
+  isLive?: boolean
 }
+
+const CHANNEL_COLORS = ['#00B894', '#74B9FF', '#FFE135', '#FF7675', '#B8A9FA']
 
 export function OmzetReportPanel({
   onNavigate,
   salesReport,
   officialTransactions,
+  isLive = false,
 }: OmzetReportPanelProps) {
-  const hasLiveSummary = Boolean(
-    salesReport && salesReport.summary.totalTransactions > 0,
-  )
-  const grossRevenue = hasLiveSummary
-    ? formatRupiah(salesReport!.summary.totalRevenue)
+  const hasLiveReport = isLive || Boolean(salesReport)
+  const totalRevenueNumeric = hasLiveReport
+    ? (salesReport?.summary.totalRevenue ?? 0)
+    : 0
+  const grossRevenue = hasLiveReport
+    ? formatRupiah(totalRevenueNumeric)
     : REVENUE_METRIC_SUMMARY.grossRevenue
-  const mdrAmount = hasLiveSummary
-    ? Math.round(salesReport!.summary.totalRevenue * 0.023)
+  // QRIS Dinamis MDR 0.7% sesuai regulasi BI / Xendit QRIS
+  const mdrAmount = hasLiveReport
+    ? Math.round(totalRevenueNumeric * 0.007)
     : 1255000
-  const netRevenue = hasLiveSummary
-    ? formatRupiah(Math.max(0, salesReport!.summary.totalRevenue - mdrAmount))
+  const netRevenueNumeric = Math.max(0, totalRevenueNumeric - mdrAmount)
+  const netRevenue = hasLiveReport
+    ? formatRupiah(netRevenueNumeric)
     : REVENUE_METRIC_SUMMARY.netRevenue
-  const trxCount = hasLiveSummary
-    ? salesReport!.summary.totalTransactions
+  const trxCount = hasLiveReport
+    ? (salesReport?.summary.totalTransactions ?? 0)
     : REVENUE_METRIC_SUMMARY.successfulOrders
+  const pendingDisbursement = hasLiveReport
+    ? formatRupiah(netRevenueNumeric)
+    : 'Rp 480.150'
 
-  const recentRows =
-    officialTransactions && officialTransactions.length > 0
-      ? officialTransactions.slice(0, 5).map((trx) => ({
-          id: trx.id,
-          orderNumber: trx.orderNumber,
-          customerName: trx.customerName,
-          totalAmountFormatted: trx.amountFormatted,
-          paidAt: trx.paidAt,
+  const liveChannels = (() => {
+    if (!hasLiveReport) return PAYMENT_METHOD_DISTRIBUTIONS
+    const rows = officialTransactions ?? []
+    if (rows.length === 0) return []
+
+    const grouped = new Map<string, { count: number; amount: number }>()
+    let grandTotal = 0
+    for (const trx of rows) {
+      const label =
+        trx.paymentMethod?.toUpperCase() === 'QRIS'
+          ? 'QRIS Dinamis (Xendit)'
+          : trx.paymentMethod || 'QRIS Dinamis (Xendit)'
+      const cur = grouped.get(label) ?? { count: 0, amount: 0 }
+      cur.count += 1
+      cur.amount += trx.amount
+      grandTotal += trx.amount
+      grouped.set(label, cur)
+    }
+
+    return Array.from(grouped.entries()).map(([name, val], idx) => ({
+      name,
+      sharePercent:
+        grandTotal > 0 ? Math.round((val.amount / grandTotal) * 100) : 100,
+      orderCount: val.count,
+      totalAmount: formatRupiah(val.amount),
+      color: CHANNEL_COLORS[idx % CHANNEL_COLORS.length],
+      icon: 'QR',
+    }))
+  })()
+
+  const recentRows = hasLiveReport
+    ? (officialTransactions ?? []).slice(0, 5).map((trx) => ({
+        id: trx.id,
+        orderNumber: trx.orderNumber,
+        customerName: trx.customerName,
+        totalAmountFormatted: trx.amountFormatted,
+        paidAt: trx.paidAt,
+      }))
+    : INITIAL_ORDERS_DATA.filter((o) => o.status === 'PAID')
+        .slice(0, 5)
+        .map((o) => ({
+          id: o.id,
+          orderNumber: o.orderNumber,
+          customerName: o.customerName,
+          totalAmountFormatted: o.totalAmountFormatted,
+          paidAt: o.paidAt ?? '-',
         }))
-      : INITIAL_ORDERS_DATA.filter((o) => o.status === 'PAID')
-          .slice(0, 5)
-          .map((o) => ({
-            id: o.id,
-            orderNumber: o.orderNumber,
-            customerName: o.customerName,
-            totalAmountFormatted: o.totalAmountFormatted,
-            paidAt: o.paidAt ?? '-',
-          }))
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -66,7 +105,7 @@ export function OmzetReportPanel({
           </div>
           <div className="tf-kpi-value">{grossRevenue}</div>
           <div className="tf-kpi-footer">
-            <span>{hasLiveSummary ? 'Data Backend Live' : REVENUE_METRIC_SUMMARY.period} • {trxCount} trx</span>
+            <span>{hasLiveReport ? 'Data Backend Live' : REVENUE_METRIC_SUMMARY.period} • {trxCount} trx</span>
           </div>
         </div>
 
@@ -76,7 +115,7 @@ export function OmzetReportPanel({
           </div>
           <div className="tf-kpi-value">{formatRupiah(mdrAmount)}</div>
           <div className="tf-kpi-footer">
-            <span>Rata-rata 2.3% per transaksi</span>
+            <span>Estimasi MDR QRIS 0.7% (Xendit)</span>
           </div>
         </div>
 
@@ -92,11 +131,11 @@ export function OmzetReportPanel({
 
         <div className="tf-kpi-card" style={{ '--card-accent': 'var(--nb-blue)' } as CSSProperties}>
           <div className="tf-kpi-header">
-            <span className="tf-kpi-title">Dana Menunggu Cair</span>
+            <span className="tf-kpi-title">Estimasi Cair (Settlement)</span>
           </div>
-          <div className="tf-kpi-value">Rp 480.150</div>
+          <div className="tf-kpi-value">{pendingDisbursement}</div>
           <div className="tf-kpi-footer">
-            <span>Batch malam ini (23:59 WIB)</span>
+            <span>{hasLiveReport ? 'Sinkron dari transaksi terverifikasi' : 'Batch malam ini (23:59 WIB)'}</span>
           </div>
         </div>
       </div>
@@ -107,41 +146,46 @@ export function OmzetReportPanel({
         <section className="tf-breakdown-card" aria-label="Distribusi Saluran dan Tarif MDR">
           <div className="tf-card-header">
             <h3 className="tf-card-title">Distribusi Saluran &amp; Tarif MDR</h3>
-            <span className="tf-card-tag">MDR RESMI</span>
+            <span className="tf-card-tag">{hasLiveReport ? 'LIVE DB' : 'MDR RESMI'}</span>
           </div>
 
           <div className="tf-share-list">
-            {PAYMENT_METHOD_DISTRIBUTIONS.map((method, idx) => (
-              <div key={idx} className="tf-share-row">
-                <div className="tf-share-header">
-                  <span>{method.name}</span>
-                  <span className="tf-mono">{method.sharePercent}%</span>
-                </div>
-
-                <div className="tf-progress-track">
-                  <div
-                    className="tf-progress-fill"
-                    style={{
-                      width: `${method.sharePercent}%`,
-                      backgroundColor: method.color,
-                    }}
-                  />
-                </div>
-
-                <div className="tf-share-meta">
-                  <span>{method.orderCount} transaksi</span>
-                  <span className="tf-mono">{method.totalAmount}</span>
-                </div>
+            {liveChannels.length === 0 ? (
+              <div style={{ padding: '12px 0', fontSize: 13, color: 'var(--nb-text-muted)' }}>
+                Belum ada transaksi terverifikasi di database.
               </div>
-            ))}
+            ) : (
+              liveChannels.map((method, idx) => (
+                <div key={idx} className="tf-share-row">
+                  <div className="tf-share-header">
+                    <span>{method.name}</span>
+                    <span className="tf-mono">{method.sharePercent}%</span>
+                  </div>
+
+                  <div className="tf-progress-track">
+                    <div
+                      className="tf-progress-fill"
+                      style={{
+                        width: `${method.sharePercent}%`,
+                        backgroundColor: method.color,
+                      }}
+                    />
+                  </div>
+
+                  <div className="tf-share-meta">
+                    <span>{method.orderCount} transaksi</span>
+                    <span className="tf-mono">{method.totalAmount}</span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           <div className="tf-tariff-note">
-            <strong className="tf-tariff-note-title">Catatan Tarif Gateway</strong>
+            <strong className="tf-tariff-note-title">Catatan Tarif Gateway (Xendit)</strong>
             <ul className="tf-tariff-note-list">
               <li>QRIS Dinamis: MDR 0.7% (regulasi Bank Indonesia)</li>
-              <li>Virtual Account Bank: Rp 2.500 flat per transaksi sukses</li>
-              <li>E-Wallet (GoPay/OVO): MDR 2.0% per transaksi sukses</li>
+              <li>Verifikasi otomatis via webhook Xendit (`x-callback-token`)</li>
             </ul>
           </div>
         </section>
@@ -170,14 +214,22 @@ export function OmzetReportPanel({
                 </tr>
               </thead>
               <tbody>
-                {recentRows.map((o) => (
-                  <tr key={o.id}>
-                    <td className="tf-mono">{o.orderNumber}</td>
-                    <td>{o.customerName}</td>
-                    <td className="tf-money">{o.totalAmountFormatted}</td>
-                    <td className="tf-td-muted">{o.paidAt}</td>
+                {recentRows.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} style={{ textAlign: 'center', padding: '16px', color: 'var(--nb-text-muted)' }}>
+                      Belum ada transaksi terverifikasi di database.
+                    </td>
                   </tr>
-                ))}
+                ) : (
+                  recentRows.map((o) => (
+                    <tr key={o.id}>
+                      <td className="tf-mono">{o.orderNumber}</td>
+                      <td>{o.customerName}</td>
+                      <td className="tf-money">{o.totalAmountFormatted}</td>
+                      <td className="tf-td-muted">{o.paidAt}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

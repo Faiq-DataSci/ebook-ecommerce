@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { apiClient } from '../../../services/api/apiClient'
 import type { ToastMessage } from '../../../shared/components/ui'
 import { MOCK_AUTHORS, MOCK_PUBLISHERS } from '../data/authorPublisherData'
 import type {
@@ -52,6 +53,95 @@ export function useAuthorPublisher() {
   })
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLiveFromDb, setIsLiveFromDb] = useState<boolean>(false)
+
+  const fetchAuthorsFromDatabase = useCallback(async (): Promise<AuthorListItem[] | null> => {
+    try {
+      const res = await apiClient.get<
+        Array<{
+          id: string
+          author: string
+          isActive: boolean
+          createdAt: string
+          category?: { name: string } | null
+        }>
+      >('/admin/ebooks?page=1&limit=100')
+
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        const grouped = new Map<
+          string,
+          {
+            name: string
+            ebookCount: number
+            activeCount: number
+            categories: Set<string>
+            earliestCreatedAt: string
+          }
+        >()
+
+        for (const book of res.data) {
+          const authorName = (book.author || 'Penulis').trim()
+          const key = authorName.toLowerCase()
+          const existing = grouped.get(key)
+          if (existing) {
+            existing.ebookCount += 1
+            if (book.isActive) existing.activeCount += 1
+            if (book.category?.name) existing.categories.add(book.category.name)
+            if (book.createdAt && book.createdAt < existing.earliestCreatedAt) {
+              existing.earliestCreatedAt = book.createdAt
+            }
+          } else {
+            const cats = new Set<string>()
+            if (book.category?.name) cats.add(book.category.name)
+            grouped.set(key, {
+              name: authorName,
+              ebookCount: 1,
+              activeCount: book.isActive ? 1 : 0,
+              categories: cats,
+              earliestCreatedAt: book.createdAt || new Date().toISOString(),
+            })
+          }
+        }
+
+        return Array.from(grouped.values()).map((item, index) => {
+          const slug = item.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '.')
+            .replace(/^\.|\.$/g, '')
+          return {
+            id: `db-author-${index + 1}`,
+            name: item.name,
+            email: `${slug || 'penulis'}@katalog-ebook.local`,
+            affiliation:
+              Array.from(item.categories).join(', ') || 'Katalog E-Book Resmi',
+            bio: `Penulis terverifikasi dari database katalog (${item.ebookCount} judul e-book).`,
+            ebookCount: item.ebookCount,
+            isActive: item.activeCount > 0,
+            createdAt: item.earliestCreatedAt,
+          }
+        })
+      }
+    } catch {
+      return null
+    }
+    return null
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    fetchAuthorsFromDatabase().then((dbAuthors) => {
+      if (cancelled) return
+      if (dbAuthors && dbAuthors.length > 0) {
+        setAuthors(dbAuthors)
+        setIsLiveFromDb(true)
+      } else {
+        setIsLiveFromDb(false)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [fetchAuthorsFromDatabase])
 
   const [isAuthorModalOpen, setIsAuthorModalOpen] = useState<boolean>(false)
   const [editingAuthor, setEditingAuthor] = useState<AuthorListItem | null>(null)
@@ -356,10 +446,17 @@ export function useAuthorPublisher() {
 
   const handleRefreshDirectory = (message: string) => {
     setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      addToast('info', message)
-    }, 400)
+    void fetchAuthorsFromDatabase()
+      .then((dbAuthors) => {
+        if (dbAuthors && dbAuthors.length > 0) {
+          setAuthors(dbAuthors)
+          setIsLiveFromDb(true)
+        }
+        addToast('info', message)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   const summaryMetrics = useMemo(() => {
@@ -397,6 +494,7 @@ export function useAuthorPublisher() {
     paginatedPublishers,
     totalPublisherPages,
     isLoading,
+    isLiveFromDb,
     isAuthorModalOpen,
     setIsAuthorModalOpen,
     editingAuthor,

@@ -5,16 +5,23 @@ import {
   WEEKLY_SALES_SERIES,
 } from '../data/dashboardData'
 import type {
+  BestsellingBookItem,
   DailySalesPoint,
   DashboardPeriod,
+  KpiStatItem,
+  TransactionRecord,
+  TransactionStatus,
 } from '../types/dashboard'
 import {
   fetchDashboardSummary,
   subscribeToRealtimeSalesUpdates,
   type DashboardSummaryData,
 } from '../services/dashboard.service'
+import {
+  fetchAdminSalesReport,
+  fetchAdminTransactionsData,
+} from '../../transactions/services/transactionAdmin.service'
 import { formatRupiah } from '../../../shared/utils/formatters'
-import { DashboardActivityLog } from './DashboardActivityLog'
 import { DashboardKpiCards } from './DashboardKpiCards'
 import { DashboardRecentOrders } from './DashboardRecentOrders'
 import { DashboardQuickShortcuts } from './DashboardQuickShortcuts'
@@ -36,7 +43,15 @@ const PERIOD_OPTIONS: DashboardPeriod[] = [
 ]
 
 const PAGE_SIZE = 5
-const TOTAL_RECORD_COUNT = 142
+const RANK_COLORS = ['#FFE135', '#74C0FC', '#51CF66', '#FF8787', '#B8A9FA']
+
+function mapOrderStatusToTxStatus(
+  status: 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED' | 'CANCELLED',
+): TransactionStatus {
+  if (status === 'PAID') return 'LUNAS'
+  if (status === 'PENDING') return 'MENUNGGU'
+  return 'KEDALUWARSA'
+}
 
 export function DashboardContent({
   searchQuery,
@@ -48,79 +63,167 @@ export function DashboardContent({
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [liveSummary, setLiveSummary] =
     useState<DashboardSummaryData | null>(null)
+  const [liveTransactions, setLiveTransactions] = useState<
+    TransactionRecord[] | null
+  >(null)
+  const [liveTopBooks, setLiveTopBooks] = useState<
+    BestsellingBookItem[] | undefined
+  >(undefined)
   const [isSyncing, setIsSyncing] = useState<boolean>(false)
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null)
 
-  const handleSyncData = useCallback(async (isManual = false) => {
-    if (isManual) {
-      setIsSyncing(true)
+  const loadAllDashboardData = useCallback(async () => {
+    const [summary, txData, salesReport] = await Promise.all([
+      fetchDashboardSummary(),
+      fetchAdminTransactionsData().catch(() => null),
+      fetchAdminSalesReport({ groupBy: 'day' }).catch(() => null),
+    ])
+
+    if (summary) {
+      setLiveSummary(summary)
+      setLastSyncTime(new Date())
     }
-    try {
-      const data = await fetchDashboardSummary()
-      if (data) {
-        setLiveSummary(data)
-        setLastSyncTime(new Date())
+
+    if (txData && Array.isArray(txData.orders)) {
+      const mappedTx: TransactionRecord[] = txData.orders.map((ord) => ({
+        code: ord.orderNumber,
+        bookTitle:
+          ord.items.length > 1
+            ? `${ord.items[0]?.title ?? 'E-Book'} (+${ord.items.length - 1} lainnya)`
+            : ord.items[0]?.title ?? 'E-Book Digital',
+        customerName: ord.customerName,
+        customerEmail: ord.customerEmail,
+        paymentMethod: ord.paymentMethod || 'QRIS',
+        amount: ord.totalAmountFormatted,
+        status: mapOrderStatusToTxStatus(ord.status),
+      }))
+      setLiveTransactions(mappedTx)
+    }
+
+    if (salesReport) {
+      const maxUnits = Math.max(
+        1,
+        ...salesReport.topEbooks.map((item) => item.unitsSold),
+      )
+      const mappedBooks: BestsellingBookItem[] = salesReport.topEbooks
+        .slice(0, 5)
+        .map((book, idx) => ({
+          rank: `#${idx + 1}`,
+          rankBg: RANK_COLORS[idx % RANK_COLORS.length],
+          soldText: `${book.unitsSold} terjual`,
+          title: book.title,
+          progressPercent: Math.max(
+            12,
+            Math.round((book.unitsSold / maxUnits) * 100),
+          ),
+          barBg: RANK_COLORS[idx % RANK_COLORS.length],
+        }))
+      setLiveTopBooks(mappedBooks)
+    }
+
+    return Boolean(summary)
+  }, [])
+
+  const handleSyncData = useCallback(
+    async (isManual = false) => {
+      if (isManual) {
+        setIsSyncing(true)
+      }
+      try {
+        const ok = await loadAllDashboardData()
+        if (ok && isManual) {
+          onActionNotice(
+            'Dashboard berhasil disinkronkan dengan data database terkini!',
+          )
+        }
+      } finally {
         if (isManual) {
-          onActionNotice('Diagram penjualan berhasil disinkronkan dengan data database terkini!')
+          setIsSyncing(false)
         }
       }
-    } finally {
-      if (isManual) {
-        setIsSyncing(false)
-      }
-    }
-  }, [onActionNotice])
+    },
+    [loadAllDashboardData, onActionNotice],
+  )
 
   useEffect(() => {
     let isMounted = true
 
-    // 1. Initial Fetch
-    fetchDashboardSummary().then((data) => {
-      if (isMounted && data) {
-        setLiveSummary(data)
-        setLastSyncTime(new Date())
+    const safeSync = () => {
+      if (isMounted) {
+        void loadAllDashboardData()
       }
-    })
+    }
+
+    // 1. Initial Fetch
+    safeSync()
 
     // 2. Real-time Subscription via Supabase WebSocket (orders & transactions)
-    const unsubscribe = subscribeToRealtimeSalesUpdates(() => {
-      if (isMounted) {
-        fetchDashboardSummary().then((data) => {
-          if (isMounted && data) {
-            setLiveSummary(data)
-            setLastSyncTime(new Date())
-          }
-        })
-      }
-    })
+    const unsubscribe = subscribeToRealtimeSalesUpdates(safeSync)
 
-    // 3. Heartbeat Auto-Polling interval setiap 15 detik
-    const pollInterval = window.setInterval(() => {
-      if (isMounted) {
-        fetchDashboardSummary().then((data) => {
-          if (isMounted && data) {
-            setLiveSummary(data)
-            setLastSyncTime(new Date())
-          }
-        })
-      }
-    }, 15000)
+    // 3. Heartbeat Auto-Polling interval setiap 30 detik
+    const pollInterval = window.setInterval(safeSync, 30000)
 
     return () => {
       isMounted = false
       unsubscribe()
       window.clearInterval(pollInterval)
     }
-  }, [])
+  }, [loadAllDashboardData])
 
-  const kpiCards = KPI_STATS_BY_PERIOD[selectedPeriod]
+  const kpiCards: KpiStatItem[] = useMemo(() => {
+    const baseCards = KPI_STATS_BY_PERIOD[selectedPeriod]
+    if (!liveSummary) return baseCards
+
+    const totalOrders = liveSummary.ordersCount.total
+    const paidOrders = liveSummary.ordersCount.PAID
+    const pendingOrders = liveSummary.ordersCount.PENDING
+    const paidRatio =
+      totalOrders > 0 ? Math.round((paidOrders / totalOrders) * 100) : 0
+
+    return baseCards.map((card, index) => {
+      if (index === 0) {
+        return {
+          ...card,
+          value: formatRupiah(liveSummary.totalRevenue),
+          deltaBadgeText: 'LIVE DB',
+          deltaLabel: 'akumulasi transaksi terverifikasi',
+          footerLeftText: `Lunas: ${paidOrders} order`,
+          footerRightText: `Pending: ${pendingOrders}`,
+        }
+      }
+      if (index === 1) {
+        return {
+          ...card,
+          value: String(totalOrders),
+          deltaBadgeText: `${paidRatio}% LUNAS`,
+          deltaLabel: 'rasio pelunasan order',
+          footerLeftText: `Berhasil: ${paidOrders}`,
+          footerRightText: `Menunggu: ${pendingOrders}`,
+        }
+      }
+      if (index === 2) {
+        return {
+          ...card,
+          value: String(liveSummary.activeEbooksCount),
+          deltaBadgeText: 'KATALOG',
+          deltaLabel: 'e-book aktif di database',
+          footerLeftText: 'Storage PDF Privat',
+          footerRightText: 'Signed URL Aktif',
+        }
+      }
+      return {
+        ...card,
+        value: String(liveSummary.activeCustomersCount),
+        deltaBadgeText: 'XENDIT QRIS',
+        deltaLabel: 'pelanggan aktif terdaftar',
+        footerLeftText: 'Supabase Auth',
+        footerRightText: 'RBAC Aktif',
+      }
+    })
+  }, [liveSummary, selectedPeriod])
 
   const chartSeries: DailySalesPoint[] = useMemo(() => {
-    if (
-      liveSummary?.weeklySales &&
-      liveSummary.weeklySales.length === 7 &&
-      liveSummary.weeklySales.some((d) => d.totalAmount > 0)
-    ) {
+    if (liveSummary?.weeklySales && liveSummary.weeklySales.length === 7) {
       return liveSummary.weeklySales.map((d) => ({
         day: d.day,
         date: d.date,
@@ -149,7 +252,7 @@ export function DashboardContent({
       }
       return `Total: ${formatRupiah(sum)}`
     }
-    return 'Total: Rp 42.85M'
+    return 'Total: Rp 0'
   }, [chartSeries])
 
   const yAxisLabels = useMemo(() => {
@@ -165,7 +268,7 @@ export function DashboardContent({
       chartSeries[5] ||
       chartSeries[0] || {
         day: 'SAB',
-        totalLabel: '8.6M',
+        totalLabel: '0',
       }
     )
   }, [chartSeries])
@@ -182,13 +285,18 @@ export function DashboardContent({
       }
       return `${formatRupiah(avg)} / hari`
     }
-    return 'Rp 6.12M / hari'
+    return 'Rp 0 / hari'
   }, [chartSeries])
+
+  const sourceTransactions = liveTransactions ?? RECENT_TRANSACTIONS
+  const totalRecordCount = liveTransactions
+    ? liveTransactions.length
+    : RECENT_TRANSACTIONS.length
 
   const filteredTransactions = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
-    if (!q) return RECENT_TRANSACTIONS
-    return RECENT_TRANSACTIONS.filter(
+    if (!q) return sourceTransactions
+    return sourceTransactions.filter(
       (item) =>
         item.code.toLowerCase().includes(q) ||
         item.bookTitle.toLowerCase().includes(q) ||
@@ -197,7 +305,7 @@ export function DashboardContent({
         item.paymentMethod.toLowerCase().includes(q) ||
         item.status.toLowerCase().includes(q),
     )
-  }, [searchQuery])
+  }, [searchQuery, sourceTransactions])
 
   const totalPages = Math.max(
     1,
@@ -282,18 +390,20 @@ export function DashboardContent({
             visibleTransactions={visibleTransactions}
             searchQuery={searchQuery}
             filteredTransactionsCount={filteredTransactions.length}
-            totalRecordCount={TOTAL_RECORD_COUNT}
+            totalRecordCount={totalRecordCount}
             safePage={safePage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
           />
         </div>
 
-        {/* RIGHT COLUMN (4 COLS): Quick Shortcuts + Top Bestseller + Activity Feed */}
+        {/* RIGHT COLUMN (4 COLS): Quick Shortcuts + Top Bestseller */}
         <div className="dashboard-col-right">
           <DashboardQuickShortcuts onNavigate={onNavigate} />
-          <DashboardTopEbooks />
-          <DashboardActivityLog />
+          <DashboardTopEbooks
+            books={liveTopBooks}
+            isLive={Boolean(liveSummary)}
+          />
         </div>
       </section>
     </>

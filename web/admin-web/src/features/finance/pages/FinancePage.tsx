@@ -51,7 +51,7 @@ export function FinancePage({
         if (cancelled) return
         setSalesReport(report)
         setOfficialTransactions(transactions)
-        setIsSimulated(report.summary.totalTransactions === 0 && transactions.length === 0)
+        setIsSimulated(false)
       })
       .catch(() => {
         if (!cancelled) setIsSimulated(true)
@@ -191,6 +191,7 @@ export function FinancePage({
           onNavigate={onNavigate}
           salesReport={salesReport}
           officialTransactions={officialTransactions}
+          isLive={!isSimulated}
         />
       )}
 

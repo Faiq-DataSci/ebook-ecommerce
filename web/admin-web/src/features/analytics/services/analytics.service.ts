@@ -4,9 +4,12 @@ import { getAnalyticsDataset } from '../data/analyticsData'
 import type {
   AnalyticsDataset,
   AnalyticsPeriod,
+  CategoryPerformance,
   TimeSeriesPoint,
   TopPerformingEbook,
 } from '../types/analytics'
+
+const CATEGORY_COLORS = ['#FFE135', '#74C0FC', '#51CF66', '#FF8787', '#B8A9FA']
 
 function resolveDateRange(
   period: AnalyticsPeriod,
@@ -51,8 +54,16 @@ export async function fetchAnalyticsDataset(
   const range = resolveDateRange(period, customStart, customEnd)
 
   try {
-    const report = await fetchAdminSalesReport(range)
-    if (!report || report.summary.totalTransactions === 0) {
+    let report = await fetchAdminSalesReport(range)
+    // Bila rentang tanggal belum punya transaksi, ambil agregasi seluruh waktu dari database
+    if (report && report.summary.totalTransactions === 0 && period !== 'CUSTOM') {
+      const allTimeReport = await fetchAdminSalesReport({ groupBy: range.groupBy })
+      if (allTimeReport && allTimeReport.summary.totalTransactions > 0) {
+        report = allTimeReport
+      }
+    }
+
+    if (!report) {
       return { dataset: fallback, isSimulated: true }
     }
 
@@ -67,6 +78,8 @@ export async function fetchAnalyticsDataset(
           ...kpi,
           value: formatRupiah(totalRevenue),
           numericValue: totalRevenue,
+          delta: 'LIVE DB',
+          deltaType: 'positive' as const,
           comparisonText: 'Data agregasi transaksi resmi backend',
         }
       }
@@ -75,6 +88,8 @@ export async function fetchAnalyticsDataset(
           ...kpi,
           value: String(totalTransactions),
           numericValue: totalTransactions,
+          delta: `${totalTransactions} trx`,
+          deltaType: 'positive' as const,
           comparisonText: 'Transaksi terverifikasi (backend)',
         }
       }
@@ -83,6 +98,8 @@ export async function fetchAnalyticsDataset(
           ...kpi,
           value: formatRupiah(averageOrderValue),
           numericValue: averageOrderValue,
+          delta: 'AKTUAL',
+          deltaType: 'neutral' as const,
           comparisonText: 'Rata-rata nilai transaksi aktual',
         }
       }
@@ -91,10 +108,15 @@ export async function fetchAnalyticsDataset(
           ...kpi,
           value: String(totalUnits),
           numericValue: totalUnits,
+          delta: 'LIVE DB',
+          deltaType: 'positive' as const,
           comparisonText: 'Total lisensi e-book terjual',
         }
       }
-      return kpi
+      return {
+        ...kpi,
+        comparisonText: 'Sinkron dengan data backend',
+      }
     })
 
     const liveSeries: TimeSeriesPoint[] = report.series.map((pt) => ({
@@ -126,12 +148,41 @@ export async function fetchAnalyticsDataset(
       growthRate: 0,
     }))
 
+    const categoryMap = new Map<string, { revenue: number; units: number }>()
+    for (const book of report.topEbooks) {
+      const cat = book.categoryName || 'Umum'
+      const cur = categoryMap.get(cat) ?? { revenue: 0, units: 0 }
+      cur.revenue += book.revenue
+      cur.units += book.unitsSold
+      categoryMap.set(cat, cur)
+    }
+
+    const totalCatRevenue = Array.from(categoryMap.values()).reduce(
+      (sum, item) => sum + item.revenue,
+      0,
+    )
+
+    const liveCategories: CategoryPerformance[] = Array.from(
+      categoryMap.entries(),
+    ).map(([name, val], idx) => ({
+      id: `cat-live-${idx + 1}`,
+      name,
+      slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      revenue: val.revenue,
+      revenueFormatted: formatRupiah(val.revenue),
+      unitsSold: val.units,
+      sharePercent:
+        totalCatRevenue > 0 ? Math.round((val.revenue / totalCatRevenue) * 100) : 0,
+      color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
+    }))
+
     return {
       dataset: {
         ...fallback,
         kpis: liveKpis,
-        timeSeries: liveSeries.length > 0 ? liveSeries : fallback.timeSeries,
-        topBooks: liveTopBooks.length > 0 ? liveTopBooks : fallback.topBooks,
+        timeSeries: liveSeries,
+        topBooks: liveTopBooks,
+        categoryPerformance: liveCategories,
       },
       isSimulated: false,
     }

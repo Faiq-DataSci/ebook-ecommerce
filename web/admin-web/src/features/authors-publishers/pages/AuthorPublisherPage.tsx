@@ -27,6 +27,7 @@ export function AuthorPublisherPage() {
     paginatedPublishers,
     totalPublisherPages,
     isLoading,
+    isLiveFromDb,
     isAuthorModalOpen,
     setIsAuthorModalOpen,
     editingAuthor,
@@ -68,7 +69,7 @@ export function AuthorPublisherPage() {
           <div className="catalog-title-group">
             <div className="catalog-header-title-row">
               <h1 className="catalog-page-title">Penulis & Penerbit</h1>
-              <SimulationBadge />
+              {!isLiveFromDb && <SimulationBadge />}
             </div>
             <p className="catalog-page-subtitle">
               Direktori kontributor konten, lisensi kepengarangan, dan manajemen mitra penerbit buku.
