@@ -9,6 +9,9 @@ class PaymentModel extends PaymentEntity {
     required super.amount,
     required super.status,
     super.externalRef,
+    super.qrId,
+    super.qrString,
+    super.channelCode,
     super.expiresAt,
     super.paidAt,
     super.createdAt,
@@ -29,14 +32,20 @@ class PaymentModel extends PaymentEntity {
       return null;
     }
 
+    final rawQr = json['qrPayload'];
+    final qrMap = rawQr is Map<String, dynamic> ? rawQr : null;
+
     return PaymentModel(
       id: (json['id'] ?? '').toString(),
       orderId: (json['orderId'] ?? '').toString(),
-      provider: (json['provider'] ?? 'midtrans').toString(),
-      paymentMethod: (json['paymentMethod'] ?? 'PENDING').toString(),
+      provider: (json['provider'] ?? 'xendit').toString(),
+      paymentMethod: (json['paymentMethod'] ?? 'QRIS').toString(),
       amount: parseAmount(json['amount']),
       status: PaymentStatusEnum.fromString(json['status']?.toString()),
       externalRef: json['externalRef']?.toString(),
+      qrId: qrMap?['qrId']?.toString(),
+      qrString: qrMap?['qrString']?.toString(),
+      channelCode: qrMap?['channelCode']?.toString(),
       expiresAt: parseDate(json['expiresAt']),
       paidAt: parseDate(json['paidAt']),
       createdAt: parseDate(json['createdAt']),
@@ -52,6 +61,12 @@ class PaymentModel extends PaymentEntity {
       'amount': amount,
       'status': status.name.toUpperCase(),
       'externalRef': externalRef,
+      if (qrString != null || qrId != null)
+        'qrPayload': <String, dynamic>{
+          'qrId': qrId,
+          'qrString': qrString,
+          'channelCode': channelCode,
+        },
       'expiresAt': expiresAt?.toIso8601String(),
       'paidAt': paidAt?.toIso8601String(),
       'createdAt': createdAt?.toIso8601String(),

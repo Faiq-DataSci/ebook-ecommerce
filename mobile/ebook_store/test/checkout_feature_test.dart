@@ -92,7 +92,7 @@ void main() {
             {
               'id': 'pay-01',
               'orderId': 'ord-test-01',
-              'provider': 'midtrans',
+              'provider': 'xendit',
               'paymentMethod': 'BCA Virtual Account',
               'amount': '133000.00',
               'status': 'PENDING',
@@ -109,7 +109,7 @@ void main() {
         expect(order.items.length, 1);
         expect(order.items.first.title, 'Arsitektur Cloud');
         expect(order.payments.length, 1);
-        expect(order.payments.first.provider, 'midtrans');
+        expect(order.payments.first.provider, 'xendit');
         expect(order.payments.first.status, PaymentStatusEnum.pending);
 
         final serialized = order.toJson();
@@ -204,7 +204,7 @@ void main() {
     );
 
     testWidgets(
-      '6. PaymentGatewayCard menampilkan opsi kanal Midtrans dan interaksi pilih',
+      '6. PaymentGatewayCard menampilkan opsi kanal Xendit QRIS dan interaksi pilih',
       (tester) async {
         String selected = 'BCA Virtual Account';
         await _pumpCheckoutWidget(
@@ -222,7 +222,7 @@ void main() {
         );
 
         expect(find.byKey(const Key('payment_gateway_card')), findsOneWidget);
-        expect(find.text('MIDTRANS GATEWAY'), findsOneWidget);
+        expect(find.text('XENDIT QRIS GATEWAY'), findsOneWidget);
         expect(find.text('BCA Virtual Account'), findsOneWidget);
         expect(find.text('QRIS (Gopay / ShopeePay / Dana)'), findsOneWidget);
 
@@ -286,7 +286,7 @@ void main() {
             PaymentEntity(
               id: 'pay-01',
               orderId: 'ord-sim-01',
-              provider: 'midtrans',
+              provider: 'xendit',
               paymentMethod: 'BCA Virtual Account',
               amount: 133000,
               status: PaymentStatusEnum.pending,

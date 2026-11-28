@@ -26,10 +26,15 @@ class CheckoutRemoteDataSourceImpl implements CheckoutRemoteDataSource {
 
       // Backend returns { order: ..., payment: ... } or direct order
       if (data is Map<String, dynamic>) {
-        final orderMap = data['order'] is Map<String, dynamic>
-            ? data['order'] as Map<String, dynamic>
-            : data;
-        return OrderModel.fromJson(orderMap);
+        final rawOrder = data['order'] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(data['order'] as Map<String, dynamic>)
+            : Map<String, dynamic>.from(data);
+        final rawPayments = rawOrder['payments'];
+        final hasPayments = rawPayments is List && rawPayments.isNotEmpty;
+        if (!hasPayments && data['payment'] is Map<String, dynamic>) {
+          rawOrder['payments'] = <dynamic>[data['payment']];
+        }
+        return OrderModel.fromJson(rawOrder);
       }
 
       throw const CheckoutFailure(

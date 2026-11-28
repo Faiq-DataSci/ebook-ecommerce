@@ -24,13 +24,21 @@ class PaymentGatewayPendingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final payment = order.latestPayment;
-    final paymentMethod = payment?.paymentMethod ?? 'BCA Virtual Account';
+    final hasQrisString =
+        payment?.qrString != null && payment!.qrString!.trim().isNotEmpty;
+    final isQris = (payment?.isQris ?? false) || !isMock;
+    final providerLabel = (payment?.provider ?? 'xendit').toUpperCase();
+    final paymentMethod = isQris
+        ? 'QRIS Dinamis ($providerLabel)'
+        : (payment?.paymentMethod ?? 'QRIS Dinamis (XENDIT)');
     final externalRef = payment?.externalRef ?? 'PAY-${order.orderNumber}';
-    final vaNumber =
-        '88012${order.orderNumber.replaceAll(RegExp(r'[^0-9]'), '')}'.padRight(
-          16,
-          '0',
-        );
+    final vaNumber = hasQrisString
+        ? payment.qrString!
+        : '88012${order.orderNumber.replaceAll(RegExp(r'[^0-9]'), '')}'
+              .padRight(16, '0');
+    final qrImageUrl = hasQrisString
+        ? 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${Uri.encodeComponent(payment.qrString!)}'
+        : null;
 
     return Container(
       key: const Key('payment_gateway_pending_card'),
@@ -100,6 +108,50 @@ class PaymentGatewayPendingCard extends StatelessWidget {
                   'KANAL: $paymentMethod',
                   style: AppTheme.dataMono(AppColors.nbTextMuted, fontSize: 11),
                 ),
+                if (qrImageUrl != null) ...[
+                  const SizedBox(height: 10),
+                  Center(
+                    child: Container(
+                      key: const Key('pending_qris_image_box'),
+                      padding: const EdgeInsets.all(8),
+                      decoration: AppTheme.brutalBox(
+                        color: AppColors.nbWhite,
+                        borderColor: AppColors.nbBlack,
+                        borderWidth: AppTheme.borderDefault,
+                        shadowOffset: 2,
+                      ),
+                      child: Image.network(
+                        qrImageUrl,
+                        width: 180,
+                        height: 180,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, _, _) => SizedBox(
+                          width: 180,
+                          height: 180,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              const Icon(
+                                Icons.qr_code_2,
+                                size: 64,
+                                color: AppColors.nbBlack,
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'QRIS AKTIF',
+                                style: AppTheme.dataMono(
+                                  AppColors.nbBlack,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
                 const SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -109,7 +161,9 @@ class PaymentGatewayPendingCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            'NOMOR VIRTUAL ACCOUNT',
+                            hasQrisString
+                                ? 'STRING QRIS DINAMIS'
+                                : 'NOMOR VIRTUAL ACCOUNT',
                             style: AppTheme.labelSm(
                               AppColors.nbTextMuted,
                               fontSize: 10,
@@ -119,9 +173,10 @@ class PaymentGatewayPendingCard extends StatelessWidget {
                           SelectableText(
                             vaNumber,
                             key: const Key('pending_va_number_text'),
+                            maxLines: hasQrisString ? 2 : 1,
                             style: AppTheme.dataMono(
                               AppColors.nbBlack,
-                              fontSize: 14,
+                              fontSize: hasQrisString ? 11 : 14,
                             ),
                           ),
                         ],
@@ -136,7 +191,9 @@ class PaymentGatewayPendingCard extends StatelessWidget {
                           SnackBar(
                             backgroundColor: AppColors.nbYellow,
                             content: Text(
-                              'Nomor Virtual Account disalin!',
+                              hasQrisString
+                                  ? 'String QRIS berhasil disalin!'
+                                  : 'Nomor Virtual Account disalin!',
                               style: AppTheme.labelSm(AppColors.nbBlack),
                             ),
                           ),

@@ -50,6 +50,9 @@ class PaymentEntity {
   final int amount;
   final PaymentStatusEnum status;
   final String? externalRef;
+  final String? qrId;
+  final String? qrString;
+  final String? channelCode;
   final DateTime? expiresAt;
   final DateTime? paidAt;
   final DateTime? createdAt;
@@ -62,6 +65,9 @@ class PaymentEntity {
     required this.amount,
     required this.status,
     this.externalRef,
+    this.qrId,
+    this.qrString,
+    this.channelCode,
     this.expiresAt,
     this.paidAt,
     this.createdAt,
@@ -71,4 +77,7 @@ class PaymentEntity {
   bool get isPending => status == PaymentStatusEnum.pending;
   bool get isFailed => status == PaymentStatusEnum.failed;
   bool get isExpired => status == PaymentStatusEnum.expired;
+  bool get isQris =>
+      paymentMethod.toUpperCase() == 'QRIS' ||
+      (qrString != null && qrString!.isNotEmpty);
 }

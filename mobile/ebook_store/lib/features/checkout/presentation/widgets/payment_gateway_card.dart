@@ -15,17 +15,17 @@ class PaymentGatewayCard extends StatelessWidget {
   static const List<Map<String, String>> _methods = <Map<String, String>>[
     {
       'name': 'BCA Virtual Account',
-      'desc': 'Verifikasi otomatis 24 jam via Midtrans',
+      'desc': 'Verifikasi otomatis 24 jam via Xendit',
       'icon': '🏦',
     },
     {
       'name': 'Mandiri Virtual Account',
-      'desc': 'Verifikasi otomatis via Midtrans',
+      'desc': 'Verifikasi otomatis via Xendit',
       'icon': '🏦',
     },
     {
       'name': 'BNI Virtual Account',
-      'desc': 'Verifikasi otomatis via Midtrans',
+      'desc': 'Verifikasi otomatis via Xendit',
       'icon': '🏦',
     },
     {
@@ -70,7 +70,7 @@ class PaymentGatewayCard extends StatelessWidget {
                   shadowOffset: 1,
                 ),
                 child: Text(
-                  'MIDTRANS GATEWAY',
+                  'XENDIT QRIS GATEWAY',
                   style: AppTheme.dataMono(AppColors.nbBlack, fontSize: 10),
                 ),
               ),

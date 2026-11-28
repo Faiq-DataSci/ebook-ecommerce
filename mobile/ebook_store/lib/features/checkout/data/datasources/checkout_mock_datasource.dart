@@ -54,7 +54,7 @@ class CheckoutMockDataSourceImpl implements CheckoutMockDataSource {
           PaymentModel(
             id: 'pay-sim-001',
             orderId: 'ord-sim-001',
-            provider: 'midtrans',
+            provider: 'xendit',
             paymentMethod: 'BCA Virtual Account',
             amount: 133000,
             status: PaymentStatusEnum.pending,
@@ -137,7 +137,7 @@ class CheckoutMockDataSourceImpl implements CheckoutMockDataSource {
     final newPayment = PaymentModel(
       id: 'pay-$randomSuffix',
       orderId: orderId,
-      provider: 'midtrans',
+      provider: 'xendit',
       paymentMethod: 'BCA Virtual Account',
       amount: total,
       status: PaymentStatusEnum.pending,
