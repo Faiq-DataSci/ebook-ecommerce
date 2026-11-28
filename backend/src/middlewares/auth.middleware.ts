@@ -1,9 +1,11 @@
+import crypto from 'node:crypto'
 import type { NextFunction, Request, Response } from 'express'
 import { env } from '../config/env.js'
 import { prisma } from '../config/prisma.js'
 import { getSupabaseAdmin } from '../config/supabase.js'
 import { AppError } from '../utils/app-error.js'
 import { recordSecurityEvent } from '../utils/audit-logger.js'
+import { authCache } from '../utils/ttl-cache.js'
 
 export type UserRole = 'CUSTOMER' | 'ADMIN'
 
@@ -41,6 +43,20 @@ export async function authenticate(
     return
   }
 
+  const tokenHash =
+    env.NODE_ENV !== 'test'
+      ? crypto.createHash('sha256').update(token).digest('hex')
+      : ''
+
+  if (env.NODE_ENV !== 'test') {
+    const cachedUser = authCache.get(tokenHash)
+    if (cachedUser) {
+      req.user = cachedUser
+      next()
+      return
+    }
+  }
+
   try {
     const supabase = getSupabaseAdmin()
     const { data, error } = await supabase.auth.getUser(token)
@@ -76,11 +92,17 @@ export async function authenticate(
     const rawRole = data.user.app_metadata?.role
     const role: UserRole = rawRole === 'ADMIN' ? 'ADMIN' : 'CUSTOMER'
 
-    req.user = {
+    const authenticatedUser: AuthenticatedUser = {
       id: data.user.id,
       email: data.user.email ?? '',
       role,
     }
+
+    if (env.NODE_ENV !== 'test') {
+      authCache.set(tokenHash, authenticatedUser)
+    }
+
+    req.user = authenticatedUser
     next()
   } catch (err) {
     next(err)

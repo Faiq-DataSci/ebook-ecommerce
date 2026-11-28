@@ -1,3 +1,7 @@
+import {
+  invalidateAuthCache,
+  invalidateCatalogAndSawCache,
+} from '../../utils/ttl-cache.js'
 import { adminRepository, type AdminRepository } from './admin.repository.js'
 import type {
   CreateCategoryInput,
@@ -26,7 +30,9 @@ export class AdminService {
   }
 
   async updateSawWeights(input: UpdateSawWeightsInput) {
-    return this.repo.updateActiveSawCriteria(input.criteria, input.replaceAll)
+    const res = await this.repo.updateActiveSawCriteria(input.criteria, input.replaceAll)
+    invalidateCatalogAndSawCache()
+    return res
   }
 
   async getAdminEbooks(query: GetAdminEbooksQuery) {
@@ -34,19 +40,27 @@ export class AdminService {
   }
 
   async createEbook(input: CreateEbookInput) {
-    return this.repo.createEbook(input)
+    const res = await this.repo.createEbook(input)
+    invalidateCatalogAndSawCache()
+    return res
   }
 
   async updateEbook(id: string, input: UpdateEbookInput) {
-    return this.repo.updateEbook(id, input)
+    const res = await this.repo.updateEbook(id, input)
+    invalidateCatalogAndSawCache()
+    return res
   }
 
   async toggleEbookStatus(id: string, isActive: boolean) {
-    return this.repo.toggleEbookStatus(id, isActive)
+    const res = await this.repo.toggleEbookStatus(id, isActive)
+    invalidateCatalogAndSawCache()
+    return res
   }
 
   async archiveEbook(id: string) {
-    return this.repo.archiveEbook(id)
+    const res = await this.repo.archiveEbook(id)
+    invalidateCatalogAndSawCache()
+    return res
   }
 
   async getAdminCategories(query: GetAdminCategoriesQuery) {
@@ -54,19 +68,27 @@ export class AdminService {
   }
 
   async createCategory(input: CreateCategoryInput) {
-    return this.repo.createCategory(input)
+    const res = await this.repo.createCategory(input)
+    invalidateCatalogAndSawCache()
+    return res
   }
 
   async updateCategory(id: string, input: UpdateCategoryInput) {
-    return this.repo.updateCategory(id, input)
+    const res = await this.repo.updateCategory(id, input)
+    invalidateCatalogAndSawCache()
+    return res
   }
 
   async toggleCategoryStatus(id: string, isActive: boolean) {
-    return this.repo.toggleCategoryStatus(id, isActive)
+    const res = await this.repo.toggleCategoryStatus(id, isActive)
+    invalidateCatalogAndSawCache()
+    return res
   }
 
   async deleteCategory(id: string) {
-    return this.repo.deleteCategory(id)
+    const res = await this.repo.deleteCategory(id)
+    invalidateCatalogAndSawCache()
+    return res
   }
 
   async getAdminCustomers(query: GetAdminCustomersQuery) {
@@ -78,7 +100,9 @@ export class AdminService {
   }
 
   async toggleCustomerStatus(id: string, isActive: boolean) {
-    return this.repo.toggleCustomerStatus(id, isActive)
+    const res = await this.repo.toggleCustomerStatus(id, isActive)
+    invalidateAuthCache()
+    return res
   }
 
   async getAdminOrders(query: GetAdminOrdersQuery) {

@@ -1,8 +1,10 @@
+import { env } from '../../config/env.js'
 import {
   calculateSawScores,
   type SawAlternative,
   type SawCriterion,
 } from '../../services/saw.service.js'
+import { sawCache } from '../../utils/ttl-cache.js'
 import { adminRepository } from '../admin/admin.repository.js'
 import {
   recommendationRepository,
@@ -29,6 +31,29 @@ export class RecommendationService {
     }>
     activeCriteria: SawCriterion[]
   }> {
+    const cacheKey = `saw:${query.categoryId ?? 'all'}:${query.limit}`
+    if (env.NODE_ENV !== 'test') {
+      const cached = sawCache.get(cacheKey)
+      if (cached) {
+        return cached as {
+          items: Array<{
+            rank: number
+            ebookId: string
+            title: string
+            sawScore: number
+            displayScore: string
+            author?: string
+            price?: string
+            coverUrl?: string | null
+            category?: { id: string; name: string; slug: string }
+            rawValues: Record<string, number>
+            normalizedValues: Record<string, number>
+          }>
+          activeCriteria: SawCriterion[]
+        }
+      }
+    }
+
     const [ebooks, criteriaStore] = await Promise.all([
       this.repo.findActiveEbooksForSaw(query.categoryId),
       adminRepository.getActiveSawCriteria(),
@@ -76,7 +101,11 @@ export class RecommendationService {
       }
     })
 
-    return { items, activeCriteria }
+    const result = { items, activeCriteria }
+    if (env.NODE_ENV !== 'test') {
+      sawCache.set(cacheKey, result)
+    }
+    return result
   }
 
   async getSawRecommendations(query: GetSawRecommendationsQuery) {
