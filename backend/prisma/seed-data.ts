@@ -204,7 +204,7 @@ export function buildSimulationSeedData(referenceDate = new Date('2026-11-16T00:
       ],
       payment: {
         id: '00000000-0000-4000-8000-000000000501',
-        provider: 'midtrans',
+        provider: 'xendit',
         paymentMethod: 'QRIS',
         amount: '75000.00',
         status: 'VERIFIED',
@@ -228,7 +228,7 @@ export function buildSimulationSeedData(referenceDate = new Date('2026-11-16T00:
       ],
       payment: {
         id: '00000000-0000-4000-8000-000000000502',
-        provider: 'midtrans',
+        provider: 'xendit',
         paymentMethod: 'QRIS',
         amount: '85000.00',
         status: 'PENDING',

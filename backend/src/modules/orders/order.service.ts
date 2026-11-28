@@ -1,3 +1,5 @@
+import { env } from '../../config/env.js'
+import { createXenditDynamicQris } from '../../integrations/payment/xendit.client.js'
 import type { AuthenticatedUser } from '../../middlewares/auth.middleware.js'
 import { AppError } from '../../utils/app-error.js'
 import { userRepository, type UserRepository } from '../users/user.repository.js'
@@ -51,6 +53,40 @@ export class OrderService {
       unitPrice: Number(ebook.price).toFixed(2),
     }))
 
+    const provider = process.env.PAYMENT_GATEWAY_PROVIDER || env.PAYMENT_GATEWAY_PROVIDER
+    const serverKey = process.env.PAYMENT_GATEWAY_SERVER_KEY || env.PAYMENT_GATEWAY_SERVER_KEY
+    const shouldGenerateLiveQris =
+      provider === 'xendit' && Boolean(serverKey) && process.env.NODE_ENV !== 'test'
+
+    let paymentMethod = 'PENDING'
+    let qrPayload:
+      | {
+          qrId: string
+          referenceId: string
+          qrString: string
+          status: string
+          channelCode: string
+          expiresAt: string | null
+        }
+      | undefined
+
+    if (shouldGenerateLiveQris) {
+      const qris = await createXenditDynamicQris({
+        referenceId: paymentRef,
+        amount: totalNumber,
+        expiresAt,
+      })
+      paymentMethod = 'QRIS'
+      qrPayload = {
+        qrId: qris.qrId,
+        referenceId: qris.referenceId,
+        qrString: qris.qrString,
+        status: qris.status,
+        channelCode: qris.channelCode,
+        expiresAt: qris.expiresAt,
+      }
+    }
+
     const { order, payment } = await this.orderRepo.createOrderTransaction({
       userId: user.id,
       orderNumber,
@@ -58,6 +94,9 @@ export class OrderService {
       expiresAt,
       items,
       paymentRef,
+      provider,
+      paymentMethod,
+      qrPayload,
     })
 
     return { order, payment }

@@ -238,7 +238,7 @@ export async function findAdminPaymentRecords(query: GetAdminPaymentsQuery) {
       orderNumber: p.order.orderNumber,
       customerName: p.order.user.fullName,
       customerEmail: p.order.user.email,
-      provider: p.provider === 'simulator' ? 'simulator' : 'midtrans',
+      provider: p.provider === 'simulator' ? 'simulator' : 'xendit',
       paymentMethod: p.paymentMethod,
       amount: Number(p.amount ?? 0),
       status: p.status,

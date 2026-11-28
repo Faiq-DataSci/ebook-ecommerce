@@ -303,7 +303,7 @@ export function PaymentsTablePanel({
                       <td>
                         <div style={{ fontWeight: 600, fontSize: '13px' }}>{pay.paymentMethod}</div>
                         <div className="tf-mono" style={{ fontSize: '10.5px', color: 'var(--nb-text-muted)' }}>
-                          Provider: {pay.provider}
+                          Provider: {pay.provider === 'xendit' ? 'Xendit QRIS' : pay.provider}
                         </div>
                       </td>
 
@@ -331,7 +331,11 @@ export function PaymentsTablePanel({
                               alignItems: 'center',
                             }}
                           >
-                            <span>HMAC SHA512 Valid</span>
+                            <span>
+                              {pay.provider === 'xendit'
+                                ? 'Xendit Callback Valid'
+                                : 'HMAC SHA512 Valid'}
+                            </span>
                           </span>
                         ) : (
                           <span

@@ -45,7 +45,7 @@ export function RawWebhookModal({
             }}
           >
             <span>
-              Signature <strong>HMAC SHA512</strong> cocok dengan <code>MIDTRANS_SERVER_KEY</code> backend. Payload terotentikasi dan anti-tampering.
+              Token <strong>x-callback-token</strong> cocok dengan <code>PAYMENT_GATEWAY_WEBHOOK_SECRET</code> backend (Xendit). Payload terotentikasi dan anti-tampering.
             </span>
           </div>
         </div>

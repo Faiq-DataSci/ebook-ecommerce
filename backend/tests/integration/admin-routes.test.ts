@@ -1099,7 +1099,7 @@ describe('Admin Routes Integration Tests (/api/v1/admin)', () => {
             orderNumber: 'ORD-20261127-001',
             customerName: 'Rina Kartika',
             customerEmail: 'rina@example.com',
-            provider: 'midtrans',
+            provider: 'xendit',
             paymentMethod: 'QRIS',
             amount: 120000,
             status: 'VERIFIED',
@@ -1196,7 +1196,7 @@ describe('Admin Routes Integration Tests (/api/v1/admin)', () => {
         payments: [
           {
             id: 'e0000000-0000-4000-8000-000000000001',
-            provider: 'midtrans',
+            provider: 'xendit',
             paymentMethod: 'QRIS',
             amount: 120000,
             status: 'VERIFIED',
@@ -1252,7 +1252,7 @@ describe('Admin Routes Integration Tests (/api/v1/admin)', () => {
             orderNumber: 'ORD-20261127-001',
             orderStatus: 'PAID',
             paymentId: 'e0000000-0000-4000-8000-000000000001',
-            paymentProvider: 'midtrans',
+            paymentProvider: 'xendit',
             paymentMethod: 'QRIS',
             paymentRef: 'MID-TRX-001',
             customerId: 'c0000000-0000-4000-8000-000000000001',

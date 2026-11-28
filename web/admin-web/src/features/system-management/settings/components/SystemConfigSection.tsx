@@ -133,7 +133,7 @@ export function SystemConfigSection({
           <div className="sys-kv-row">
             <span className="sys-kv-key">Payment Gateway</span>
             <span className="sys-kv-val">
-              Midtrans (verifikasi via webhook bertanda tangan &amp; idempoten)
+              Xendit QRIS (verifikasi via x-callback-token &amp; idempoten)
             </span>
           </div>
         </div>

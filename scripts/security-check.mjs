@@ -19,7 +19,7 @@ const FORBIDDEN_FILE_PATTERNS = [
 const SECRET_PATTERNS = [
   { name: 'Private Key Block', regex: /-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----/ },
   { name: 'Supabase Secret Key', regex: /\bsb_secret_[A-Za-z0-9_-]{16,}\b/ },
-  { name: 'Midtrans Server Key', regex: /\b(SB-)?Mid-server-[A-Za-z0-9_-]{10,}\b/ },
+  { name: 'Xendit Secret API Key', regex: /\bxnd_(development|production)_[A-Za-z0-9_-]{16,}\b/ },
   {
     name: 'Hardcoded Service Role Key in Frontend/Mobile',
     regex: /\bVITE_.*(SERVICE_ROLE|SECRET_KEY|SERVER_KEY|DATABASE_URL)\b/,

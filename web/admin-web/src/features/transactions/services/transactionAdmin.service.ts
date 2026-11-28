@@ -41,7 +41,7 @@ interface RawAdminPayment {
   orderNumber: string
   customerName: string
   customerEmail: string
-  provider: 'midtrans' | 'simulator'
+  provider: 'xendit' | 'simulator' | string
   paymentMethod: string
   amount: number | string
   status: 'PENDING' | 'VERIFIED' | 'FAILED' | 'EXPIRED'
@@ -49,6 +49,14 @@ interface RawAdminPayment {
   signatureVerified: boolean
   receivedAt: string
   rawWebhookPayload: Record<string, unknown>
+  qrPayload?: {
+    qrId?: string
+    qrString?: string
+    referenceId?: string
+    channelCode?: string
+    status?: string
+    expiresAt?: string | null
+  } | null
 }
 
 function formatDateTimeId(iso?: string | null): string {
@@ -163,13 +171,15 @@ function mapRawOrderToRecord(raw: RawAdminOrder): OrderRecord {
 
 function mapRawPaymentToRecord(raw: RawAdminPayment): PaymentAuditRecord {
   const amount = Number(raw.amount ?? 0)
+  const normalizedProvider: PaymentAuditRecord['provider'] =
+    raw.provider === 'simulator' ? 'simulator' : 'xendit'
   return {
     id: raw.id,
     paymentCode: raw.paymentCode,
     orderNumber: raw.orderNumber,
     customerName: raw.customerName,
     customerEmail: raw.customerEmail,
-    provider: raw.provider === 'simulator' ? 'simulator' : 'midtrans',
+    provider: normalizedProvider,
     paymentMethod: raw.paymentMethod,
     amount,
     amountFormatted: formatRupiah(amount),
@@ -178,6 +188,7 @@ function mapRawPaymentToRecord(raw: RawAdminPayment): PaymentAuditRecord {
     signatureVerified: Boolean(raw.signatureVerified),
     receivedAt: formatDateTimeId(raw.receivedAt),
     rawWebhookPayload: raw.rawWebhookPayload ?? {},
+    qrPayload: raw.qrPayload ?? null,
   }
 }
 

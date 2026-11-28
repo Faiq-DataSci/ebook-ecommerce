@@ -1,3 +1,5 @@
+import type { QrisPayload } from './order.types';
+
 export type PaymentStatus =
   | 'pending'
   | 'paid'
@@ -11,6 +13,9 @@ export interface PaymentSummary {
   paymentStatus: PaymentStatus;
   amount: number;
   paymentChannelLabel: string;
+  paymentProvider?: string;
+  paymentMethod?: string;
+  qrPayload?: QrisPayload | null;
   recordedAt?: string;
   instructions: string[];
   verificationStatusText: string;

@@ -66,7 +66,7 @@ export interface PaymentAuditRecord {
   orderNumber: string
   customerName: string
   customerEmail: string
-  provider: 'midtrans' | 'simulator'
+  provider: 'xendit' | 'simulator'
   paymentMethod: string
   amount: number
   amountFormatted: string
@@ -75,6 +75,14 @@ export interface PaymentAuditRecord {
   signatureVerified: boolean
   receivedAt: string
   rawWebhookPayload: Record<string, unknown>
+  qrPayload?: {
+    qrId?: string
+    qrString?: string
+    referenceId?: string
+    channelCode?: string
+    status?: string
+    expiresAt?: string | null
+  } | null
 }
 
 export interface PaymentMethodShare {

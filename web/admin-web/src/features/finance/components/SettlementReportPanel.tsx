@@ -44,7 +44,7 @@ export function SettlementReportPanel({
         </div>
 
         <span className="tf-escrow-status-badge">
-          Auto-Disbursement Midtrans Terhubung (H+1)
+          Auto-Disbursement Xendit Terhubung (H+1)
         </span>
       </section>
 

@@ -38,6 +38,33 @@ export class PaymentService {
     return crypto.timingSafeEqual(Buffer.from(signatureHeader), Buffer.from(expected))
   }
 
+  verifyXenditCallbackToken(
+    callbackToken: string | undefined,
+    secretOverride?: string,
+  ): boolean {
+    const expectedToken =
+      secretOverride ||
+      process.env.PAYMENT_GATEWAY_WEBHOOK_SECRET ||
+      env.PAYMENT_GATEWAY_WEBHOOK_SECRET
+
+    if (!expectedToken) {
+      if (env.NODE_ENV !== 'production') {
+        return Boolean(callbackToken)
+      }
+      return false
+    }
+
+    if (!callbackToken) {
+      return false
+    }
+
+    if (callbackToken.length !== expectedToken.length) {
+      return false
+    }
+
+    return crypto.timingSafeEqual(Buffer.from(callbackToken), Buffer.from(expectedToken))
+  }
+
   async processWebhook(payload: PaymentWebhookInput) {
     const payment = await prisma.payment.findUnique({
       where: { externalRef: payload.externalRef },

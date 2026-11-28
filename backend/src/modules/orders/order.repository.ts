@@ -1,3 +1,5 @@
+import type { Prisma } from '../../generated/prisma/client.js'
+import { env } from '../../config/env.js'
 import { prisma } from '../../config/prisma.js'
 import type { GetOrdersQuery } from './order.schema.js'
 
@@ -44,6 +46,7 @@ export const orderDetailSelect = {
       amount: true,
       status: true,
       externalRef: true,
+      qrPayload: true,
       expiresAt: true,
       paidAt: true,
       createdAt: true,
@@ -89,6 +92,9 @@ export class OrderRepository {
     expiresAt: Date
     items: Array<{ ebookId: string; unitPrice: string }>
     paymentRef: string
+    provider?: string
+    paymentMethod?: string
+    qrPayload?: Prisma.InputJsonValue
   }) {
     return prisma.$transaction(async (tx) => {
       const order = await tx.order.create({
@@ -111,16 +117,23 @@ export class OrderRepository {
       const payment = await tx.payment.create({
         data: {
           orderId: order.id,
-          provider: 'midtrans',
-          paymentMethod: 'PENDING',
+          provider: params.provider || env.PAYMENT_GATEWAY_PROVIDER || 'xendit',
+          paymentMethod: params.paymentMethod || 'PENDING',
           amount: params.totalAmount,
           status: 'PENDING',
           externalRef: params.paymentRef,
+          qrPayload: params.qrPayload,
           expiresAt: params.expiresAt,
         },
       })
 
-      return { order, payment }
+      return {
+        order: {
+          ...order,
+          payments: [payment],
+        },
+        payment,
+      }
     })
   }
 

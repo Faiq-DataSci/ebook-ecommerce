@@ -21,9 +21,24 @@ export function TransactionDetailPage() {
   const [order, setOrder] = useState<Order | null>(null);
   const [previewPaymentStatus, setPreviewPaymentStatus] =
     useState<PaymentStatusType | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [pageStatus, setPageStatus] = useState<
     'loading' | 'ready' | 'not_found' | 'error'
   >('loading');
+
+  const handleRefreshStatus = async () => {
+    if (!id) return;
+    setIsRefreshing(true);
+    try {
+      const updated = await orderService.getOrderById(id);
+      if (updated) {
+        setOrder(updated);
+        setPreviewPaymentStatus(null);
+      }
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -212,6 +227,13 @@ export function TransactionDetailPage() {
               status={effectivePaymentStatus}
               verificationStatusText={paymentSummary.verificationStatusText}
               instructions={paymentSummary.instructions}
+              qrPayload={paymentSummary.qrPayload}
+              paymentProvider={paymentSummary.paymentProvider}
+              paymentMethod={paymentSummary.paymentMethod}
+              transactionReference={order.transactionReference}
+              isSimulation={paymentSummary.isSimulation}
+              isRefreshing={isRefreshing}
+              onRefreshStatus={handleRefreshStatus}
             />
 
             <div style={{ marginTop: 'var(--nb-space-4)' }}>

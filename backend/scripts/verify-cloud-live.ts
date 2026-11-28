@@ -3,6 +3,7 @@ import { prisma, disconnectDatabase } from '../src/config/prisma.js'
 import { getSupabaseAdmin } from '../src/config/supabase.js'
 import { env } from '../src/config/env.js'
 import { createPrivatePdfSignedUrl } from '../src/integrations/storage/supabase-storage.js'
+import { createXenditDynamicQris } from '../src/integrations/payment/xendit.client.js'
 
 interface VerificationReport {
   database: { success: boolean; details: any }
@@ -154,62 +155,41 @@ async function verifyAll(): Promise<VerificationReport> {
     console.error('  -> GAGAL pada Supabase Storage:', err.message)
   }
 
-  // 4. Midtrans Payment Gateway Sandbox
+  // 4. Payment Gateway Test Mode (Xendit Dynamic QRIS)
   try {
-    console.log('\n[4/4] Menguji Midtrans Payment Gateway (Sandbox)...')
+    console.log('\n[4/4] Menguji Payment Gateway (XENDIT Dynamic QRIS Test Mode)...')
     const serverKey = env.PAYMENT_GATEWAY_SERVER_KEY
     if (!serverKey) {
       throw new Error('PAYMENT_GATEWAY_SERVER_KEY belum dikonfigurasi')
     }
 
-    const authHeader = `Basic ${Buffer.from(serverKey + ':').toString('base64')}`
     const testOrderId = `VERIFY-${Date.now()}`
-
-    const chargePayload = {
-      payment_type: 'qris',
-      transaction_details: {
-        order_id: testOrderId,
-        gross_amount: 15000,
-      },
-      qris: {
-        acquirer: 'gopay',
-      },
-    }
-
-    const response = await fetch(`${env.PAYMENT_GATEWAY_BASE_URL}/v2/charge`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': authHeader,
-      },
-      body: JSON.stringify(chargePayload),
+    const qris = await createXenditDynamicQris({
+      referenceId: testOrderId,
+      amount: 15000,
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000),
     })
 
-    const data: any = await response.json()
-
-    if (response.status === 200 || response.status === 201) {
-      report.paymentGateway = {
-        success: true,
-        details: {
-          statusCode: data.status_code,
-          transactionStatus: data.transaction_status,
-          transactionId: data.transaction_id,
-          orderId: testOrderId,
-          paymentType: data.payment_type,
-          hasQrString: Boolean(data.qr_string || data.actions?.length),
-        },
-      }
-      console.log('  -> BERHASIL: Midtrans Sandbox Core API merespons dengan status 201/200.')
-      console.log(
-        `     Order ID: ${testOrderId}, Status: ${data.transaction_status}, QR Dihasilkan: ${Boolean(data.qr_string || data.actions?.length)}`,
-      )
-    } else {
-      throw new Error(`Midtrans API Error [${response.status}]: ${data.status_message || JSON.stringify(data)}`)
+    report.paymentGateway = {
+      success: true,
+      details: {
+        provider: 'xendit',
+        qrId: qris.qrId,
+        referenceId: qris.referenceId,
+        status: qris.status,
+        amount: qris.amount,
+        currency: qris.currency,
+        channelCode: qris.channelCode,
+        hasQrString: Boolean(qris.qrString),
+      },
     }
+    console.log('  -> BERHASIL: Xendit Dynamic QRIS Test Mode berhasil dibuat.')
+    console.log(
+      `     Reference ID: ${qris.referenceId}, QR ID: ${qris.qrId}, Status: ${qris.status}, QR Dihasilkan: ${Boolean(qris.qrString)}`,
+    )
   } catch (err: any) {
     report.paymentGateway = { success: false, details: err.message }
-    console.error('  -> GAGAL pada Midtrans Sandbox:', err.message)
+    console.error('  -> GAGAL pada Payment Gateway:', err.message)
   } finally {
     await disconnectDatabase()
   }

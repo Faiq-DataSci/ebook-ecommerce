@@ -29,8 +29,8 @@ export function WebhookSimulatorCard({
     const timeStr = new Date().toLocaleTimeString('id-ID')
     const grossAmount = targetOrder.totalAmount.toFixed(2)
 
-    const logEntry1 = `[${timeStr}] [REQ] POST /api/webhooks/midtrans HTTP/1.1 | Event: ${eventType.toUpperCase()} | Order: ${targetOrder.orderNumber}`
-    const logEntry2 = `[${timeStr}] [SIG] Validating HMAC SHA512 Signature: 9e8a7c... [OK]`
+    const logEntry1 = `[${timeStr}] [REQ] POST /api/v1/payments/webhook HTTP/1.1 | Event: ${eventType.toUpperCase()} | Order: ${targetOrder.orderNumber}`
+    const logEntry2 = `[${timeStr}] [SIG] Validating Xendit x-callback-token: verified [OK]`
     const logEntry3 = eventType === 'settlement'
       ? `[${timeStr}] [PAID] Order ${targetOrder.orderNumber} PAID (Rp ${grossAmount}). EbookAccess AKTIF & Signed URL tersedia.`
       : `[${timeStr}] [STATUS] Order ${targetOrder.orderNumber} diubah ke ${eventType.toUpperCase()}. Akses e-book dinonaktifkan.`
@@ -55,7 +55,7 @@ export function WebhookSimulatorCard({
             <span className="tf-badge-zone">AUDIT WEBHOOK</span>
           </div>
           <div className="tf-simulator-title">
-            <span>Simulator Interaktif Webhook Payment Gateway (Midtrans HMAC SHA512)</span>
+            <span>Simulator Interaktif Webhook Payment Gateway (Xendit QRIS Callback)</span>
           </div>
           <p style={{ margin: 0, fontSize: '13px', color: 'var(--nb-text-muted)', lineHeight: 1.4 }}>
             Pilih transaksi sasaran dan tipe event callback untuk menguji otomatisasi siklus pesanan, validasi anti-spoofing signature, dan aktivasi hak baca <code>EbookAccess</code>.

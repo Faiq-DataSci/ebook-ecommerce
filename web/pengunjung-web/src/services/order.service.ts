@@ -3,11 +3,23 @@ import {
   INITIAL_PURCHASED_LIBRARY,
   MOCK_BOOKS,
 } from '../data/mock-books';
-import type { Order, PurchasedBookAccess } from '../types/order.types';
+import type { Order, PurchasedBookAccess, QrisPayload } from '../types/order.types';
 import { fetchAuthenticatedApi, getStoredAccessToken } from './api/apiClient';
 import { API_ENDPOINTS } from './api/endpoints';
 
 const ORDERS_STORAGE_KEY = 'ebook_store_sim_orders';
+
+interface RawBackendPayment {
+  id: string;
+  provider?: string;
+  paymentMethod?: string;
+  amount?: string | number;
+  status?: string;
+  externalRef?: string | null;
+  qrPayload?: QrisPayload | null;
+  expiresAt?: string | null;
+  paidAt?: string | null;
+}
 
 interface RawBackendOrder {
   id: string;
@@ -27,10 +39,12 @@ interface RawBackendOrder {
       category?: { name: string } | null;
     };
   }>;
+  payments?: RawBackendPayment[];
 }
 
-function mapBackendOrder(raw: RawBackendOrder): Order {
+function mapBackendOrder(raw: RawBackendOrder, explicitPayment?: RawBackendPayment): Order {
   const firstItem = raw.items?.[0];
+  const latestPayment = explicitPayment ?? raw.payments?.[0];
   const paymentStatus: Order['paymentStatus'] =
     raw.status === 'PAID'
       ? 'paid'
@@ -46,6 +60,9 @@ function mapBackendOrder(raw: RawBackendOrder): Order {
         ? 'pending'
         : 'cancelled';
 
+  const paymentProvider = latestPayment?.provider ?? 'xendit';
+  const paymentMethod = latestPayment?.paymentMethod ?? 'QRIS';
+
   return {
     id: raw.id,
     orderNumber: raw.orderNumber,
@@ -57,15 +74,22 @@ function mapBackendOrder(raw: RawBackendOrder): Order {
     bookCoverAccent: 'blue',
     bookCoverCode: 'EBK',
     orderDate: raw.createdAt,
-    expiresAt: raw.expiresAt,
+    expiresAt: latestPayment?.expiresAt ?? raw.expiresAt,
     totalAmount: Number(raw.totalAmount ?? 0),
     paymentStatus,
     orderStatus,
-    paymentConfigurationNote: 'Diproses melalui backend REST API resmi.',
+    transactionReference: latestPayment?.externalRef ?? undefined,
+    paymentProvider,
+    paymentMethod,
+    qrPayload: latestPayment?.qrPayload ?? null,
+    paymentConfigurationNote:
+      paymentMethod.toUpperCase() === 'QRIS'
+        ? `QRIS Dinamis via ${paymentProvider.toUpperCase()} (terhubung ke backend REST API).`
+        : 'Diproses melalui backend REST API resmi.',
     verificationNote:
       paymentStatus === 'paid'
-        ? 'Pembayaran terverifikasi oleh backend.'
-        : 'Menunggu verifikasi pembayaran backend.',
+        ? 'Pembayaran QRIS terverifikasi otomatis oleh backend melalui webhook.'
+        : 'Scan kode QRIS dinamis sebelum batas waktu berakhir. Status akan terverifikasi otomatis melalui webhook.',
     isSimulation: false,
   };
 }
@@ -89,7 +113,7 @@ export const orderService = {
       try {
         const res = await fetchAuthenticatedApi<RawBackendOrder[]>(API_ENDPOINTS.ORDERS);
         if (res.ok && Array.isArray(res.body?.data)) {
-          return res.body.data.map(mapBackendOrder);
+          return res.body.data.map((item) => mapBackendOrder(item));
         }
       } catch {
         // Fallback ke DATA SIMULASI bila backend offline
@@ -132,6 +156,23 @@ export const orderService = {
   },
 
   async createSimulatedOrder(bookId: string, customerId: string): Promise<Order> {
+    if (getStoredAccessToken()) {
+      try {
+        const res = await fetchAuthenticatedApi<{
+          order: RawBackendOrder;
+          payment?: RawBackendPayment;
+        }>(API_ENDPOINTS.ORDERS, {
+          method: 'POST',
+          body: JSON.stringify({ ebookIds: [bookId] }),
+        });
+        if (res.ok && res.body?.data?.order) {
+          return mapBackendOrder(res.body.data.order, res.body.data.payment);
+        }
+      } catch {
+        // Fallback ke DATA SIMULASI bila backend offline atau bookId simulasi
+      }
+    }
+
     const book = MOCK_BOOKS.find((item) => item.id === bookId);
     if (!book) {
       throw new Error('E-book tidak ditemukan di katalog.');

@@ -8,6 +8,15 @@ export type OrderStatus =
 
 export type AccessStatus = 'granted' | 'locked' | 'revoked';
 
+export interface QrisPayload {
+  qrId?: string;
+  referenceId?: string;
+  qrString?: string;
+  status?: string;
+  channelCode?: string;
+  expiresAt?: string | null;
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
@@ -24,6 +33,9 @@ export interface Order {
   paymentStatus: PaymentStatus;
   orderStatus: OrderStatus;
   transactionReference?: string;
+  paymentProvider?: string;
+  paymentMethod?: string;
+  qrPayload?: QrisPayload | null;
   paymentConfigurationNote: string;
   verificationNote: string;
   isSimulation: boolean;
