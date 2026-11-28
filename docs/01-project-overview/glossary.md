@@ -16,7 +16,7 @@ Dokumen ini menjadi kamus istilah resmi proyek **Sistem Informasi E-Commerce E-B
 | **Signed URL** | Tautan sementara bertanda tangan kriptografis dan berumur pendek (*TTL* singkat) yang diterbitkan `backend` agar **Pelanggan** pemilik `EbookAccess` sah dapat membaca PDF dari `bucket privat`. |
 | **Bucket privat** | Wadah penyimpanan objek di Supabase Storage yang akses publiknya ditutup; seluruh file PDF `e-book` wajib ditempatkan di sini dan tidak dapat diunduh bebas tanpa `signed URL` dari `backend`. |
 | **Checkout** | Proses pembuatan pesanan (`Order` berstatus `PENDING` beserta `OrderItem` yang mengunci *snapshot* harga dari database) oleh **Pelanggan** sebelum pembayaran. |
-| **Payment gateway** | Penyedia layanan pembayaran eksternal nyata (seperti Midtrans/Xendit) yang memproses transaksi pembayaran daring dan mengirim notifikasi status ke `backend` (Keputusan #3 `[ADA]`). |
+| **Payment gateway** | Penyedia layanan pembayaran eksternal nyata (Xendit Dynamic QRIS) yang memproses transaksi pembayaran daring dan mengirim notifikasi status ke `backend` (Keputusan #3 `[ADA]`). |
 | **Webhook** | Permintaan HTTP callback asinkron dari *payment gateway* ke endpoint `backend` untuk melaporkan perubahan status pembayaran; wajib diverifikasi *signature*-nya. |
 | **Idempotensi** | Sifat operasi `backend` (khususnya *webhook* pembayaran) di mana pemrosesan ulang permintaan yang sama persis tidak menimbulkan efek ganda (tidak menggandakan `Transaction` atau `EbookAccess`). |
 | **Transaksi atomik** | Eksekusi beberapa perubahan basis data (`prisma.$transaction`) sebagai satu kesatuan: seluruh langkah berhasil (*commit*) atau seluruhnya dibatalkan (*rollback*) apabila ada kegagalan. |

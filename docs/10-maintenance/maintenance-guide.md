@@ -13,7 +13,7 @@ Panduan ini menjadi acuan operasional pasca-rilis untuk menjaga keandalan, keama
 - **Aplikasi Web:** Admin Web (`web/admin-web/`, TypeScript + Vite) dan Web Pengunjung (`web/pengunjung-web/`, Vite).
 - **Aplikasi Mobile:** Flutter Android (`mobile/ebook_store/`, Riverpod + Dio).
 - **Database & Storage:** PostgreSQL Supabase (pooler port `6543` runtime, direct port `5432` migrasi), Supabase Auth, dan Supabase Storage bucket privat (`ebooks-private`).
-- **Layanan Eksternal:** Payment Gateway (Midtrans/Xendit) beserta callback webhook.
+- **Layanan Eksternal:** Payment Gateway (Xendit QRIS) beserta callback webhook.
 
 > **Catatan Status:** Karena sistem masih berada pada tahap fondasi pra-produksi, seluruh jadwal dan prosedur operasional produksi di bawah ini berstatus `[RENCANA]` kecuali komponen atau aturan yang telah terbukti tersedia di repository (`[ADA]`).
 

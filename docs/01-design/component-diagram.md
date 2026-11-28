@@ -31,7 +31,7 @@ flowchart TB
         SAUTH["Supabase Auth<br/>(Penerbit Sesi & JWT)<br/>[RENCANA Integrasi]"]
         PGDB[("PostgreSQL Supabase<br/>(via Prisma 7)<br/>[ADA: Schema | RENCANA: Migrasi]")]
         SSTOR["Supabase Storage<br/>Bucket Privat (File PDF E-Book)<br/>[RENCANA]"]
-        PAYGW["Payment Gateway<br/>(Midtrans / Xendit)<br/>[RENCANA]"]
+        PAYGW["Payment Gateway<br/>(Xendit QRIS)<br/>[RENCANA]"]
     end
 
     MOB -->|"HTTPS REST + Bearer JWT"| MW

@@ -11,7 +11,7 @@ Diterima
 - **Pengganti:** Tidak ada
 
 ## Konteks
-Proyek ini membangun sistem informasi e-commerce e-book yang harus memproses pembayaran transaksi pembelian secara kredibel. Mengandalkan simulasi pembayaran lokal tanpa integrasi penyedia pembayaran tidak mencerminkan alur e-commerce nyata dan tidak menguji penanganan *callback webhook*, verifikasi signature, maupun atomisitas pembaruan status pesanan. Layanan payment gateway Indonesia (seperti Midtrans atau Xendit) menyediakan mode *sandbox* untuk pengujian aman serta webhook otomatis untuk berbagai metode pembayaran.
+Proyek ini membangun sistem informasi e-commerce e-book yang harus memproses pembayaran transaksi pembelian secara kredibel. Mengandalkan simulasi pembayaran lokal tanpa integrasi penyedia pembayaran tidak mencerminkan alur e-commerce nyata dan tidak menguji penanganan *callback webhook*, verifikasi signature, maupun atomisitas pembaruan status pesanan. Layanan payment gateway Indonesia (Xendit Dynamic QRIS) menyediakan mode *sandbox* untuk pengujian aman serta webhook otomatis untuk berbagai metode pembayaran.
 
 ### Faktor yang Mempengaruhi
 - Kredibilitas akademik dan kesesuaian alur sistem dengan praktik e-commerce produksi.
@@ -25,7 +25,7 @@ Proyek ini membangun sistem informasi e-commerce e-book yang harus memproses pem
 
 ## Alternatif yang Dipertimbangkan
 
-### Alternatif 1: Integrasi Payment Gateway Nyata (Midtrans / Xendit)
+### Alternatif 1: Integrasi Payment Gateway Nyata (Xendit QRIS)
 - **Deskripsi:** Backend berkomunikasi dengan REST API payment gateway (mode sandbox saat pengembangan/uji) dan menerima callback webhook resmi untuk memfinalisasi pesanan.
 - **Kelebihan:** Alur pembayaran realistis, mendukung banyak metode pembayaran, memiliki mekanisme verifikasi signature webhook, dan kredibel untuk demonstrasi akademik.
 - **Kekurangan:** Ketergantungan pada layanan gateway eksternal, kompleksitas penanganan webhook/idempotensi, dan biaya transaksi bila diaktifkan di mode live.
@@ -44,7 +44,7 @@ Proyek ini membangun sistem informasi e-commerce e-book yang harus memproses pem
 - **Status:** Ditolak
 
 ## Keputusan
-Sistem menggunakan integrasi **payment gateway nyata (Midtrans / Xendit)** sejak awal pengembangan (berjalan pada mode *sandbox* saat pengujian), dengan kewajiban verifikasi signature webhook, pemeriksaan nominal, idempotensi, dan eksekusi atomik di backend.
+Sistem menggunakan integrasi **payment gateway nyata (Xendit QRIS)** sejak awal pengembangan (berjalan pada mode *sandbox* saat pengujian), dengan kewajiban verifikasi signature webhook, pemeriksaan nominal, idempotensi, dan eksekusi atomik di backend.
 
 ### Alasan
 1. Menjamin status `Order.PAID`, pembuatan `Transaction`, dan pemberian `EbookAccess` hanya dipicu oleh bukti pembayaran sah dari gateway, bukan klaim klien.
@@ -94,4 +94,4 @@ Sistem menggunakan integrasi **payment gateway nyata (Midtrans / Xendit)** sejak
 - **Bukti Teknis:** [`backend/prisma/schema.prisma`](../../backend/prisma/schema.prisma) (`Payment`, `Transaction`, `PaymentStatus`), [`backend/src/config/env.ts`](../../backend/src/config/env.ts)
 
 ## Catatan
-Keputusan memakai payment gateway nyata sudah final (`Diterima`), namun pemilihan penyedia spesifik antara **Midtrans** atau **Xendit** serta pemasangan SDK/adapter terkait di `backend/package.json` masih terbuka sebelum implementasi modul pembayaran (`[RENCANA]`).
+Keputusan memakai payment gateway nyata sudah final (`Diterima`), namun pemilihan penyedia spesifik pada **Xendit Dynamic QRIS** serta pemasangan SDK/adapter terkait di `backend/package.json` masih terbuka sebelum implementasi modul pembayaran (`[RENCANA]`).

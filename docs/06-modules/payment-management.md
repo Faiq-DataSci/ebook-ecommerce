@@ -20,7 +20,7 @@
 flowchart LR
     Client["Klien (Mobile / Web)"]
     Express["Backend Express (Payment Service & Webhook Handler)"]
-    PG["Payment Gateway (Midtrans / Xendit)"]
+    PG["Payment Gateway (Xendit QRIS)"]
     DB["PostgreSQL Supabase (payments, orders, transactions, ebook_accesses)"]
 
     Client -->|"POST /payments + Bearer JWT"| Express
@@ -174,7 +174,7 @@ stateDiagram-v2
 
 ## K. Ketergantungan Keputusan Terbuka
 
-- Pemilihan provider Payment Gateway (Midtrans vs Xendit) dan implementasi adapter gateway (`[RENCANA]`).
+- Pemilihan provider Payment Gateway (Xendit Dynamic QRIS) dan implementasi adapter gateway (`[RENCANA]`).
 
 ---
 

@@ -22,7 +22,7 @@
 | **Admin Web (`web/admin-web/`)** | `npm --prefix web/admin-web install`, `web/admin-web/.env` | `package.json` (`eslint`, `tsc --noEmit`, `vite build`) | Variabel `VITE_*` hanya boleh berisi konfigurasi publik | `[ADA]` (lint/build) / `[RENCANA]` (UI test) |
 | **Pengunjung Web (`web/pengunjung-web/`)** | `npm --prefix web/pengunjung-web install`, `web/pengunjung-web/.env` | `package.json` (`eslint`, `vite build`) | Tidak ada secret di bundle frontend | `[ADA]` (lint/build) / `[RENCANA]` (UI test) |
 | **Mobile (`mobile/ebook_store/`)** | `flutter pub get` pada `mobile/ebook_store` | `pubspec.yaml` (`flutter_test`, `flutter_lints`, `Dart ^3.12.0`) | Pada Windows, `flutter analyze` / build symlink plugin mungkin memerlukan **Windows Developer Mode** aktif | `[ADA]` (analyze/template) / `[RENCANA]` (bisnis) |
-| **Integrasi Eksternal (`[RENCANA]`)** | Sandbox payment gateway (Midtrans/Xendit), tunneling lokal webhook (mis. ngrok), PostgreSQL Supabase test/staging, bucket Storage test | `.env.test` terpisah dengan `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `WEBHOOK_SECRET` sandbox | Terpisah total dari lingkungan production | `[RENCANA]` |
+| **Integrasi Eksternal (`[RENCANA]`)** | Sandbox payment gateway (Xendit QRIS), tunneling lokal webhook (mis. ngrok), PostgreSQL Supabase test/staging, bucket Storage test | `.env.test` terpisah dengan `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `WEBHOOK_SECRET` sandbox | Terpisah total dari lingkungan production | `[RENCANA]` |
 
 ---
 

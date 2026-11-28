@@ -25,7 +25,7 @@ flowchart TB
     end
 
     subgraph TB4["Trust Boundary 4: Eksternal"]
-        PG["Payment Gateway (Midtrans / Xendit)"]
+        PG["Payment Gateway (Xendit QRIS)"]
     end
 
     Mobile -->|"HTTPS + Bearer JWT"| API

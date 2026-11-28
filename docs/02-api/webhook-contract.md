@@ -1,6 +1,6 @@
 # Kontrak Webhook Payment Gateway (`Webhook Contract`)
 
-**Status:** `[RENCANA]` — Endpoint webhook dan integrasi *payment gateway* nyata (Keputusan #3 `[ADA]`) belum diimplementasikan di `backend/`.
+**Status:** `[ADA]` — Endpoint webhook, adapter pembuatan QRIS dinamis **Xendit** (`POST /qr_codes`), verifikasi `x-callback-token` (Xendit) serta `x-webhook-signature` (kontrak internal HMAC-SHA512), pengujian unit/integrasi (152/152 lulus), serta verifikasi live Xendit Dynamic QRIS Test Mode (`npm run test:cloud` 4/4 lulus) telah terverifikasi di `backend/`.
 
 ---
 
@@ -8,7 +8,7 @@
 
 - **Tujuan:** Menerima notifikasi status pembayaran secara asinkron dari *payment gateway* nyata, memverifikasi keasliannya, dan memperbarui status transaksi serta hak akses `e-book` secara atomik dan idempoten.
 - **Endpoint:** `POST /api/v1/payments/webhook`
-- **Sumber Webhook:** Server *payment gateway* eksternal (Midtrans / Xendit). Endpoint ini **tidak** menggunakan Bearer JWT Pelanggan.
+- **Sumber Webhook:** Server *payment gateway* eksternal (Xendit QRIS). Endpoint ini **tidak** menggunakan Bearer JWT Pelanggan.
 - **Header yang Diperlukan:**
   - `Content-Type: application/json`
   - Header *signature* resmi penyedia gateway (mis. `X-Webhook-Signature` / header khusus provider; diverifikasi dengan *webhook secret* yang hanya tersimpan di `.env` `backend/`).

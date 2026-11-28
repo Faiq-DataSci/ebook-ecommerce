@@ -36,7 +36,7 @@ flowchart TB
     Auth["Supabase Auth"]
     Database[("PostgreSQL Supabase (Prisma 7)")]
     Storage["Supabase Storage: Bucket Privat"]
-    Payment["Payment Gateway (Midtrans / Xendit)"]
+    Payment["Payment Gateway (Xendit QRIS)"]
 
     Customer --> Mobile
     Customer --> VisitorWeb
@@ -73,7 +73,7 @@ flowchart TB
 | **Supabase Auth** | Layanan Autentikasi Terkelola | `[ADA]` keputusan #2; integrasi `[RENCANA]` | Mengelola registrasi, login, dan penerbitan `JWT`; diverifikasi oleh `backend/` sebelum akses resource. |
 | **PostgreSQL Supabase** | PostgreSQL + Prisma 7 (`prisma.config.ts`) | `[ADA]` `schema.prisma` (8 model); migrasi `[RENCANA]` | Penyimpanan persisten data relasional (`users`, `categories`, `ebooks`, `orders`, `order_items`, `payments`, `transactions`, `ebook_accesses`). |
 | **Supabase Storage (`bucket privat`)** | Object Storage Privat | `[ADA]` helper dasar & keputusan #4; integrasi `[RENCANA]` | Menyimpan file PDF e-book secara privat tanpa akses publik bebas. |
-| **Payment Gateway** | Midtrans / Xendit | `[ADA]` keputusan #3; integrasi `[RENCANA]` | Memproses pembayaran daring nyata dan mengirim notifikasi status ke *webhook* `backend/`. |
+| **Payment Gateway** | Xendit QRIS | `[ADA]` keputusan #3; integrasi `[RENCANA]` | Memproses pembayaran daring nyata dan mengirim notifikasi status ke *webhook* `backend/`. |
 
 ---
 

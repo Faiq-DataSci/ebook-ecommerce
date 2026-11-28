@@ -54,7 +54,7 @@ Meminimalkan dampak gangguan layanan, melindungi integritas data transaksi dan k
 1. Periksa `PAYMENT_GATEWAY_WEBHOOK_SECRET` pada environment backend.
 2. Periksa log handler `POST /api/v1/payments/webhook` (error verifikasi signature, format payload, atau timeout).
 3. Periksa status `Payment` dan `Order` terkait di database PostgreSQL.
-4. Cek status layanan Payment Gateway (Midtrans/Xendit); jika provider mengalami gangguan, pantau antrean retry webhook gateway.
+4. Cek status layanan Payment Gateway (Xendit QRIS); jika provider mengalami gangguan, pantau antrean retry webhook gateway.
 5. Pastikan pengecekan idempotensi aktif saat webhook dikirim ulang agar tidak memicu duplikasi `Transaction` atau `EbookAccess`.
 
 ### D. Kebocoran Secret (`[RENCANA]`)

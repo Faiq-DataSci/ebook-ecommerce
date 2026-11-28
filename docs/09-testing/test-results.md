@@ -13,7 +13,7 @@ Validasi Prisma memuat skema dan konfigurasi; file migrasi awal `20261116000000_
 |---|---|---|---|
 | Backend typecheck | `npm run typecheck` | **PASS** | `tsc --noEmit`, tanpa error |
 | Backend test | `npm run test` | **PASS** | 17 file suite tes (Vitest): **146 skenario** pengujian unit & integrasi lulus 100% |
-| Backend cloud integration | `npm run test:cloud` | **PASS (Sebagian)** | Database Supabase live terhubung & ter-seed; Supabase Auth Admin valid; Supabase Storage privat bucket `ebooks-private` valid (Signed URL 200, Public blocked 400); Midtrans sandbox API merespons 401 Unauthorized (memerlukan server key aktif). |
+| Backend cloud integration | `npm run test:cloud` | **PASS (4/4)** | Database Supabase live terhubung & ter-seed; Supabase Auth Admin valid; Supabase Storage privat bucket `ebooks-private` valid (Signed URL 200, Public blocked 400); Xendit Dynamic QRIS Test Mode valid (`hasQrString: true`, status `ACTIVE`). |
 | Backend build | `npm run build` | **PASS** | `tsc` menghasilkan `dist/` |
 | Backend Prisma schema | `npm run prisma:validate` | **PASS** | `"The schema at prisma\schema.prisma is valid 🚀"` |
 | Admin Web typecheck & lint | `npx tsc --noEmit` & `npm run lint` | **PASS** | TypeScript 0 error & ESLint 0 temuan |

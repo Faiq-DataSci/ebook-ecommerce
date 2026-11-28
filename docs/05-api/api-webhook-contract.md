@@ -8,7 +8,7 @@
 ## 1. Spesifikasi Endpoint & Autentikasi Signature
 
 - **Endpoint:** `POST /api/v1/payments/webhook`
-- **Sumber Pemanggil:** Server Payment Gateway (Midtrans/Xendit).
+- **Sumber Pemanggil:** Server Payment Gateway (Xendit QRIS).
 - **Mekanisme Keamanan:** Tidak memakai Bearer JWT Pelanggan; menggunakan verifikasi signature pada header `X-Webhook-Signature` (HMAC/SHA-512 atau sesuai provider) terhadap *raw body* dan webhook secret di `.env` backend.
 - **Header Wajib:** `Content-Type: application/json`, `X-Webhook-Signature: <signature>`.
 

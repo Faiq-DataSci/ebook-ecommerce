@@ -7,7 +7,7 @@
 
 ## 1. Verifikasi Signature Webhook
 
-- Endpoint `POST /api/v1/payments/webhook` menerima callback dari Payment Gateway (Midtrans/Xendit) tanpa JWT pelanggan.
+- Endpoint `POST /api/v1/payments/webhook` menerima callback dari Payment Gateway (Xendit QRIS) tanpa JWT pelanggan.
 - Header signature (mis. `X-Webhook-Signature`) wajib diverifikasi menggunakan `PAYMENT_GATEWAY_WEBHOOK_SECRET` terhadap *raw request body* (bukan objek JSON hasil re-serialisasi) dengan algoritma HMAC/SHA-512 sesuai spesifikasi provider.
 - Jika signature tidak cocok -> tolak `401 WEBHOOK_SIGNATURE_INVALID` dan catat log keamanan.
 

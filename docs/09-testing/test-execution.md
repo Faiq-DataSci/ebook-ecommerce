@@ -44,7 +44,7 @@
 ## 4. Eksekusi Integrasi DB & Webhook Sandbox (`[RENCANA]`)
 
 - **Test Integrasi DB (`[RENCANA]`):** Gunakan database Supabase test terpisah (`DATABASE_URL` port `6543` & `DIRECT_URL` port `5432`), pastikan migrasi telah diterapkan.
-- **Test Webhook Sandbox (`[RENCANA]`):** Aktifkan sandbox Midtrans/Xendit, set `PAYMENT_GATEWAY_WEBHOOK_SECRET`, dan gunakan tunnel HTTPS lokal (mis. ngrok) bila menguji callback eksternal.
+- **Test Webhook Sandbox (`[RENCANA]`):** Aktifkan sandbox Xendit QRIS, set `PAYMENT_GATEWAY_WEBHOOK_SECRET`, dan gunakan tunnel HTTPS lokal (mis. ngrok) bila menguji callback eksternal.
 
 ---
 

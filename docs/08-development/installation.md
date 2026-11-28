@@ -16,7 +16,7 @@
 | **Windows Developer Mode** | Aktif | `[ADA]` | Wajib aktif agar `flutter analyze` berjalan tanpa error symlink |
 | **Git** | Terpasang | `[ADA]` | Kontrol versi dan alur PR |
 | **Proyek Supabase** | PostgreSQL + Auth + Storage Privat | `[RENCANA]` | Diperlukan saat menjalankan migrasi & runtime penuh |
-| **Akun Payment Gateway** | Midtrans / Xendit (Sandbox/Live) | `[RENCANA]` | Diperlukan saat menguji checkout & webhook pembayaran |
+| **Akun Payment Gateway** | Xendit QRIS (Sandbox/Live) | `[RENCANA]` | Diperlukan saat menguji checkout & webhook pembayaran |
 
 ---
 

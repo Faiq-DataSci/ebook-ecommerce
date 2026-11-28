@@ -1,6 +1,6 @@
 # Gambaran Umum API (`API Overview`)
 
-**Status:** `[ADA]` (seluruh endpoint inti bisnis & Admin CRUD lengkap: autentikasi, profil, katalog, pesanan, pembayaran/webhook, transaksi, laporan penjualan, signed URL PDF privat, manajemen akses, SPK SAW, serta dashboard & bobot admin terverifikasi di 146 test Vitest) | `[RENCANA]` (verifikasi live Midtrans sandbox aktif & deployment cloud)
+**Status:** `[ADA]` (seluruh endpoint inti bisnis & Admin CRUD lengkap: autentikasi, profil, katalog, pesanan, pembayaran/webhook, transaksi, laporan penjualan, signed URL PDF privat, manajemen akses, SPK SAW, serta dashboard & bobot admin terverifikasi di 146 test Vitest) | `[RENCANA]` (verifikasi live Xendit sandbox aktif & deployment cloud)
 
 Dokumen ini menjelaskan arsitektur REST API **E-Book Store** pada `backend/` (*Node.js + Express + TypeScript + Zod + Prisma 7 ESM*), batas tanggung jawab antar komponen, serta daftar status implementasi endpoint.
 

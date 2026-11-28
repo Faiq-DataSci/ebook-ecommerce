@@ -20,7 +20,7 @@ Seluruh variabel di bawah ini diverifikasi langsung dari skema Zod (`envSchema`)
 | `SUPABASE_ANON_KEY` | Opsional di schema | — | Anon/public key Supabase untuk verifikasi auth klien | Publik terbatas |
 | `SUPABASE_SERVICE_ROLE_KEY` | Opsional di schema | — | Kunci admin penuh Supabase (akses bucket privat & bypass RLS) | **SECRET KRITIS** |
 | `SUPABASE_EBOOK_BUCKET` | Opsional (`min(1)`) | `ebooks-private` | Nama bucket privat penyimpanan file PDF | Non-secret |
-| `PAYMENT_GATEWAY_SERVER_KEY` | Opsional di schema | — | Server key API Payment Gateway (Midtrans/Xendit) | **SECRET KRITIS** |
+| `PAYMENT_GATEWAY_SERVER_KEY` | Opsional di schema | — | Server key API Payment Gateway (Xendit QRIS) | **SECRET KRITIS** |
 | `PAYMENT_GATEWAY_WEBHOOK_SECRET` | Opsional di schema | — | Secret verifikasi signature callback webhook gateway | **SECRET KRITIS** |
 
 > **Catatan Audit Dokumen Lama:** Pada [`docs/08-development/environment-configuration.md`](../08-development/environment-configuration.md), masih tercantum usulan lama `JWT_SECRET` / `JWT_EXPIRES_IN` (`[RENCANA]`). Implementasi aktual di `backend/src/config/env.ts` (`[ADA]`) menggunakan **Supabase Auth** (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`), bukan `JWT_SECRET`.

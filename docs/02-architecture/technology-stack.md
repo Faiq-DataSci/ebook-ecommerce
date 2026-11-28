@@ -21,7 +21,7 @@
 | **Mobile Framework** | **Flutter** (Dart `^3.12.0`, target Android) | Aplikasi mobile pelanggan `ebook_store` | `[ADA]` template / `[RENCANA]` fitur | `mobile/ebook_store/pubspec.yaml` |
 | **State Management** | **Riverpod** (`flutter_riverpod ^2.6.1`) | Pengelolaan state & DI di aplikasi Flutter | `[ADA]` paket terpasang / `[RENCANA]` kode | `mobile/ebook_store/pubspec.yaml` |
 | **HTTP Client Mobile** | **Dio** (`^5.8.0+1`) | Komunikasi REST API Flutter ke backend | `[ADA]` paket terpasang / `[RENCANA]` kode | `mobile/ebook_store/pubspec.yaml` |
-| **Pembayaran** | **Payment Gateway** (Midtrans / Xendit) | Pemrosesan transaksi nyata & *webhook* | `[ADA]` keputusan #3 / `[RENCANA]` integrasi | `keputusan-terbuka.md` (#3), `webhook-contract.md` |
+| **Pembayaran** | **Payment Gateway** (Xendit QRIS) | Pemrosesan transaksi nyata & *webhook* | `[ADA]` keputusan #3 / `[RENCANA]` integrasi | `keputusan-terbuka.md` (#3), `webhook-contract.md` |
 | **Pengujian** | **Vitest** (`^5.1.0`), **Supertest**, **Flutter Test** | Pengujian unit & integrasi otomatis | `[ADA]` 5 tes backend + 1 tes template Flutter | `backend/vitest.config.ts`, `test-results.md` |
 | **Diagram Dokumentasi** | **Mermaid** | Diagram arsitektur, UML, ERD, dan DFD pada Markdown | `[ADA]` | `docs/01-design/`, `docs/02-architecture/` |
 
@@ -33,7 +33,7 @@ Sesuai [`AGENTS.md`](../../AGENTS.md), seluruh komponen stack inti berikut **ter
 ---
 
 ## 3. Ketergantungan Eksternal, Kesenjangan `[RENCANA]`, & Catatan ESM / Prisma 7
-- **Ketergantungan Eksternal:** Ketersediaan layanan **Supabase** (Auth, PostgreSQL, Storage) dan **Payment Gateway** (Midtrans/Xendit).
+- **Ketergantungan Eksternal:** Ketersediaan layanan **Supabase** (Auth, PostgreSQL, Storage) dan **Payment Gateway** (Xendit QRIS).
 - **Kesenjangan `[RENCANA]`:** `web/pengunjung-web` masih memakai `.jsx` (belum migrasi TypeScript), belum ada *package* PDF viewer di `pubspec.yaml`, belum ada ESLint di `backend/`, serta paket provider *payment gateway* belum ditambahkan ke `backend/package.json`.
 - **Kompatibilitas ESM & Prisma 7:**
   - `backend/package.json` menggunakan `"type": "module"`; seluruh import relatif di file `.ts` **wajib** memakai ekstensi `.js` (`AGENTS.md`).
